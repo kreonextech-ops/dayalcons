@@ -1,0 +1,134 @@
+@import "tailwindcss";
+
+@theme {
+  /* Dayal Master Redesign Colors */
+  --color-primary: #082C4E; /* Primary Navy */
+  --color-deep-navy: #021524; /* Deep Navy */
+  --color-accent: #16B5FF; /* Accent Cyan */
+  --color-background-light: #F7FAFC; /* Light BG */
+  --color-heading: #0B2239; /* Heading */
+  --color-body-text: #526375; /* Body */
+  
+  --color-on-primary: #FFFFFF;
+  --color-on-accent: #FFFFFF;
+
+  --color-background: #F7FAFC;
+  --color-on-background: #526375;
+  
+  --color-surface: #FFFFFF;
+  --color-on-surface: #526375;
+  --color-outline: rgba(8, 44, 78, 0.08);
+
+  /* Gradients */
+  --background-radial-section: radial-gradient(circle at 15% 20%, rgba(22,181,255,.08), transparent 30%), linear-gradient(180deg,#FFFFFF 0%,#F7FAFC 100%);
+  --background-footer: linear-gradient(180deg, #082C4E 0%, #021524 100%);
+  --background-cta: linear-gradient(135deg, #021524 0%, #082C4E 100%);
+
+  /* Border Radii */
+  --radius-lg: 18px;
+  --radius-xl: 20px;
+  --radius-2xl: 24px;
+  --radius-3xl: 32px;
+  --radius-full: 9999px;
+
+  /* Spacing */
+  --spacing-container-max: 1320px;
+  --spacing-margin-mobile: 24px;
+  --spacing-margin-desktop: 80px;
+
+  /* Typography */
+  --font-heading: 'Clash Display', 'Inter', sans-serif;
+  --font-body: 'Satoshi', 'Inter', sans-serif;
+
+  --text-display: 72px;
+  --text-display--line-height: 1.1;
+  --text-display--letter-spacing: -0.02em;
+
+  --text-heading-lg: 48px;
+  --text-heading-lg--line-height: 1.1;
+  
+  --text-heading-md: 28px;
+  --text-heading-md--line-height: 1.2;
+
+  --text-body-lg: 18px;
+  --text-body-lg--line-height: 1.7;
+
+  --text-body-sm: 15px;
+  --text-body-sm--line-height: 1.7;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    font-family: var(--font-body);
+    color: var(--color-body-text);
+    background-color: var(--color-background-light);
+  }
+
+  h1, h2, h3, h4, h5, h6, .font-heading {
+    font-family: var(--font-heading);
+    color: var(--color-heading);
+    font-weight: 600;
+  }
+}
+
+@layer utilities {
+  .blueprint-grid {
+    background-image: 
+      linear-gradient(rgba(22, 181, 255, 0.1) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(22, 181, 255, 0.1) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+  
+  .glass-card {
+    background-color: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 16px 40px rgba(8, 44, 78, 0.06);
+  }
+
+  .premium-shadow {
+    box-shadow: 0 20px 40px -10px rgba(8, 44, 78, 0.08);
+  }
+  
+  .concrete-texture {
+    /* Super subtle noise */
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
+  }
+
+  .section-bg-artistic {
+    background: radial-gradient(circle at 15% 20%, rgba(22,181,255,.08), transparent 30%), linear-gradient(180deg,#FFFFFF 0%,#F7FAFC 100%);
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center bg-accent text-white font-medium rounded-full px-8 py-4 transition-all duration-250 hover:shadow-[0_0_20px_rgba(22,181,255,0.4)] hover:-translate-y-[2px];
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center bg-transparent border-2 border-white text-white font-medium rounded-full px-8 py-4 transition-all duration-250 hover:bg-white hover:text-primary hover:-translate-y-[2px];
+  }
+
+  .btn-arrow {
+    @apply ml-2 transition-transform duration-250 group-hover:translate-x-1;
+  }
+}
+
+.material-symbols-outlined {
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+.material-symbols-outlined.fill {
+  font-variation-settings: 'FILL' 1;
+}
+
+/* Auto-scrolling marquee */
+@keyframes scroll {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+.animate-marquee {
+  animation: scroll 20s linear infinite;
+}
