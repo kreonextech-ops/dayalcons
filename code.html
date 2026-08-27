@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+
+<html lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Dayal Construction | Engineering Excellence</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;700&amp;family=Montserrat:wght@600;700&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@100..900&amp;family=Montserrat:wght@100..900&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined.fill {
+            font-variation-settings: 'FILL' 1;
+        }
+    </style>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "tertiary-fixed": "#ffe088",
+                        "surface-container-low": "#f3f3f5",
+                        "on-primary": "#ffffff",
+                        "outline": "#75777a",
+                        "on-tertiary-fixed-variant": "#574500",
+                        "surface-dim": "#d9dadc",
+                        "background": "#f9f9fb",
+                        "on-primary-container": "#838486",
+                        "outline-variant": "#c5c6ca",
+                        "surface-container-highest": "#e2e2e4",
+                        "primary": "#000101",
+                        "on-background": "#1a1c1d",
+                        "on-primary-fixed": "#1a1c1e",
+                        "inverse-surface": "#2f3132",
+                        "surface-bright": "#f9f9fb",
+                        "primary-fixed-dim": "#c6c6c9",
+                        "on-error-container": "#93000a",
+                        "surface-container": "#eeeef0",
+                        "surface-container-lowest": "#ffffff",
+                        "surface": "#f9f9fb",
+                        "surface-container-high": "#e8e8ea",
+                        "secondary-fixed": "#ffdcc3",
+                        "on-primary-fixed-variant": "#454749",
+                        "on-secondary-fixed-variant": "#6e3900",
+                        "on-surface-variant": "#44474a",
+                        "on-surface": "#1a1c1d",
+                        "secondary-container": "#fc9430",
+                        "on-secondary-container": "#663500",
+                        "primary-fixed": "#e2e2e5",
+                        "on-tertiary-container": "#4f3e00",
+                        "on-tertiary": "#ffffff",
+                        "tertiary": "#735c00",
+                        "surface-variant": "#e2e2e4",
+                        "error-container": "#ffdad6",
+                        "on-tertiary-fixed": "#241a00",
+                        "error": "#ba1a1a",
+                        "primary-container": "#1a1c1e",
+                        "surface-tint": "#5d5e61",
+                        "secondary-fixed-dim": "#ffb77d",
+                        "tertiary-fixed-dim": "#e9c349",
+                        "inverse-primary": "#c6c6c9",
+                        "secondary": "#914d00",
+                        "tertiary-container": "#cca730",
+                        "on-secondary": "#ffffff",
+                        "inverse-on-surface": "#f0f0f2",
+                        "on-secondary-fixed": "#2f1500",
+                        "on-error": "#ffffff"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px",
+                        "4xl": "2rem",
+                        "5xl": "3rem"
+                    },
+                    "spacing": {
+                        "margin-desktop": "80px",
+                        "margin-mobile": "20px",
+                        "fluid-gap": "clamp(24px, 5vw, 64px)",
+                        "unit": "8px",
+                        "container-max": "1440px",
+                        "section-overlap": "-64px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Montserrat"],
+                        "headline-md": ["Montserrat"],
+                        "label-caps": ["Hanken Grotesk"],
+                        "display-lg": ["Montserrat"],
+                        "body-lg": ["Hanken Grotesk"],
+                        "body-md": ["Hanken Grotesk"],
+                        "headline-lg-mobile": ["Montserrat"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-md": ["32px", {"lineHeight": "40px", "fontWeight": "600"}],
+                        "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.1em", "fontWeight": "700"}],
+                        "display-lg": ["84px", {"lineHeight": "92px", "letterSpacing": "-0.04em", "fontWeight": "700"}],
+                        "body-lg": ["20px", {"lineHeight": "32px", "fontWeight": "400"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "headline-lg-mobile": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-background text-on-background font-body-md antialiased overflow-x-hidden">
+<!-- TopAppBar -->
+<header class="docked full-width top-0 sticky z-50 backdrop-blur-md bg-white/80 dark:bg-black/80 flat no shadows flex justify-between items-center w-full px-margin-mobile md:px-margin-desktop py-4 max-w-container-max mx-auto transition-all duration-300" id="main-header">
+<a class="font-headline-md text-headline-md font-bold text-primary dark:text-on-primary-fixed uppercase tracking-tighter" href="#">
+            Dayal Construction
+        </a>
+<nav class="hidden md:flex gap-8 items-center font-label-caps text-label-caps">
+<a class="text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-high/50 dark:hover:bg-surface-container-highest/10 transition-all scale-95 active:scale-90 px-3 py-2 rounded-lg" href="#projects">Projects</a>
+<a class="text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-high/50 dark:hover:bg-surface-container-highest/10 transition-all scale-95 active:scale-90 px-3 py-2 rounded-lg" href="#services">Services</a>
+<a class="text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-high/50 dark:hover:bg-surface-container-highest/10 transition-all scale-95 active:scale-90 px-3 py-2 rounded-lg" href="#process">Process</a>
+<a class="text-on-surface-variant dark:text-outline-variant hover:bg-surface-container-high/50 dark:hover:bg-surface-container-highest/10 transition-all scale-95 active:scale-90 px-3 py-2 rounded-lg" href="#about">About</a>
+</nav>
+<div class="flex items-center gap-4">
+<a class="hidden md:inline-flex items-center justify-center bg-secondary-container text-on-secondary-container font-label-caps text-label-caps px-6 py-3 rounded-lg hover:bg-secondary hover:text-on-secondary transition-colors scale-95 active:scale-90" href="#quote">
+                Request Quote
+            </a>
+<button class="md:hidden text-primary dark:text-on-primary-fixed hover:bg-surface-container-high/50 transition-all p-2 rounded-full scale-95 active:scale-90">
+<span class="material-symbols-outlined">menu</span>
+</button>
+</div>
+</header>
+<main>
+<!-- 1. Hero Section -->
+<section class="relative w-full min-h-[921px] flex items-center justify-center px-margin-mobile md:px-margin-desktop py-20 overflow-hidden">
+<div class="absolute inset-0 z-0">
+<img class="w-full h-full object-cover" data-alt="A massive, high-end architectural construction site at dawn. The scene features towering steel structures, pristine concrete foundations, and heavy machinery, all captured with professional, cinematic photography. The lighting is dramatic, casting long shadows and highlighting the raw materials in a modern minimalist style. The color palette emphasizes industrial grays, deep charcoals, and bright safety orange accents against a soft, hazy sky." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAakgUE3pncG7Wgy3ATaQRlrxqIknW_alLoNcPREHzYRVd6vqtg-BB3tlhQp84dkEpto2OknCGll11WJQCiUARpmncQVtBAOygyYROpuExs3a6IfNzpIEtTZXXr53G1yHq3nrQMOq8N0GrfvvzVPeRSroayI0wL-J8pToyN1ZjtNWDdLhgaABiVVWhEcm5d2FlaTB_qEcAuyhJbMUCqfw2IH32ji7K0QErSH4hcsH6BNKtjWgbooVs"/>
+<div class="absolute inset-0 bg-gradient-to-r from-primary/80 to-transparent"></div>
+</div>
+<div class="relative z-10 w-full max-w-container-max mx-auto flex flex-col md:flex-row items-center gap-fluid-gap">
+<div class="w-full md:w-2/3 space-y-6">
+<span class="inline-block bg-surface-container-lowest/10 backdrop-blur-md border border-outline-variant/30 text-on-primary font-label-caps text-label-caps px-4 py-2 rounded-full">
+                        Industrial • Commercial • Residential
+                    </span>
+<h1 class="font-display-lg text-display-lg text-on-primary max-w-4xl tracking-tighter leading-tight drop-shadow-lg">
+                        Engineering Excellence.<br/>Building Legacies.
+                    </h1>
+<p class="font-body-lg text-body-lg text-surface-variant max-w-2xl">
+                        From complex industrial infrastructure to high-end residential masterworks, we bring precision to every square inch.
+                    </p>
+<div class="pt-8">
+<a class="inline-flex items-center gap-2 bg-secondary-container text-on-secondary-container font-label-caps text-label-caps px-8 py-4 rounded-lg hover:bg-secondary hover:text-on-secondary transition-colors group" href="#quote">
+                            Request Quote
+                            <span class="material-symbols-outlined group-hover:translate-x-1 transition-transform">arrow_forward</span>
+</a>
+</div>
+</div>
+<div class="w-full md:w-1/3 hidden md:flex justify-end">
+<!-- Abstract overlapping element -->
+<div class="w-64 h-96 bg-surface-container-lowest/10 backdrop-blur-xl border border-outline-variant/20 rounded-5xl rotate-6 transform translate-y-12 translate-x-12 flex items-end p-8">
+<div class="text-on-primary font-body-md">
+                             Precision in every detail.
+                         </div>
+</div>
+</div>
+</div>
+</section>
+<!-- 2. Trust Numbers -->
+<section class="w-full px-margin-mobile md:px-margin-desktop py-24 bg-surface relative z-20 mt-section-overlap rounded-t-[3rem] shadow-2xl shadow-primary/10">
+<div class="max-w-container-max mx-auto">
+<div class="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-fluid-gap divide-x divide-outline-variant/30 text-center">
+<div class="flex flex-col items-center">
+<span class="font-display-lg text-display-lg text-primary">25+</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant mt-2">Years of Excellence</span>
+</div>
+<div class="flex flex-col items-center">
+<span class="font-display-lg text-display-lg text-primary">500+</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant mt-2">Projects Completed</span>
+</div>
+<div class="flex flex-col items-center">
+<span class="font-display-lg text-display-lg text-primary">1M+</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant mt-2">SqFt Built</span>
+</div>
+<div class="flex flex-col items-center">
+<span class="font-display-lg text-display-lg text-primary">100%</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant mt-2">Safety Record</span>
+</div>
+</div>
+</div>
+</section>
+<!-- 3. About / Company Introduction -->
+<section class="w-full px-margin-mobile md:px-margin-desktop py-24 bg-surface-container-low" id="about">
+<div class="max-w-container-max mx-auto flex flex-col md:flex-row gap-fluid-gap items-center">
+<div class="w-full md:w-1/2 space-y-6">
+<h2 class="font-headline-lg text-headline-lg text-primary">Forged in Steel.<br/>Built on Trust.</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant">
+                Dayal Construction is not just a contractor; we are engineering partners. Our legacy is built on a relentless pursuit of perfection, combining decades of structural expertise with cutting-edge construction technologies. We don't just build structures; we engineer solutions that stand the test of time.
+            </p>
+<a class="inline-flex items-center gap-2 text-secondary font-label-caps text-label-caps uppercase tracking-widest hover:text-secondary-container transition-colors" href="#">
+                Discover Our Story
+                <span class="material-symbols-outlined">arrow_forward</span>
+</a>
+</div>
+<div class="w-full md:w-1/2 relative">
+<img alt="Construction engineers reviewing plans" class="rounded-3xl shadow-xl w-full h-[500px] object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBHQmGxlqExnE3JVqiAuUj1I3ygpIirjeqNtuAYyu9UcRVg9cWpm8Knt8oxfokA4etY12WhjYM_8JBBxbKF51uqoGx8lnVXjj6-AbPaI8D0Fxhe1t7ybFsBNpN7HVFNTkSiPXRxBuPnMqjWBZEk8sG5GyYHXevx3YT7XkKgUQbZLNpBZFpe_LX9YUuf5RlT12U1UE9Ofh9PTHcjDyJE9idVhhm0COZwftUZBaFZYTWuKpyIGI-kxqg"/>
+<div class="absolute -bottom-12 -left-12 bg-surface p-8 rounded-2xl shadow-lg max-w-xs hidden md:block">
+<p class="font-body-md text-on-surface font-semibold">"Engineering precision meets architectural vision."</p>
+</div>
+</div>
+</div>
+</section>
+<!-- 4. Services / What We Build -->
+<section class="w-full px-margin-mobile md:px-margin-desktop py-32 bg-surface-bright relative" id="services">
+<div class="max-w-container-max mx-auto space-y-16">
+<div class="flex flex-col md:flex-row justify-between items-end gap-8">
+<h2 class="font-headline-lg text-headline-lg text-primary max-w-lg">
+                        Specialized Sectors.
+                    </h2>
+<p class="font-body-md text-body-md text-on-surface-variant max-w-md">
+                        Delivering structural integrity and modern aesthetic across diverse environments.
+                    </p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-fluid-gap">
+<!-- Service 1 -->
+<div class="group relative rounded-[2.5rem] overflow-hidden aspect-[3/4] transform md:translate-y-8 transition-transform duration-500 hover:-translate-y-2 cursor-pointer">
+<img class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="A sprawling industrial complex under construction, featuring massive steel beams and concrete silos. The architectural photography highlights the scale and precision of the structural engineering. The color scheme is dominated by deep charcoals and industrial grays, with a clear blue sky providing contrast. The style is modern, minimalist, and authoritative." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCLwabCMvXK8VD-lJ0OLEDUTNrLFO_zysZ7Yq-mKRXvsqOT_eJm4_Foi7q-GTSBNjF_DY7pg7WOMZXarL38G1DtXmeIvqPvEV4myeKKN9ZaYXojDRW1xcSEGGVXqPwMCSmdNxoPrwPWIaHAANzVoFe942Y4PalhQ6JvbpopqTbhVC-FRWmzVXdgeD-bjGZTJorLrtxda7JZGrkEGgpPG2fBNUeplv6xeuLSeO1riEae6HyE5mrh4AI"/>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/90 via-primary/40 to-transparent"></div>
+<div class="absolute bottom-0 left-0 p-8 w-full">
+<span class="inline-block bg-secondary-container text-on-secondary-container font-label-caps text-label-caps px-3 py-1 rounded-full mb-4">01</span>
+<h3 class="font-headline-md text-headline-md text-on-primary mb-2">Industrial</h3>
+<p class="font-body-md text-body-md text-surface-variant opacity-0 group-hover:opacity-100 transition-opacity duration-300 h-0 group-hover:h-auto overflow-hidden">
+                                Heavy-duty infrastructure designed for maximum efficiency and durability.
+                            </p>
+</div>
+</div>
+<!-- Service 2 -->
+<div class="group relative rounded-[3rem] overflow-hidden aspect-square md:aspect-[3/4] transition-transform duration-500 hover:-translate-y-2 cursor-pointer">
+<img class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="A sleek, modern commercial skyscraper in the mid-stages of construction. Glass panels are being installed over a complex steel frame. The image conveys innovation and high-end design. The lighting is bright and clean, emphasizing the reflective surfaces and sharp geometric lines. The palette is neutral with subtle metallic accents." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC0ftS1YXtWGFRAyLA3B3vQUP5bAu2br4lBEUG60hLl6i3s8Te2ZsRLp3Hqd3qm9GjfiWxWHR4g6n1o7yT-Gc3VFg8c2zEqmYckHyYgLzawakEqV5VHJ5Dtr_lLi9JhUbuFjHZAwKqnn99G7UbW-yY1wwthnk7KlJNgiTrziLpulKUgURdA6ABE_yPQXhAs4SNg-MO8Vk5l6U6jbu2nObWmsWAj92NHrxTvHsKF1IqM3uH8yYvza5g"/>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/90 via-primary/40 to-transparent"></div>
+<div class="absolute bottom-0 left-0 p-8 w-full">
+<span class="inline-block bg-secondary-container text-on-secondary-container font-label-caps text-label-caps px-3 py-1 rounded-full mb-4">02</span>
+<h3 class="font-headline-md text-headline-md text-on-primary mb-2">Commercial</h3>
+<p class="font-body-md text-body-md text-surface-variant opacity-0 group-hover:opacity-100 transition-opacity duration-300 h-0 group-hover:h-auto overflow-hidden">
+                                Innovative office spaces and retail centers built for the modern workforce.
+                            </p>
+</div>
+</div>
+<!-- Service 3 -->
+<div class="group relative rounded-[2rem] overflow-hidden aspect-[4/5] md:aspect-[3/4] transform md:-translate-y-8 transition-transform duration-500 hover:-translate-y-10 cursor-pointer">
+<img class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" data-alt="A high-end residential property under construction, showcasing luxurious architectural features, large windows, and integration with natural surroundings. The photography is editorial and refined, highlighting the craftsmanship. The color palette includes warm, natural tones mixed with crisp architectural grays." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDiD8gVItkqbT1R7IDr-XAtJ47FQpXd-H-316pclDOfgMTlH3LaoKedDOmpvaOzyeo3RJ8tkHrb8hKu2Y2I-W8YKAqNOD1HdNAb4D9LQMlqwee_7QlXCRXztQrHSyjHMHzTCR4kNSCpP0oJAMzr7DQdBwqXCvYY9qRyQ3TMWiZD7XNPV2BeX1ZtzShNSzaDwIkxKg8tlmxbYibq8OXAU6Wag4Zz2MRkl2VyBiAbTfNXaK4Es_HsEVU"/>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/90 via-primary/40 to-transparent"></div>
+<div class="absolute bottom-0 left-0 p-8 w-full">
+<span class="inline-block bg-secondary-container text-on-secondary-container font-label-caps text-label-caps px-3 py-1 rounded-full mb-4">03</span>
+<h3 class="font-headline-md text-headline-md text-on-primary mb-2">Residential</h3>
+<p class="font-body-md text-body-md text-surface-variant opacity-0 group-hover:opacity-100 transition-opacity duration-300 h-0 group-hover:h-auto overflow-hidden">
+                                Masterfully crafted homes that blend structural integrity with elegant design.
+                            </p>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 5. Featured Projects -->
+<section class="w-full px-margin-mobile md:px-margin-desktop py-24 bg-surface" id="projects">
+<div class="max-w-container-max mx-auto">
+<div class="flex justify-between items-end mb-12">
+<h2 class="font-headline-lg text-headline-lg text-primary">Featured Work</h2>
+<a class="hidden md:inline-flex items-center gap-2 text-secondary font-label-caps text-label-caps uppercase tracking-widest hover:text-secondary-container transition-colors" href="#">
+                View All Projects
+                <span class="material-symbols-outlined">arrow_forward</span>
+</a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+<div class="group relative rounded-3xl overflow-hidden aspect-[4/3]">
+<img alt="Skyline Commercial Tower" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBrAB_RaSFonYNdDq8hRJ0t2Pu7ToZzPLAEsiDkjk7f4EqmkKz7yOEejMFWylvnfz2DezBh5SyDnNrUByDTd9T6RtG7JTzaG6A3YxjEQuYUcVZ0CbE3if2kyU6jB0Qn23ailOdRRoIuP-Oms_E8ALl5bv8dE9qaJLreSxVyYm6h2X8IYAg2HzLf5eUeQWqJyiY94LvwDUTDRGAy0kv9xt9zISy4NACE0e4r8qqa8bNGsf_4dZrLf6E"/>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/90 to-transparent flex flex-col justify-end p-8">
+<span class="text-secondary-container font-label-caps mb-2">Commercial</span>
+<h3 class="font-headline-md text-on-primary">The Zenith Tower</h3>
+</div>
+</div>
+<div class="group relative rounded-3xl overflow-hidden aspect-[4/3]">
+<img alt="Industrial Logistics Hub" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAb73_CUAitya7afPV01i5fF457rJAEBtCzhVMrE0j8EAFunGxv0iwls4brfD9ByZ48Q48X0-1JnbN3J_tN6-SdbpsVBSaSDfqoMr2UEeNRqaDco6lOxWqmEuP0cm7e9xVbzU_0J6KAMM5_McC1QF-SxmYOpOULl9MoVNUEYcoq-cADUuE1FghK0ZjXGl4v1whz7jGhNJsae_xKB8Lm2PZFPVvtHoOjJ2FV-A4wai-BC0ivNVSB1go"/>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/90 to-transparent flex flex-col justify-end p-8">
+<span class="text-secondary-container font-label-caps mb-2">Industrial</span>
+<h3 class="font-headline-md text-on-primary">Apex Logistics Hub</h3>
+</div>
+</div>
+</div>
+<div class="mt-8 text-center md:hidden">
+<a class="inline-flex items-center gap-2 text-secondary font-label-caps text-label-caps uppercase tracking-widest" href="#">View All Projects <span class="material-symbols-outlined">arrow_forward</span></a>
+</div>
+</div>
+</section>
+<!-- 6. Why Choose Us -->
+<section class="w-full px-margin-mobile md:px-margin-desktop py-24 bg-surface-container-low">
+<div class="max-w-container-max mx-auto text-center space-y-16">
+<h2 class="font-headline-lg text-headline-lg text-primary">The Dayal Advantage</h2>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-12">
+<div class="flex flex-col items-center text-center space-y-4">
+<div class="w-16 h-16 rounded-2xl bg-secondary-container text-on-secondary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-3xl">architecture</span>
+</div>
+<h3 class="font-headline-md text-primary">Precision Engineering</h3>
+<p class="font-body-md text-on-surface-variant">We utilize advanced BIM technology and exacting standards to ensure millimeter-perfect execution.</p>
+</div>
+<div class="flex flex-col items-center text-center space-y-4">
+<div class="w-16 h-16 rounded-2xl bg-secondary-container text-on-secondary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-3xl">health_and_safety</span>
+</div>
+<h3 class="font-headline-md text-primary">Uncompromising Safety</h3>
+<p class="font-body-md text-on-surface-variant">Our zero-incident culture is embedded in every phase, protecting our workforce and your investment.</p>
+</div>
+<div class="flex flex-col items-center text-center space-y-4">
+<div class="w-16 h-16 rounded-2xl bg-secondary-container text-on-secondary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-3xl">lightbulb</span>
+</div>
+<h3 class="font-headline-md text-primary">Innovative Solutions</h3>
+<p class="font-body-md text-on-surface-variant">Pioneering sustainable practices and modern methodologies to deliver future-proof structures.</p>
+</div>
+</div>
+</div>
+</section>
+<!-- 7. Construction Process -->
+<section class="w-full px-margin-mobile md:px-margin-desktop py-24 bg-surface" id="process">
+<div class="max-w-container-max mx-auto">
+<h2 class="font-headline-lg text-headline-lg text-primary mb-16 text-center">Our Process</h2>
+<div class="relative">
+<div class="absolute left-1/2 -translate-x-1/2 h-full w-1 bg-outline-variant/30 hidden md:block"></div>
+<div class="space-y-12">
+<!-- Step 1 -->
+<div class="flex flex-col md:flex-row items-center justify-between w-full">
+<div class="w-full md:w-5/12 text-right md:pr-8 mb-4 md:mb-0">
+<h3 class="font-headline-md text-primary">Pre-Construction</h3>
+<p class="font-body-md text-on-surface-variant mt-2">Comprehensive planning, feasibility analysis, and detailed architectural integration.</p>
+</div>
+<div class="w-10 h-10 rounded-full bg-secondary text-on-secondary flex items-center justify-center font-bold z-10 shrink-0">1</div>
+<div class="w-full md:w-5/12 hidden md:block"></div>
+</div>
+<!-- Step 2 -->
+<div class="flex flex-col md:flex-row items-center justify-between w-full">
+<div class="w-full md:w-5/12 hidden md:block"></div>
+<div class="w-10 h-10 rounded-full bg-secondary text-on-secondary flex items-center justify-center font-bold z-10 shrink-0">2</div>
+<div class="w-full md:w-5/12 text-left md:pl-8 mt-4 md:mt-0">
+<h3 class="font-headline-md text-primary">Execution</h3>
+<p class="font-body-md text-on-surface-variant mt-2">Rigorous site management, material procurement, and precise structural assembly.</p>
+</div>
+</div>
+<!-- Step 3 -->
+<div class="flex flex-col md:flex-row items-center justify-between w-full">
+<div class="w-full md:w-5/12 text-right md:pr-8 mb-4 md:mb-0">
+<h3 class="font-headline-md text-primary">Delivery</h3>
+<p class="font-body-md text-on-surface-variant mt-2">Final inspections, client walkthroughs, and seamless handover of the completed project.</p>
+</div>
+<div class="w-10 h-10 rounded-full bg-secondary text-on-secondary flex items-center justify-center font-bold z-10 shrink-0">3</div>
+<div class="w-full md:w-5/12 hidden md:block"></div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- 8. Quality & Safety -->
+<section class="w-full px-margin-mobile md:px-margin-desktop py-24 bg-primary text-on-primary">
+<div class="max-w-container-max mx-auto flex flex-col md:flex-row items-center gap-12">
+<div class="w-full md:w-1/2">
+<img alt="Safety Engineer" class="rounded-3xl w-full h-[400px] object-cover grayscale opacity-80" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAg2AxAqDBVlbEkCqo2MEPHYukNcErK_NWjjqwXxUN-326YPqxWA00_ernQnhGMBleCvYobGl4VbA9S16rdbsbTQNc7vzZQ0sc1s0RjIhZeuftl-sAMv3xUvPNF_LBy5QiB-qyy4VYKZt-1JEiVJs5eZ8oWKcW2WCN6NGwhS3AN6AIfwNZZhEk5Tltz99Sjz0tGjuvn8UG4T9g-ijNRvtVkOPxZ8kmohOVOzuURZMCpaobvGLOdKnU"/>
+</div>
+<div class="w-full md:w-1/2 space-y-6">
+<span class="font-label-caps text-secondary-container">ISO 9001 &amp; 45001 Certified</span>
+<h2 class="font-headline-lg">Zero Incident Culture</h2>
+<p class="font-body-lg text-surface-variant">Quality and safety are not just protocols; they are the bedrock of our operations. We adhere to the strictest international standards, ensuring every site is a safe environment and every structure meets uncompromising quality benchmarks.</p>
+</div>
+</div>
+</section>
+<!-- 9. Industries We Serve -->
+<section class="w-full px-margin-mobile md:px-margin-desktop py-24 bg-surface-bright">
+<div class="max-w-container-max mx-auto">
+<h2 class="font-headline-lg text-headline-lg text-primary text-center mb-16">Industries We Serve</h2>
+<div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+<div class="p-8 border border-outline-variant/30 rounded-2xl hover:bg-surface-container transition-colors text-center">
+<span class="material-symbols-outlined text-4xl text-secondary mb-4">factory</span>
+<h3 class="font-headline-md text-primary text-xl">Manufacturing</h3>
+</div>
+<div class="p-8 border border-outline-variant/30 rounded-2xl hover:bg-surface-container transition-colors text-center">
+<span class="material-symbols-outlined text-4xl text-secondary mb-4">domain</span>
+<h3 class="font-headline-md text-primary text-xl">Corporate Real Estate</h3>
+</div>
+<div class="p-8 border border-outline-variant/30 rounded-2xl hover:bg-surface-container transition-colors text-center">
+<span class="material-symbols-outlined text-4xl text-secondary mb-4">home_work</span>
+<h3 class="font-headline-md text-primary text-xl">Luxury Residential</h3>
+</div>
+<div class="p-8 border border-outline-variant/30 rounded-2xl hover:bg-surface-container transition-colors text-center">
+<span class="material-symbols-outlined text-4xl text-secondary mb-4">local_hospital</span>
+<h3 class="font-headline-md text-primary text-xl">Healthcare Facilities</h3>
+</div>
+</div>
+</div>
+</section>
+<!-- 10. Client Logos / Partners -->
+<section class="w-full px-margin-mobile md:px-margin-desktop py-16 bg-surface border-y border-outline-variant/20">
+<div class="max-w-container-max mx-auto">
+<p class="text-center font-label-caps text-on-surface-variant mb-8 uppercase tracking-widest">Trusted By Industry Leaders</p>
+<div class="flex flex-wrap justify-center items-center gap-12 md:gap-24 opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
+<!-- Placeholder for logos -->
+<span class="font-headline-md font-bold text-xl">APEX STEEL</span>
+<span class="font-headline-md font-bold text-xl">NEXUS CEMENT</span>
+<span class="font-headline-md font-bold text-xl">LUMINA CORP</span>
+<span class="font-headline-md font-bold text-xl">STRUCTURA</span>
+</div>
+</div>
+</section>
+<!-- 11. Testimonials -->
+<section class="w-full px-margin-mobile md:px-margin-desktop py-24 bg-surface-container-low">
+<div class="max-w-container-max mx-auto text-center max-w-4xl">
+<span class="material-symbols-outlined text-secondary text-5xl mb-6">format_quote</span>
+<h2 class="font-headline-md text-headline-md text-primary leading-relaxed italic">"Dayal Construction delivered our industrial complex ahead of schedule and with remarkable precision. Their engineering acumen is unmatched."</h2>
+<p class="font-label-caps text-on-surface-variant mt-8 uppercase tracking-widest">Sarah Jenkins — CEO, Apex Logistics</p>
+</div>
+</section>
+<!-- 12. Certifications & Awards -->
+<section class="w-full px-margin-mobile md:px-margin-desktop py-16 bg-surface">
+<div class="max-w-container-max mx-auto flex flex-col md:flex-row justify-center items-center gap-12">
+<div class="text-center">
+<span class="material-symbols-outlined text-4xl text-secondary mb-2">workspace_premium</span>
+<p class="font-label-caps font-bold">Excellence in Structural Engineering 2023</p>
+</div>
+<div class="text-center">
+<span class="material-symbols-outlined text-4xl text-secondary mb-2">verified</span>
+<p class="font-label-caps font-bold">ISO 9001 Certified</p>
+</div>
+<div class="text-center">
+<span class="material-symbols-outlined text-4xl text-secondary mb-2">shield</span>
+<p class="font-label-caps font-bold">National Safety Council Award</p>
+</div>
+</div>
+</section>
+<!-- 13. Project Gallery -->
+<section class="w-full px-margin-mobile md:px-margin-desktop py-24 bg-surface-bright">
+<div class="max-w-container-max mx-auto">
+<h2 class="font-headline-lg text-headline-lg text-primary mb-12">Gallery</h2>
+<div class="grid grid-cols-2 md:grid-cols-3 gap-4 auto-rows-[250px]">
+<img alt="Construction detail" class="w-full h-full object-cover rounded-2xl col-span-2 row-span-2" src="https://lh3.googleusercontent.com/aida-public/AB6AXuA2X15XLDM7hohOJfGHF8iDvLJ5N78wzAzoPC7rdk8WJ7QizvTtpIuVaRw8NXKvO6J7FWq1X5yjUPVmDpzq6eqR8DOM4gNkxHbM-fGFxVN2NLwmWq64hJUeQKGqG4dOHgnjvIqDT3ldR9BPFD4psskldl7zB-Q8aJyDZVeEGRztG35ARHLYk4pz5khkB-R1u8e8ckakqq4mpnaE6kpTputVGzAfYmaeSbR15xXhqQnw_iv-1eimZIc"/>
+<img alt="Crane" class="w-full h-full object-cover rounded-2xl" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAi2qS1C58os9eJ8-YU7FfWXbRhsxEDn9mgMe6EfOeQ-bBvq3rkra0IgNHHqls9ZNXV_xo16FQwV5Y4xd9PERZphzb9imd6jWTSQyTC_7dILDJmu58WOznM-jqSLhoGhnWA67FuZVBISw-MqB9J5s0AIc02bNPmG1A0ZxMKQSihm61Bu2xf5_zBtUsURt8d1F_ZusdSYcahKxkKj-20y4PepkMLLklRThAV62qPbuipebi-iZqzEKQ"/>
+<img alt="Steel framework" class="w-full h-full object-cover rounded-2xl" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBKZyS2OF4KjYW13AJz_Lkxe5yL8_FTA_0QMFgX4Yl_RI5F4KNTTAYiwC0BMgtJrbKeqo6JXnAfyEO0aOkPCMizErpykLp0wivApBiwb6ZwJKTsS3aZ_jQ0aFfTlOXCooRQXt6U1FhyfX1dW-qS3wmX9Gbeh7_7aMhHr1bSJgCZSETl0Rd8wl1PnBAiwu8zAXCDNmM_98D3Yg9xWYcVSfGGuDx1HLLFCe0zdR7P2D-q_i7eUVEUHLg"/>
+</div>
+</div>
+</section>
+<!-- 14. Locations Served -->
+<section class="w-full px-margin-mobile md:px-margin-desktop py-24 bg-surface-container-low">
+<div class="max-w-container-max mx-auto text-center">
+<h2 class="font-headline-md text-headline-md text-primary mb-8">Regions We Serve</h2>
+<div class="flex flex-wrap justify-center gap-4">
+<span class="px-6 py-2 bg-surface rounded-full border border-outline-variant/30 font-label-caps">North America</span>
+<span class="px-6 py-2 bg-surface rounded-full border border-outline-variant/30 font-label-caps">Europe</span>
+<span class="px-6 py-2 bg-surface rounded-full border border-outline-variant/30 font-label-caps">Middle East</span>
+<span class="px-6 py-2 bg-surface rounded-full border border-outline-variant/30 font-label-caps">Asia Pacific</span>
+</div>
+</div>
+</section>
+<!-- 15. FAQ -->
+<section class="w-full px-margin-mobile md:px-margin-desktop py-24 bg-surface">
+<div class="max-w-container-max mx-auto max-w-3xl space-y-6">
+<h2 class="font-headline-lg text-headline-lg text-primary text-center mb-12">Common Inquiries</h2>
+<details class="group border-b border-outline-variant/30 pb-4">
+<summary class="flex justify-between items-center font-headline-md text-xl cursor-pointer list-none">
+                What project sizes do you handle?
+                <span class="transition group-open:rotate-180 material-symbols-outlined">expand_more</span>
+</summary>
+<p class="text-on-surface-variant mt-4 font-body-md">We handle projects ranging from mid-size commercial developments to large-scale industrial complexes and premium residential masterworks.</p>
+</details>
+<details class="group border-b border-outline-variant/30 pb-4">
+<summary class="flex justify-between items-center font-headline-md text-xl cursor-pointer list-none">
+                Do you provide design-build services?
+                <span class="transition group-open:rotate-180 material-symbols-outlined">expand_more</span>
+</summary>
+<p class="text-on-surface-variant mt-4 font-body-md">Yes, we offer comprehensive design-build solutions, integrating architectural design with structural engineering and construction management.</p>
+</details>
+</div>
+</section>
+<!-- 16. Final CTA -->
+<section class="w-full px-margin-mobile md:px-margin-desktop py-32 bg-primary text-on-primary text-center" id="quote">
+<div class="max-w-container-max mx-auto space-y-8">
+<h2 class="font-display-lg text-display-lg md:text-6xl tracking-tighter">Ready to Build Your Legacy?</h2>
+<p class="font-body-lg text-surface-variant max-w-2xl mx-auto">Contact our engineering team today to discuss your project requirements and discover how we can turn your vision into reality.</p>
+<div class="pt-8">
+<button class="bg-secondary text-on-secondary font-label-caps px-8 py-4 rounded-lg hover:bg-secondary-container hover:text-on-secondary-container transition-colors uppercase tracking-widest text-lg">
+                Start Your Project
+            </button>
+</div>
+</div>
+</section>
+</main>
+<!-- 17. Footer -->
+<footer class="full-width relative bg-inverse-surface dark:bg-primary-container border-t border-outline/20 flat no shadows flex flex-col md:flex-row justify-between items-center w-full px-margin-mobile md:px-margin-desktop py-12 gap-8 max-w-container-max mx-auto text-inverse-on-surface dark:text-on-primary-fixed">
+<div class="flex flex-col gap-4 items-center md:items-start">
+<span class="font-headline-md text-headline-md font-bold text-surface-container-lowest">Dayal Construction</span>
+<p class="font-body-md text-body-md text-surface-variant/80">© 2024 Dayal Construction. Engineering Excellence.</p>
+</div>
+<nav class="flex flex-wrap justify-center md:justify-end gap-6 font-label-caps text-label-caps">
+<a class="text-surface-variant/80 hover:text-surface-container-lowest transition-colors hover:opacity-80 transition-opacity underline-offset-4 hover:underline" href="#">Privacy Policy</a>
+<a class="text-surface-variant/80 hover:text-surface-container-lowest transition-colors hover:opacity-80 transition-opacity underline-offset-4 hover:underline" href="#">Terms of Service</a>
+<a class="text-surface-variant/80 hover:text-surface-container-lowest transition-colors hover:opacity-80 transition-opacity underline-offset-4 hover:underline" href="#">LinkedIn</a>
+<a class="text-surface-variant/80 hover:text-surface-container-lowest transition-colors hover:opacity-80 transition-opacity underline-offset-4 hover:underline" href="#">Instagram</a>
+</nav>
+</footer>
+</body></html>
