@@ -1,3 +1,10 @@
+import type { Metadata } from "next";
+export const metadata: Metadata = {
+  title: "Projects | Dayal Constructions & Co.",
+  description: "Browse Dayal Constructions & Co.'s portfolio of completed residential, commercial and industrial projects across Siliguri and West Bengal — built with precision and pride.",
+  alternates: { canonical: "https://dayalconstructions.in/projects" },
+  openGraph: { url: "https://dayalconstructions.in/projects", title: "Projects | Dayal Constructions & Co." },
+};
 "use client";
 
 import { motion, useScroll, useTransform } from "framer-motion";
@@ -34,18 +41,30 @@ const trustBadges = [
 
 // Project Placeholders Data (12 items)
 const projects = [
-  { id: 1, aspect: "aspect-[5/4]", title: "Modern Luxury Villa" },
-  { id: 2, aspect: "aspect-[4/5]", title: "Commercial Complex" },
-  { id: 3, aspect: "aspect-[5/4]", title: "Corporate Office" },
-  { id: 4, aspect: "aspect-[16/10]", title: "Industrial Facility" },
-  { id: 5, aspect: "aspect-[1/1]", title: "Minimalist Residence" },
-  { id: 6, aspect: "aspect-[4/5]", title: "Urban Apartment" },
-  { id: 7, aspect: "aspect-[5/4]", title: "Retail Showroom" },
-  { id: 8, aspect: "aspect-[16/10]", title: "Factory Warehouse" },
-  { id: 9, aspect: "aspect-[5/4]", title: "Luxury Penthouse" },
-  { id: 10, aspect: "aspect-[4/5]", title: "Hospitality Project" },
-  { id: 11, aspect: "aspect-[5/4]", title: "Boutique Hotel" },
-  { id: 12, aspect: "aspect-[1/1]", title: "Custom Duplex" },
+  { id: 1, aspect: "aspect-[5/4]", src: "/images/project/1000579291.jpg.jpg" },
+  { id: 2, aspect: "aspect-[4/5]", src: "/images/project/1000609146.jpg.jpg" },
+  { id: 3, aspect: "aspect-[16/10]", src: "/images/project/1000609147.jpg.jpg" },
+  { id: 4, aspect: "aspect-[1/1]", src: "/images/project/1000609148.jpg.jpg" },
+  { id: 5, aspect: "aspect-[5/4]", src: "/images/project/1000609149.jpg.jpg" },
+  { id: 6, aspect: "aspect-[4/5]", src: "/images/project/1000630512.jpg.jpg" },
+  { id: 7, aspect: "aspect-[16/10]", src: "/images/project/1000630513.jpg.jpg" },
+  { id: 8, aspect: "aspect-[1/1]", src: "/images/project/1000714135.jpg.jpg" },
+  { id: 9, aspect: "aspect-[5/4]", src: "/images/project/1000714139.jpg.jpg" },
+  { id: 10, aspect: "aspect-[4/5]", src: "/images/project/1000714140.jpg.jpg" },
+  { id: 11, aspect: "aspect-[16/10]", src: "/images/project/1000714143.jpg.jpg" },
+  { id: 12, aspect: "aspect-[1/1]", src: "/images/project/1000714144.jpg.jpg" },
+  { id: 13, aspect: "aspect-[5/4]", src: "/images/project/1000714148.jpg.jpg" },
+  { id: 14, aspect: "aspect-[4/5]", src: "/images/project/1000714151.jpg.jpg" },
+  { id: 15, aspect: "aspect-[16/10]", src: "/images/project/ChatGPT Image Aug 28, 2026, 10_16_10 AM.jpg" },
+  { id: 16, aspect: "aspect-[1/1]", src: "/images/project/ChatGPT Image Aug 28, 2026, 10_19_32 AM.jpg" },
+  { id: 17, aspect: "aspect-[5/4]", src: "/images/project/ChatGPT Image Aug 28, 2026, 10_20_48 AM.jpg" },
+  { id: 18, aspect: "aspect-[4/5]", src: "/images/project/ChatGPT Image Aug 28, 2026, 10_25_00 AM.jpg" },
+  { id: 19, aspect: "aspect-[16/10]", src: "/images/project/ChatGPT Image Aug 28, 2026, 10_28_39 AM.jpg" },
+  { id: 20, aspect: "aspect-[1/1]", src: "/images/project/ChatGPT Image Aug 28, 2026, 10_29_57 AM.jpg" },
+  { id: 21, aspect: "aspect-[5/4]", src: "/images/project/ChatGPT Image Aug 28, 2026, 10_30_29 AM.jpg" },
+  { id: 22, aspect: "aspect-[4/5]", src: "/images/project/ChatGPT Image Aug 28, 2026, 10_30_36 AM.jpg" },
+  { id: 23, aspect: "aspect-[16/10]", src: "/images/project/1000579291.jpg.jpg" },
+  { id: 24, aspect: "aspect-[1/1]", src: "/images/project/1000609146.jpg.jpg" },
 ];
 
 // Excellence Cards Data
@@ -207,27 +226,8 @@ export default function ProjectsPage() {
                 variants={fadeUp}
                 className={`group relative w-full ${project.aspect} bg-[#F1F5F9] rounded-[22px] overflow-hidden border border-[#062B55]/10 cursor-pointer break-inside-avoid`}
               >
-                {/* Placeholder Content */}
                 <div className="absolute inset-0 flex flex-col items-center justify-center transition-transform duration-500 group-hover:scale-[1.03]">
-                  {/* Subtle Blueprint Texture for Placeholder */}
-                  <div className="absolute inset-0 opacity-[0.03]" style={{ backgroundImage: 'linear-gradient(#062B55 1px, transparent 1px), linear-gradient(90deg, #062B55 1px, transparent 1px)', backgroundSize: '20px 20px' }}></div>
-                  
-                  <span className="material-symbols-outlined text-[#062B55]/20 text-[32px] mb-2 relative z-10">
-                    image
-                  </span>
-                  <span className="text-[#062B55]/30 font-bold tracking-widest text-[11px] uppercase relative z-10">
-                    Project Image
-                  </span>
-                </div>
-
-                {/* Hover Interaction (Prepared for real images) */}
-                <div className="absolute inset-0 bg-gradient-to-t from-[#062B55]/90 via-[#062B55]/20 to-transparent opacity-0 transition-opacity duration-350 ease-out group-hover:opacity-100 flex flex-col justify-end p-6 lg:p-8">
-                  <h3 className="text-white font-bold text-[20px] lg:text-[24px] translate-y-4 opacity-0 transition-all duration-350 ease-out group-hover:translate-y-0 group-hover:opacity-100">
-                    {project.title}
-                  </h3>
-                  <div className="absolute bottom-6 right-6 lg:bottom-8 lg:right-8 w-10 h-10 rounded-full bg-white/20 backdrop-blur-md flex items-center justify-center translate-y-4 opacity-0 transition-all duration-350 delay-75 ease-out group-hover:translate-y-0 group-hover:opacity-100">
-                    <span className="material-symbols-outlined text-white text-[20px] -rotate-45">arrow_forward</span>
-                  </div>
+                  <img src={project.src} alt={`Project ${project.id}`} className="w-full h-full object-cover" />
                 </div>
               </motion.div>
             ))}
@@ -242,7 +242,7 @@ export default function ProjectsPage() {
       <section className="w-full bg-[#062B55] py-[100px] lg:py-[120px] relative overflow-hidden">
         {/* Deep blueprint texture + cyan glow */}
         <div className="absolute inset-0 opacity-[0.1] mix-blend-screen pointer-events-none">
-          <img src="/images/footer-blueprint.png" alt="Blueprint" className="w-full h-full object-cover" onError={(e) => e.currentTarget.style.display='none'} />
+          <img src="/images/footer-blueprint.jpg" alt="Blueprint" className="w-full h-full object-cover" onError={(e) => e.currentTarget.style.display='none'} />
         </div>
         <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[#18AFFF] rounded-full blur-[150px] opacity-20 pointer-events-none transform translate-x-1/2 -translate-y-1/2"></div>
         
@@ -291,7 +291,7 @@ export default function ProjectsPage() {
             <motion.img 
               animate={{ x: [0, -20, 0] }}
               transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-              src="/images/footer-blueprint.png" 
+              src="/images/footer-blueprint.jpg" 
               alt="Blueprint" 
               className="w-full h-full object-cover origin-left"
               onError={(e) => e.currentTarget.style.display='none'}
@@ -341,3 +341,4 @@ export default function ProjectsPage() {
     </main>
   );
 }
+

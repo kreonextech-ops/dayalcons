@@ -25,8 +25,16 @@ export default function Header() {
         ${isVisible ? 'top-0 translate-y-0 opacity-100' : 'top-0 -translate-y-full opacity-0'}`}
       id="main-header"
     >
-      <Link href="/" className="font-['Plus_Jakarta_Sans',_sans-serif] text-xl font-bold text-white uppercase tracking-tight">
-        DAYAL <span className="text-[#1EA7FF]">CONSTRUCTIONS & CO.</span>
+      <Link href="/" className="flex items-center gap-3">
+        <img src="/images/logo-v2.png" alt="Dayal Constructions & Co. Logo" className="h-10 md:h-12 w-auto object-contain" />
+        <div className="flex flex-col mt-1">
+          <span className="font-['Plus_Jakarta_Sans',_sans-serif] text-[17px] md:text-[20px] font-[800] text-white leading-none tracking-tight">
+            Dayal Constructions & Co.
+          </span>
+          <span className="text-[14px] md:text-[16px] text-white/90 leading-tight mt-0.5 text-center" style={{ fontFamily: "'Monotype Corsiva', 'Apple Chancery', cursive" }}>
+            Born To Build
+          </span>
+        </div>
       </Link>
       <nav className="hidden md:flex gap-8 items-center text-sm font-bold text-white/90 uppercase tracking-widest">
         <Link className="hover:text-accent transition-colors drop-shadow-md" href="/">Home</Link>

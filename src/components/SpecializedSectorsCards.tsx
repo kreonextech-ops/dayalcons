@@ -7,21 +7,21 @@ const cards = [
     eyebrow: 'Industrial Projects',
     title: 'Heavy Infrastructure',
     desc: 'Heavy-duty infrastructure engineered for maximum efficiency, scalability, and structural durability.',
-    img: '/industrial.png',
+    img: '/industrial.jpg',
     yOffset: 'md:translate-y-12',
   },
   {
     eyebrow: 'Commercial Projects',
     title: 'Corporate Spaces',
     desc: 'Innovative office spaces and landmark retail centers built to empower the modern workforce.',
-    img: '/commercial.png',
+    img: '/commercial.jpg',
     yOffset: 'md:translate-y-4',
   },
   {
     eyebrow: 'Residential Projects',
     title: 'Bespoke & Standard Homes',
     desc: 'Masterfully crafted residences tailored to any scale, seamlessly blending structural integrity with elegant design.',
-    img: '/residential.png',
+    img: '/residential.jpg',
     yOffset: 'md:-translate-y-4',
   }
 ];

@@ -1,3 +1,10 @@
+import type { Metadata } from "next";
+export const metadata: Metadata = {
+  title: "Contact Us | Dayal Constructions & Co.",
+  description: "Get in touch with Dayal Constructions & Co. in Siliguri, West Bengal. Request a free consultation, quote or site visit for your residential, commercial or industrial construction project.",
+  alternates: { canonical: "https://dayalconstructions.in/contact" },
+  openGraph: { url: "https://dayalconstructions.in/contact", title: "Contact Us | Dayal Constructions & Co." },
+};
 "use client";
 
 import { motion, useScroll, useTransform } from "framer-motion";
@@ -231,7 +238,7 @@ export default function ContactPage() {
               {/* Why Contact Us */}
               <motion.div variants={fadeUp} className="p-8 rounded-[24px] bg-[#062B55] text-white relative overflow-hidden">
                 <div className="absolute inset-0 opacity-10 mix-blend-screen pointer-events-none">
-                  <img src="/images/footer-blueprint.png" alt="Blueprint" className="w-full h-full object-cover" />
+                  <img src="/images/footer-blueprint.jpg" alt="Blueprint" className="w-full h-full object-cover" />
                 </div>
                 <h3 className="text-[20px] font-bold mb-6 relative z-10">Why Contact Us?</h3>
                 <div className="grid grid-cols-2 gap-y-6 gap-x-4 relative z-10">
@@ -431,7 +438,7 @@ export default function ContactPage() {
             <motion.img 
               animate={{ x: [0, -20, 0], y: [0, 10, 0] }}
               transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-              src="/images/footer-blueprint.png" 
+              src="/images/footer-blueprint.jpg" 
               alt="Blueprint" 
               className="w-[150%] h-[150%] object-cover origin-center"
               onError={(e) => e.currentTarget.style.display='none'}
@@ -484,3 +491,4 @@ export default function ContactPage() {
     </main>
   );
 }
+

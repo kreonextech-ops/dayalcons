@@ -23,7 +23,7 @@ export default function ContactSection() {
       <div id="CONTACT_BACKGROUND_LAYER" className="absolute inset-0 z-0 pointer-events-none">
         {/* Background image */}
         <img
-          src="/images/contact-bg.png"
+          src="/images/contact-bg.jpg"
           alt=""
           className="absolute inset-0 w-full h-full object-cover object-center"
         />

@@ -1,3 +1,10 @@
+import type { Metadata } from "next";
+export const metadata: Metadata = {
+  title: "Our Services | Dayal Constructions & Co.",
+  description: "Explore Dayal Constructions & Co.'s full range of services: residential & commercial construction, BIM design, structural engineering, interior design, 3D elevation, soil testing, vastu consultation and turnkey projects in Siliguri, West Bengal.",
+  alternates: { canonical: "https://dayalconstructions.in/services" },
+  openGraph: { url: "https://dayalconstructions.in/services", title: "Our Services | Dayal Constructions & Co." },
+};
 "use client";
 
 import { motion, useScroll, useTransform } from "framer-motion";
@@ -239,7 +246,7 @@ export default function UltraPremiumServices() {
       <section className="w-full bg-[#082C5C] py-[100px] relative overflow-hidden">
         {/* Architectural Background */}
         <div className="absolute inset-0 opacity-[0.08] pointer-events-none mix-blend-screen">
-          <img src="/images/footer-blueprint.png" alt="" className="w-full h-full object-cover" onError={(e) => e.currentTarget.style.display = 'none'} />
+          <img src="/images/footer-blueprint.jpg" alt="" className="w-full h-full object-cover" onError={(e) => e.currentTarget.style.display = 'none'} />
         </div>
 
         <div className="max-w-[1440px] mx-auto px-6 lg:px-12 relative z-10 flex flex-col lg:flex-row items-center gap-16">
@@ -424,7 +431,7 @@ export default function UltraPremiumServices() {
         <div className="max-w-[1440px] mx-auto bg-gradient-to-br from-[#082C5C] to-[#04152D] rounded-[32px] p-[40px] lg:p-[80px] relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-12 shadow-2xl">
           
           <div className="absolute right-0 bottom-0 opacity-[0.05] w-[50%] pointer-events-none mix-blend-screen">
-             <img src="/images/footer-blueprint.png" alt="" className="w-full h-auto object-cover" onError={(e) => e.currentTarget.style.display = 'none'} />
+             <img src="/images/footer-blueprint.jpg" alt="" className="w-full h-auto object-cover" onError={(e) => e.currentTarget.style.display = 'none'} />
           </div>
 
           <div className="relative z-10 md:w-2/3 text-center md:text-left">
@@ -449,3 +456,4 @@ export default function UltraPremiumServices() {
     </main>
   );
 }
+

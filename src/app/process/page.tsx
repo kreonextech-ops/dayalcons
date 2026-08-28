@@ -1,3 +1,10 @@
+import type { Metadata } from "next";
+export const metadata: Metadata = {
+  title: "Our Process | Dayal Constructions & Co.",
+  description: "Understand the step-by-step construction process at Dayal Constructions & Co. — from consultation and site analysis to BIM design, estimation, construction and handover.",
+  alternates: { canonical: "https://dayalconstructions.in/process" },
+  openGraph: { url: "https://dayalconstructions.in/process", title: "Our Process | Dayal Constructions & Co." },
+};
 'use client';
 
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
@@ -8,7 +15,7 @@ export default function ProcessPage() {
   return (
     <main className="bg-white min-h-screen relative overflow-x-hidden font-['Manrope',_sans-serif] text-[#062B55]">
       {/* Background Subtle Blueprint Grid */}
-      <div className="fixed inset-0 z-0 pointer-events-none opacity-[0.04] bg-[url('/images/footer-blueprint.png')] bg-repeat bg-[length:400px_400px] grayscale invert mix-blend-multiply"></div>
+      <div className="fixed inset-0 z-0 pointer-events-none opacity-[0.04] bg-[url('/images/footer-blueprint.jpg')] bg-repeat bg-[length:400px_400px] grayscale invert mix-blend-multiply"></div>
       
       <HeroSection />
       
@@ -46,7 +53,7 @@ function HeroSection() {
         transition={{ duration: 18, ease: "linear", repeat: Infinity, repeatType: "reverse" }}
       >
         <img 
-          src="/images/process-hero-bg.png"
+          src="/images/process-hero-bg.jpg"
           alt="Dayal Construction Process" 
           className="w-full h-full object-cover"
         />
@@ -124,42 +131,42 @@ function TimelineSection() {
       title: "Enquiry",
       icon: "chat",
       desc: "Share your land, residential or commercial project requirements with our team. We understand your vision before recommending the best solution.",
-      img: "/images/process/Consultation.png"
+      img: "/images/process/Consultation.jpg"
     },
     {
       num: "02",
       title: "Site Visit",
       icon: "location_on",
       desc: "Our engineers visit your site to assess dimensions, surroundings, accessibility and technical feasibility before planning begins.",
-      img: "/images/process/Site Analysis.png"
+      img: "/images/process/Site Analysis.jpg"
     },
     {
       num: "03",
       title: "Estimate",
       icon: "calculate",
       desc: "Receive a transparent quotation, scope of work, material specifications and project timeline with no hidden surprises.",
-      img: "/images/process/Estimation.png"
+      img: "/images/process/Estimation.jpg"
     },
     {
       num: "04",
       title: "Design & Approval",
       icon: "architecture",
       desc: "We create 2D layouts, 3D floor plans, elevations and structural drawings while refining every detail until approval.",
-      img: "/images/process/BIM Design.png"
+      img: "/images/process/BIM Design.jpg"
     },
     {
       num: "05",
       title: "Construction",
       icon: "engineering",
       desc: "Skilled professionals execute the project using premium materials, regular supervision and strict quality standards.",
-      img: "/images/process/Construction.png"
+      img: "/images/process/Construction.jpg"
     },
     {
       num: "06",
       title: "Handover",
       icon: "vpn_key",
       desc: "After final inspection and quality checks, we deliver your completed project with complete documentation and long-term support.",
-      img: "/images/process/Handover.png"
+      img: "/images/process/Handover.jpg"
     }
   ];
 
@@ -356,7 +363,7 @@ function CTASection() {
           className="absolute inset-0 z-0 opacity-20 pointer-events-none"
           style={{ y: bgY }}
         >
-          <img src="/images/footer-blueprint.png" alt="" className="w-full h-[150%] object-cover" />
+          <img src="/images/footer-blueprint.jpg" alt="" className="w-full h-[150%] object-cover" />
         </motion.div>
 
         {/* Content Wrapper */}
@@ -417,3 +424,4 @@ function CTASection() {
     </section>
   );
 }
+

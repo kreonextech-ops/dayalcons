@@ -172,10 +172,10 @@ export default function GoogleReviews() {
       
       {/* Background Decor */}
       <div className="absolute inset-0 pointer-events-none z-0">
-        <div className="absolute inset-0 bg-[url('/images/footer-blueprint.png')] opacity-[0.02] bg-repeat bg-[length:400px_400px]"></div>
+        <div className="absolute inset-0 bg-[url('/images/footer-blueprint.jpg')] opacity-[0.02] bg-repeat bg-[length:400px_400px]"></div>
         <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-[radial-gradient(circle_at_top_right,_rgba(30,167,255,0.08)_0%,_transparent_70%)]"></div>
         {/* Soft skyline silhouette */}
-        <div className="absolute bottom-0 left-0 w-full h-48 opacity-[0.08] bg-[url('/images/contact-bg.png')] bg-cover bg-bottom mix-blend-multiply filter grayscale blur-[1px]"></div>
+        <div className="absolute bottom-0 left-0 w-full h-48 opacity-[0.08] bg-[url('/images/contact-bg.jpg')] bg-cover bg-bottom mix-blend-multiply filter grayscale blur-[1px]"></div>
       </div>
 
       <div className="max-w-[1440px] mx-auto px-6 relative z-10">

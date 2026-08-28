@@ -11,7 +11,7 @@ const STAGES = [
     desc: "We begin by understanding your vision, functional requirements, budget, and project goals to create the right foundation for success.",
     output: "Requirement Brief",
     participants: "Client, Project Manager, Design Lead",
-    img: "/images/process/Consultation.png"
+    img: "/images/process/Consultation.jpg"
   },
   {
     num: "02",
@@ -20,7 +20,7 @@ const STAGES = [
     desc: "Detailed topographic surveys, soil testing, and environmental assessments to ensure complete structural feasibility.",
     output: "Feasibility Report",
     participants: "Surveyors, Geotech, Architects",
-    img: "/images/process/Site Analysis.png"
+    img: "/images/process/Site Analysis.jpg"
   },
   {
     num: "03",
@@ -29,7 +29,7 @@ const STAGES = [
     desc: "Creating precise 3D structural models and coordinating MEP frameworks to resolve clashes before construction begins.",
     output: "3D Structural Model",
     participants: "Architects, Structural Engineers",
-    img: "/images/process/BIM Design.png"
+    img: "/images/process/BIM Design.jpg"
   },
   {
     num: "04",
@@ -38,7 +38,7 @@ const STAGES = [
     desc: "Generating an exhaustive Bill of Quantities (BOQ), material schedules, and an uncompromising project timeline.",
     output: "Detailed BOQ",
     participants: "Estimators, Procurement Team",
-    img: "/images/process/Estimation.png"
+    img: "/images/process/Estimation.jpg"
   },
   {
     num: "05",
@@ -47,7 +47,7 @@ const STAGES = [
     desc: "Deploying skilled teams to execute structural engineering with premium materials, guided by rigorous quality controls.",
     output: "Quality Audit",
     participants: "Site Engineers, Contractors",
-    img: "/images/process/Construction.png"
+    img: "/images/process/Construction.jpg"
   },
   {
     num: "06",
@@ -56,7 +56,7 @@ const STAGES = [
     desc: "Final inspections, comprehensive warranty documentation, and the timely handover of your engineered asset.",
     output: "Completion Certificate",
     participants: "Project Manager, Client",
-    img: "/images/process/Handover.png"
+    img: "/images/process/Handover.jpg"
   }
 ];
 

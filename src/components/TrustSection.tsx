@@ -38,10 +38,10 @@ export default function TrustSection() {
   };
 
   const cards = [
-    { image: '/Transparent Pricing.png', icon: 'receipt_long', title: 'Transparent Pricing', text: 'Clear quotations with no hidden costs from planning to delivery.' },
-    { image: '/BIM Precision.png', icon: 'architecture', title: 'BIM Precision', text: 'Millimeter-accurate planning and engineering for flawless execution.' },
-    { image: '/Turnkey Execution.png', icon: 'check_circle', title: 'Turnkey Execution', text: 'One expert team managing design, approvals, construction, and handover.' },
-    { image: '/Premium Materials.png', icon: 'verified_user', title: 'Premium Materials', text: 'Trusted brands, rigorous quality control, and long-term durability.' },
+    { image: '/Transparent Pricing.jpg', icon: 'receipt_long', title: 'Transparent Pricing', text: 'Clear quotations with no hidden costs from planning to delivery.' },
+    { image: '/BIM Precision.jpg', icon: 'architecture', title: 'BIM Precision', text: 'Millimeter-accurate planning and engineering for flawless execution.' },
+    { image: '/Turnkey Execution.jpg', icon: 'check_circle', title: 'Turnkey Execution', text: 'One expert team managing design, approvals, construction, and handover.' },
+    { image: '/Premium Materials.jpg', icon: 'verified_user', title: 'Premium Materials', text: 'Trusted brands, rigorous quality control, and long-term durability.' },
   ];
 
   return (

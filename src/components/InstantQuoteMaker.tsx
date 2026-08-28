@@ -111,7 +111,7 @@ export default function InstantQuoteMaker() {
   return (
     <section className="w-full bg-[#F7FBFF] py-[60px] md:py-[80px] relative overflow-hidden font-['Manrope',_sans-serif]">
       {/* Blueprint overlay */}
-      <div className="absolute inset-0 z-0 pointer-events-none opacity-[0.05] bg-[url('/images/footer-blueprint.png')] bg-repeat mix-blend-multiply"></div>
+      <div className="absolute inset-0 z-0 pointer-events-none opacity-[0.05] bg-[url('/images/footer-blueprint.jpg')] bg-repeat mix-blend-multiply"></div>
       
       <div className="max-w-[1200px] mx-auto px-6 relative z-10">
         

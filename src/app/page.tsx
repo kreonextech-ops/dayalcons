@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Image from 'next/image';
 import Link from 'next/link';
 import { FadeIn, StaggerContainer, StaggerItem } from '@/components/FadeIn';
@@ -13,6 +14,13 @@ import GoogleReviews from '@/components/GoogleReviews';
 import ContactSection from '@/components/ContactSection';
 import HeroSection from '@/components/HeroSection';
 
+export const metadata: Metadata = {
+  title: "Dayal Constructions & Co. | Best Construction Company in Siliguri",
+  description:
+    "Dayal Constructions & Co. — Siliguri's trusted construction experts. Residential, commercial & industrial projects delivered with engineering precision, premium materials and 100% transparency.",
+  alternates: { canonical: "https://dayalconstructions.in" },
+};
+
 export default function Home() {
   return (
     <main className="bg-background-light">
@@ -23,7 +31,7 @@ export default function Home() {
       <section className="w-full px-margin-mobile md:px-margin-desktop py-24 bg-white relative z-20 -mt-16 rounded-t-[3rem] shadow-[0_-10px_40px_rgba(0,0,0,0.05)] overflow-hidden">
         <div 
           className="absolute inset-0 z-0 bg-cover bg-center opacity-100" 
-          style={{ backgroundImage: "url('/blueprint-bg.png')" }}
+          style={{ backgroundImage: "url('/blueprint-bg.jpg')" }}
         ></div>
         
         <div className="max-w-container-max mx-auto relative z-10">
@@ -87,53 +95,23 @@ export default function Home() {
               </Link>
             </FadeIn>
           </div>
-          <StaggerContainer className="grid grid-cols-1 md:grid-cols-2 gap-10">
-            <StaggerItem>
-              <Link href="/projects">
-                <div className="group relative rounded-3xl overflow-hidden aspect-[4/3] premium-shadow hover:-translate-y-2 transition-all duration-500 border border-transparent hover:border-accent">
-                  <img alt="The Zenith Tower" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBrAB_RaSFonYNdDq8hRJ0t2Pu7ToZzPLAEsiDkjk7f4EqmkKz7yOEejMFWylvnfz2DezBh5SyDnNrUByDTd9T6RtG7JTzaG6A3YxjEQuYUcVZ0CbE3if2kyU6jB0Qn23ailOdRRoIuP-Oms_E8ALl5bv8dE9qaJLreSxVyYm6h2X8IYAg2HzLf5eUeQWqJyiY94LvwDUTDRGAy0kv9xt9zISy4NACE0e4r8qqa8bNGsf_4dZrLf6E"/>
-                  <div className="absolute inset-0 bg-gradient-to-t from-deep-navy/90 via-deep-navy/20 to-transparent flex flex-col justify-end p-8">
-                    <span className="text-accent font-bold uppercase tracking-wider text-xs mb-3">Commercial</span>
-                    <div className="flex justify-between items-end">
-                      <div>
-                        <h3 className="font-heading text-2xl text-white mb-2">The Zenith Tower</h3>
-                        <p className="text-white/70 text-sm flex gap-4">
-                          <span>📍 Mumbai</span>
-                          <span>📐 450,000 SqFt</span>
-                          <span>🗓 2024</span>
-                        </p>
-                      </div>
-                      <div className="w-12 h-12 rounded-full bg-white/10 backdrop-blur flex items-center justify-center text-white group-hover:bg-accent transition-colors">
-                        <span className="material-symbols-outlined">arrow_outward</span>
+          <StaggerContainer className="grid grid-cols-2 md:grid-cols-5 gap-4 md:gap-6">
+            {["1000579291.jpg.jpg", "1000609146.jpg.jpg", "1000630512.jpg.jpg", "1000714135.jpg.jpg", "1000714139.jpg.jpg"].map((img, idx) => (
+              <StaggerItem key={idx}>
+                <Link href="/projects">
+                  <div className="group relative rounded-3xl overflow-hidden aspect-[4/5] premium-shadow hover:-translate-y-2 transition-all duration-500 border border-transparent hover:border-accent">
+                    <img alt={`Featured Project ${idx + 1}`} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src={`/images/project/${img}`}/>
+                    <div className="absolute inset-0 flex flex-col justify-end p-8 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      <div className="flex justify-end items-end w-full h-full">
+                        <div className="w-12 h-12 rounded-full bg-deep-navy/80 backdrop-blur flex items-center justify-center text-white bg-accent transition-colors">
+                          <span className="material-symbols-outlined">arrow_outward</span>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </Link>
-            </StaggerItem>
-            <StaggerItem>
-              <Link href="/projects">
-                <div className="group relative rounded-3xl overflow-hidden aspect-[4/3] premium-shadow hover:-translate-y-2 transition-all duration-500 border border-transparent hover:border-accent">
-                  <img alt="Apex Logistics Hub" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAb73_CUAitya7afPV01i5fF457rJAEBtCzhVMrE0j8EAFunGxv0iwls4brfD9ByZ48Q48X0-1JnbN3J_tN6-SdbpsVBSaSDfqoMr2UEeNRqaDco6lOxWqmEuP0cm7e9xVbzU_0J6KAMM5_McC1QF-SxmYOpOULl9MoVNUEYcoq-cADUuE1FghK0ZjXGl4v1whz7jGhNJsae_xKB8Lm2PZFPVvtHoOjJ2FV-A4wai-BC0ivNVSB1go"/>
-                  <div className="absolute inset-0 bg-gradient-to-t from-deep-navy/90 via-deep-navy/20 to-transparent flex flex-col justify-end p-8">
-                    <span className="text-accent font-bold uppercase tracking-wider text-xs mb-3">Industrial</span>
-                    <div className="flex justify-between items-end">
-                      <div>
-                        <h3 className="font-heading text-2xl text-white mb-2">Apex Logistics Hub</h3>
-                        <p className="text-white/70 text-sm flex gap-4">
-                          <span>📍 Pune</span>
-                          <span>📐 800,000 SqFt</span>
-                          <span>🗓 2025</span>
-                        </p>
-                      </div>
-                      <div className="w-12 h-12 rounded-full bg-white/10 backdrop-blur flex items-center justify-center text-white group-hover:bg-accent transition-colors">
-                        <span className="material-symbols-outlined">arrow_outward</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </Link>
-            </StaggerItem>
+                </Link>
+              </StaggerItem>
+            ))}
           </StaggerContainer>
         </div>
       </section>

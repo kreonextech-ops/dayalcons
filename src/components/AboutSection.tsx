@@ -64,7 +64,7 @@ export default function AboutSection() {
         className="absolute inset-[0] z-0 pointer-events-none bg-cover bg-center"
         style={{ 
           y: parallaxY,
-          backgroundImage: "url('/about-bg.png')"
+          backgroundImage: "url('/about-bg.jpg')"
         }}
       >
         {/* High-contrast reading zone overlay */}
@@ -144,7 +144,7 @@ export default function AboutSection() {
           >
             <div className="w-full h-full relative rounded-[24px] overflow-hidden">
               <img 
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuBHQmGxlqExnE3JVqiAuUj1I3ygpIirjeqNtuAYyu9UcRVg9cWpm8Knt8oxfokA4etY12WhjYM_8JBBxbKF51uqoGx8lnVXjj6-AbPaI8D0Fxhe1t7ybFsBNpN7HVFNTkSiPXRxBuPnMqjWBZEk8sG5GyYHXevx3YT7XkKgUQbZLNpBZFpe_LX9YUuf5RlT12U1UE9Ofh9PTHcjDyJE9idVhhm0COZwftUZBaFZYTWuKpyIGI-kxqg" 
+                src="/images/section.jpg" 
                 alt="Engineers reviewing architectural drawings at an active construction site"
                 className="w-full h-full object-cover"
               />

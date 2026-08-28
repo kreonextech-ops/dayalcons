@@ -1,5 +1,14 @@
 'use client';
 
+import type { Metadata } from "next";
+export const metadata: Metadata = {
+  title: "About Us | Dayal Constructions & Co.",
+  description: "Learn about Dayal Constructions & Co. — over two decades of trusted construction in Siliguri. Meet our team, our story, and our mission to deliver engineering excellence across West Bengal.",
+  alternates: { canonical: "https://dayalconstructions.in/about" },
+  openGraph: { url: "https://dayalconstructions.in/about", title: "About Us | Dayal Constructions & Co." },
+};
+
+
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import { useRef, useState } from 'react';
 import Link from 'next/link';
@@ -10,7 +19,7 @@ export default function AboutPage() {
   return (
     <main ref={containerRef} className="bg-white min-h-screen relative overflow-hidden font-['Manrope',_sans-serif] text-[#062B55]">
       {/* Background Subtle Blueprint Grid */}
-      <div className="fixed inset-0 z-0 pointer-events-none opacity-5 bg-[url('/images/footer-blueprint.png')] bg-repeat bg-[length:400px_400px] grayscale invert"></div>
+      <div className="fixed inset-0 z-0 pointer-events-none opacity-5 bg-[url('/images/footer-blueprint.jpg')] bg-repeat bg-[length:400px_400px] grayscale invert"></div>
       
       <HeroSection />
       
@@ -54,7 +63,7 @@ function HeroSection() {
         transition={{ duration: 1.5 }}
       >
         <img 
-          src="/images/about-hero.png"
+          src="/images/about-hero.jpg"
           alt="Dayal Construction Hero"
           className="w-full h-full object-cover"
         />
@@ -125,7 +134,7 @@ function HeroSection() {
 function AboutIntro() {
   return (
     <section className="pt-[120px] relative px-6 md:px-12">
-      <div className="absolute inset-0 bg-[url('/images/footer-blueprint.png')] opacity-5 bg-repeat bg-center grayscale invert pointer-events-none mix-blend-multiply"></div>
+      <div className="absolute inset-0 bg-[url('/images/footer-blueprint.jpg')] opacity-5 bg-repeat bg-center grayscale invert pointer-events-none mix-blend-multiply"></div>
       
       <motion.div 
         initial={{ opacity: 0, y: 50, filter: "blur(10px)" }}
@@ -211,7 +220,7 @@ function FounderSection() {
   return (
     <section className="px-6 md:px-12 relative">
       {/* Background blueprint faint */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-[120%] bg-[url('/images/footer-blueprint.png')] opacity-[0.03] bg-repeat grayscale invert mix-blend-multiply pointer-events-none"></div>
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-[120%] bg-[url('/images/footer-blueprint.jpg')] opacity-[0.03] bg-repeat grayscale invert mix-blend-multiply pointer-events-none"></div>
 
       <div className="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center relative z-10">
         
@@ -224,7 +233,7 @@ function FounderSection() {
           className="w-full aspect-[4/5] max-h-[700px] relative rounded-[32px] overflow-hidden shadow-[0_24px_60px_rgba(6,43,85,0.12)]"
         >
           <img 
-            src="/images/founder.png" // Fallback to provided image
+            src="/images/founder.jpg" // Fallback to provided image
             alt="Atanu Roy - Founder"
             className="w-full h-full object-cover"
           />
@@ -380,7 +389,7 @@ function PartneredBrands() {
   return (
     <section className="py-[100px] overflow-hidden bg-white">
       <div className="text-center mb-16 px-6">
-        <h2 className="text-[32px] md:text-[48px] font-[800] text-[#062B55] mb-4">Trusted by Industry Leaders</h2>
+        <h2 className="text-[32px] md:text-[48px] font-[800] text-[#062B55] mb-4">Partnered Brands</h2>
         <p className="text-[18px] text-[#062B55]/70 max-w-[600px] mx-auto font-[500]">
           We collaborate with trusted and leading brands to deliver quality, reliability, and excellence.
         </p>
@@ -393,7 +402,7 @@ function PartneredBrands() {
               {[...row.images, ...row.images].map((imgNum, i) => (
                 <div 
                   key={i} 
-                  className="w-[200px] h-[100px] bg-white border border-[#062B55]/10 rounded-[18px] flex items-center justify-center flex-shrink-0 transition-all duration-300 filter grayscale hover:grayscale-0 hover:shadow-[0_8px_24px_rgba(6,43,85,0.06)]"
+                  className="w-[200px] h-[100px] bg-white border border-[#062B55]/10 rounded-[18px] flex items-center justify-center flex-shrink-0 transition-all duration-300 hover:shadow-[0_8px_24px_rgba(6,43,85,0.06)]"
                 >
                   <img 
                     src={`/images/brands/brand-${imgNum}.jpeg`} 
@@ -437,7 +446,7 @@ function CTASection() {
   return (
     <section className="px-6 md:px-12 py-[120px] relative bg-white">
       {/* Background blueprint city skyline */}
-      <div className="absolute bottom-0 left-0 w-full h-[300px] bg-[url('/images/contact-bg.png')] opacity-10 bg-cover bg-bottom mix-blend-multiply pointer-events-none filter grayscale"></div>
+      <div className="absolute bottom-0 left-0 w-full h-[300px] bg-[url('/images/contact-bg.jpg')] opacity-10 bg-cover bg-bottom mix-blend-multiply pointer-events-none filter grayscale"></div>
       
       <div className="max-w-[1000px] mx-auto text-center relative z-10">
         <motion.h2 
@@ -490,3 +499,4 @@ function CTASection() {
     </section>
   );
 }
+

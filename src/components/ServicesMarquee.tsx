@@ -5,19 +5,19 @@ import { motion, useAnimationFrame, useMotionValue, wrap } from "framer-motion";
 import Link from "next/link";
 
 const SERVICES = [
-  { num: "01", title: "Land Registration & Mutation & Conversion", slug: "land-registration", img: "/images/services/Land Registration & Mutation.png" },
-  { num: "02", title: "Building Plan Approval", slug: "plan-approval", img: "/images/services/Building Plan Approval.png" },
-  { num: "03", title: "2D–3D Floor Plan", slug: "floor-plan", img: "/images/services/2D–3D Floor Plan.png" },
-  { num: "04", title: "3D Elevation Design", slug: "elevation-design", img: "/images/services/3D Elevation Design.png" },
-  { num: "05", title: "Soil Testing", slug: "soil-testing", img: "/images/services/Soil Testing.png" },
-  { num: "06", title: "Structural Design", slug: "structural-design", img: "/images/services/Structural Design.png" },
-  { num: "07", title: "Vastu Consultation", slug: "vastu", img: "/images/services/Vastu Consultation.png" },
-  { num: "08", title: "Residential Construction", slug: "residential", img: "/images/services/Residential Construction.png" },
-  { num: "09", title: "Commercial Construction", slug: "commercial", img: "/images/services/Commercial Construction.png" },
-  { num: "10", title: "Industrial Construction", slug: "industrial", img: "/images/services/Industrial Construction.png" },
-  { num: "11", title: "Interior Design", slug: "interior-design", img: "/images/services/Interior Design.png" },
-  { num: "12", title: "Renovation", slug: "renovation", img: "/images/services/renovation.png" },
-  { num: "13", title: "Turnkey Projects", slug: "turnkey-projects", img: "/images/services/turnkey projects.png" }
+  { num: "01", title: "Land Registration & Mutation & Conversion", slug: "land-registration", img: "/images/services/Land Registration & Mutation.jpg" },
+  { num: "02", title: "Building Plan Approval", slug: "plan-approval", img: "/images/services/Building Plan Approval.jpg" },
+  { num: "03", title: "2D–3D Floor Plan", slug: "floor-plan", img: "/images/services/2D–3D Floor Plan.jpg" },
+  { num: "04", title: "3D Elevation Design", slug: "elevation-design", img: "/images/services/3D Elevation Design.jpg" },
+  { num: "05", title: "Soil Testing", slug: "soil-testing", img: "/images/services/Soil Testing.jpg" },
+  { num: "06", title: "Structural Design", slug: "structural-design", img: "/images/services/Structural Design.jpg" },
+  { num: "07", title: "Vastu Consultation", slug: "vastu", img: "/images/services/Vastu Consultation.jpg" },
+  { num: "08", title: "Residential Construction", slug: "residential", img: "/images/services/Residential Construction.jpg" },
+  { num: "09", title: "Commercial Construction", slug: "commercial", img: "/images/services/Commercial Construction.jpg" },
+  { num: "10", title: "Industrial Construction", slug: "industrial", img: "/images/services/Industrial Construction.jpg" },
+  { num: "11", title: "Interior Design", slug: "interior-design", img: "/images/services/Interior Design.jpg" },
+  { num: "12", title: "Renovation", slug: "renovation", img: "/images/services/renovation.jpg" },
+  { num: "13", title: "Turnkey Projects", slug: "turnkey-projects", img: "/images/services/turnkey projects.jpg" }
 ];
 
 const CARD_WIDTH = 300;
@@ -46,7 +46,7 @@ export default function ServicesMarquee() {
       {/* Photographic Background */}
       <div 
         className="absolute inset-0 z-0 pointer-events-none bg-cover bg-center"
-        style={{ backgroundImage: 'url("/images/services-bg.png")' }}
+        style={{ backgroundImage: 'url("/images/services-bg.jpg")' }}
       >
         <div className="absolute inset-0 bg-[#F8FAFC]/90"></div>
       </div>
