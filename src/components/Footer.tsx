@@ -68,7 +68,7 @@ export default function Footer() {
       <div className="max-w-[1440px] w-full mx-auto px-6 pt-20 pb-12 relative z-10 flex-1 flex flex-col justify-between">
         
         {/* Footer Content Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 lg:gap-8 mb-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 lg:gap-8 mb-10">
           
           {/* Column 1: Brand Identity (Spans 4 columns) */}
           <motion.div variants={columnVariant} className="flex flex-col lg:col-span-4 lg:pr-8">
@@ -171,7 +171,7 @@ export default function Footer() {
           <motion.div variants={columnVariant} className="flex flex-col lg:col-span-3">
             <h4 className="font-['Plus_Jakarta_Sans',_sans-serif] text-[16px] font-bold text-white mb-6 uppercase tracking-[2px]">Contact</h4>
             
-            <motion.ul className="space-y-5 mb-8" variants={{ visible: { transition: { staggerChildren: 0.1 } } }}>
+            <motion.ul className="space-y-4 mb-6" variants={{ visible: { transition: { staggerChildren: 0.1 } } }}>
               <motion.li variants={slideLeftVariant} className="flex gap-4">
                 <div className="w-8 h-8 rounded-full border border-white/20 flex items-center justify-center shrink-0">
                   <span className="text-white/60 text-[14px]">✆</span>
@@ -186,9 +186,21 @@ export default function Footer() {
                 <div className="w-8 h-8 rounded-full border border-white/20 flex items-center justify-center shrink-0">
                   <span className="text-white/60 text-[14px]">✉</span>
                 </div>
-                <div className="flex flex-col">
+                <div className="flex flex-col gap-1">
                   <span className="font-['Inter',_sans-serif] text-[12px] text-[#C8D6E5]/60 mb-1 uppercase tracking-wider">Email</span>
+                  <a href="mailto:info@dayalconstructions.com" className="font-['Inter',_sans-serif] text-[14px] text-white hover:text-[#1EA7FF] transition-colors break-all">info@dayalconstructions.com</a>
                   <a href="mailto:dayalconstruction.office@gmail.com" className="font-['Inter',_sans-serif] text-[14px] text-white hover:text-[#1EA7FF] transition-colors break-all">dayalconstruction.office@gmail.com</a>
+                </div>
+              </motion.li>
+              
+              <motion.li variants={slideLeftVariant} className="flex gap-4">
+                <div className="w-8 h-8 rounded-full border border-white/20 flex items-center justify-center shrink-0">
+                  <span className="material-symbols-outlined text-white/60 text-[14px]">support_agent</span>
+                </div>
+                <div className="flex flex-col gap-1">
+                  <span className="font-['Inter',_sans-serif] text-[12px] text-[#C8D6E5]/60 mb-1 uppercase tracking-wider">Support</span>
+                  <a href="tel:9749327676" className="font-['Inter',_sans-serif] text-[14px] text-white hover:text-[#1EA7FF] transition-colors">+91 97493 27676</a>
+                  <a href="mailto:support@dayalconstructions.com" className="font-['Inter',_sans-serif] text-[14px] text-white hover:text-[#1EA7FF] transition-colors break-all">support@dayalconstructions.com</a>
                 </div>
               </motion.li>
               
@@ -202,15 +214,6 @@ export default function Footer() {
                 </div>
               </motion.li>
               
-              <motion.li variants={slideLeftVariant} className="flex gap-4">
-                <div className="w-8 h-8 rounded-full border border-white/20 flex items-center justify-center shrink-0">
-                  <span className="text-white/60 text-[14px]">⌚</span>
-                </div>
-                <div className="flex flex-col">
-                  <span className="font-['Inter',_sans-serif] text-[12px] text-[#C8D6E5]/60 mb-1 uppercase tracking-wider">Working Hours</span>
-                  <span className="font-['Inter',_sans-serif] text-[14px] text-white">Mon – Sat · 9:00 AM – 7:00 PM</span>
-                </div>
-              </motion.li>
             </motion.ul>
 
             <motion.button 

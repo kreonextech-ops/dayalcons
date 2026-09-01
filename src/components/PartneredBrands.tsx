@@ -3,32 +3,38 @@
 import { useRef, useState } from 'react';
 import { motion, useAnimationFrame, useMotionValue, wrap } from 'framer-motion';
 
-const ALL_BRANDS = Array.from({ length: 33 }, (_, i) => `/images/brands/brand-${i + 1}.jpeg`);
+const ALL_BRANDS_IDS = [
+  1, 2, 3, 4, 5, 6, 8, 9, 10, 
+  11, 12, 13, 14, 15, 16, 17, 18, 
+  20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33
+];
+const ALL_BRANDS = ALL_BRANDS_IDS.map(i => `/images/brands/brand-${i}.jpeg`);
 
-// Split into 3 rows
-const ROW1 = ALL_BRANDS.slice(0, 11);
-const ROW2 = ALL_BRANDS.slice(11, 22);
-const ROW3 = ALL_BRANDS.slice(22, 33);
+// Split into 3 rows (31 total)
+const ROW1 = ALL_BRANDS.slice(0, 10);
+const ROW2 = ALL_BRANDS.slice(10, 21);
+const ROW3 = ALL_BRANDS.slice(21, 31);
 
 const ITEM_WIDTH = 280; // approximate width per logo including gap
 const GAP = 64;
-const CONTENT_WIDTH = (ITEM_WIDTH + GAP) * 11;
 
 const MarqueeRow = ({ images, direction, speedMultiplier }: { images: string[], direction: 1 | -1, speedMultiplier: number }) => {
   const x = useMotionValue(0);
   const [isHovered, setIsHovered] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  
+  const contentWidth = (ITEM_WIDTH + GAP) * images.length;
 
   useAnimationFrame((t, delta) => {
     if (isDragging) {
-      x.set(wrap(-CONTENT_WIDTH, 0, x.get()));
+      x.set(wrap(-contentWidth, 0, x.get()));
       return;
     }
     if (isHovered) return;
     
-    // Base speed ~ 0.5 pixels per frame
-    const moveBy = direction * speedMultiplier * (delta / 16); 
-    x.set(wrap(-CONTENT_WIDTH, 0, x.get() + moveBy));
+    // Base speed ~ 0.5 pixels per frame, we increase the multiplier for a slightly faster marquee
+    const moveBy = direction * (speedMultiplier * 1.5) * (delta / 16); 
+    x.set(wrap(-contentWidth, 0, x.get() + moveBy));
   });
 
   return (
@@ -37,7 +43,7 @@ const MarqueeRow = ({ images, direction, speedMultiplier }: { images: string[], 
         className="flex items-center gap-[64px] absolute left-0 cursor-grab active:cursor-grabbing"
         style={{ x }}
         drag="x"
-        dragConstraints={{ left: -CONTENT_WIDTH, right: CONTENT_WIDTH }}
+        dragConstraints={{ left: -contentWidth, right: contentWidth }}
         onDragStart={() => setIsDragging(true)}
         onDragEnd={() => setIsDragging(false)}
         onMouseEnter={() => setIsHovered(true)}

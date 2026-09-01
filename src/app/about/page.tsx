@@ -372,8 +372,8 @@ function OurTeam() {
 // ==============================
 function PartneredBrands() {
   const rows = [
-    { dir: 'animate-marquee-right', images: [1,2,3,4,5,6,7,8,9,10,11,12] },
-    { dir: 'animate-marquee-left', images: [13,14,15,16,17,18,19,20,21,22,23,24] },
+    { dir: 'animate-marquee-right', images: [1,2,3,4,5,6,8,9,10,11,12] },
+    { dir: 'animate-marquee-left', images: [13,14,15,16,17,18,20,21,22,23,24] },
     { dir: 'animate-marquee-right', images: [25,26,27,28,29,30,31,32,33,1,2,3] }
   ];
 
@@ -418,10 +418,10 @@ function PartneredBrands() {
           100% { transform: translateX(0); }
         }
         .animate-marquee-left {
-          animation: marquee-left 40s linear infinite;
+          animation: marquee-left 25s linear infinite;
         }
         .animate-marquee-right {
-          animation: marquee-right 40s linear infinite;
+          animation: marquee-right 25s linear infinite;
         }
       `}} />
     </section>

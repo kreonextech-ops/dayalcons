@@ -83,21 +83,20 @@ export default function HeroSection() {
   };
 
   return (
-    <section className="relative w-full h-[100vh] min-h-[800px] flex items-center overflow-hidden bg-[#071A2F]">
+    <section className="relative w-full h-[100vh] min-h-[800px] flex items-center overflow-hidden bg-black">
       
-      {/* Background Container - Completely Static */}
-      <div className="absolute inset-0 z-0">
-        {/* Placeholder for video / static image */}
-        <img 
-          className="w-full h-full object-cover" 
-          alt="Premium construction site at dusk" 
-          src="https://lh3.googleusercontent.com/aida-public/AB6AXuAakgUE3pncG7Wgy3ATaQRlrxqIknW_alLoNcPREHzYRVd6vqtg-BB3tlhQp84dkEpto2OknCGll11WJQCiUARpmncQVtBAOygyYROpuExs3a6IfNzpIEtTZXXr53G1yHq3nrQMOq8N0GrfvvzVPeRSroayI0wL-J8pToyN1ZjtNWDdLhgaABiVVWhEcm5d2FlaTB_qEcAuyhJbMUCqfw2IH32ji7K0QErSH4hcsH6BNKtjWgbooVs"
-        />
+      {/* Background Container - Video Background */}
+      <div className="absolute inset-0 z-0 bg-black">
+        <video 
+          autoPlay 
+          loop 
+          muted 
+          playsInline
+          className="w-full h-full object-cover"
+        >
+          <source src="/herovideo.mp4" type="video/mp4" />
+        </video>
         <div className="absolute inset-0 blueprint-grid opacity-5"></div>
-        <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] rounded-full pointer-events-none mix-blend-screen" style={{ background: 'radial-gradient(circle, rgba(30,167,255,0.2) 0%, rgba(30,167,255,0) 70%)' }}></div>
-        {/* Static Dark Navy Overlay */}
-        <div className="absolute inset-0 bg-gradient-to-r from-[#021524] via-[#021524]/80 to-transparent"></div>
-        <div className="absolute inset-0 bg-[#062B55]/30 mix-blend-multiply"></div>
       </div>
 
       {/* Content Container */}

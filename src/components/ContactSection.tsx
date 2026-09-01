@@ -89,8 +89,9 @@ export default function ContactSection() {
                 <div className="w-[44px] h-[44px] rounded-[10px] bg-[#EBF4FA] flex items-center justify-center flex-shrink-0">
                   <span className="material-symbols-outlined text-[#071A2F] text-[20px]">mail</span>
                 </div>
-                <div className="flex flex-col pt-1">
+                <div className="flex flex-col pt-1 gap-1">
                   <span className="font-['Plus_Jakarta_Sans',_sans-serif] text-[14px] font-bold text-[#071A2F] mb-0.5">Email</span>
+                  <a href="mailto:info@dayalconstructions.com" className="font-['Inter',_sans-serif] text-[14px] text-[#5B6472] hover:text-[#1EA7FF]">info@dayalconstructions.com</a>
                   <a href="mailto:dayalconstruction.office@gmail.com" className="font-['Inter',_sans-serif] text-[14px] text-[#5B6472] hover:text-[#1EA7FF]">dayalconstruction.office@gmail.com</a>
                 </div>
               </motion.div>

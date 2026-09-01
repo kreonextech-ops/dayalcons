@@ -119,9 +119,9 @@ export default function InstantQuoteMaker() {
   };
 
   return (
-    <section className="w-full bg-gradient-to-br from-[#062B55] to-[#041d3a] py-[60px] md:py-[80px] relative overflow-hidden font-['Manrope',_sans-serif]">
+    <section className="w-full bg-[#062B55] py-[60px] md:py-[80px] relative overflow-hidden font-['Manrope',_sans-serif]">
       {/* Blueprint overlay */}
-      <div className="absolute inset-0 z-0 pointer-events-none opacity-[0.03] bg-[url('/images/footer-blueprint.jpg')] bg-repeat mix-blend-screen"></div>
+      <div className="absolute inset-0 z-0 pointer-events-none opacity-[0.25] bg-[url('/images/footer-blueprint.jpg')] bg-repeat mix-blend-screen"></div>
       
       <div className="max-w-[800px] mx-auto px-6 relative z-10">
         

@@ -91,7 +91,7 @@ export default function ServicesMarquee() {
               {SERVICES.map((service, index) => (
                 <Link 
                   key={`${arrayIndex}-${index}`} 
-                  href={`/services/${service.slug}`}
+                  href="/services"
                   draggable={false}
                   className="group relative w-[300px] h-[400px] rounded-[22px] overflow-hidden flex-shrink-0 bg-white shadow-[0_10px_30px_rgba(8,23,40,0.06)] hover:shadow-[0_20px_40px_rgba(17,150,242,0.15)] transition-all duration-500 hover:-translate-y-3 border border-transparent hover:border-[#1196F2]"
                 >
