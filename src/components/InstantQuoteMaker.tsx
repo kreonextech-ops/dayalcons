@@ -119,9 +119,9 @@ export default function InstantQuoteMaker() {
   };
 
   return (
-    <section className="w-full bg-[#F7FBFF] py-[60px] md:py-[80px] relative overflow-hidden font-['Manrope',_sans-serif]">
+    <section className="w-full bg-gradient-to-br from-[#062B55] to-[#041d3a] py-[60px] md:py-[80px] relative overflow-hidden font-['Manrope',_sans-serif]">
       {/* Blueprint overlay */}
-      <div className="absolute inset-0 z-0 pointer-events-none opacity-[0.05] bg-[url('/images/footer-blueprint.jpg')] bg-repeat mix-blend-multiply"></div>
+      <div className="absolute inset-0 z-0 pointer-events-none opacity-[0.03] bg-[url('/images/footer-blueprint.jpg')] bg-repeat mix-blend-screen"></div>
       
       <div className="max-w-[800px] mx-auto px-6 relative z-10">
         
@@ -140,7 +140,7 @@ export default function InstantQuoteMaker() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
-            className="text-[32px] md:text-[40px] font-[800] text-[#062B55] leading-[1.1] mb-3"
+            className="text-[32px] md:text-[40px] font-[800] text-white leading-[1.1] mb-3"
           >
             Get Your Instant Quote
           </motion.h2>
@@ -149,7 +149,7 @@ export default function InstantQuoteMaker() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.2 }}
-            className="text-[15px] font-[500] text-[#062B55]/70 max-w-[500px] mx-auto"
+            className="text-[15px] font-[500] text-white/80 max-w-[500px] mx-auto"
           >
             Select your service or construction package, provide your number, and receive an instant estimated quotation.
           </motion.p>
@@ -161,7 +161,7 @@ export default function InstantQuoteMaker() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8, ease: "easeOut" }}
-          className="bg-white/80 backdrop-blur-xl border border-[#062B55]/10 rounded-[24px] shadow-[0_20px_40px_rgba(6,43,85,0.06)] p-6 md:p-10 relative overflow-hidden"
+          className="bg-white rounded-[24px] shadow-[0_20px_40px_rgba(0,0,0,0.2)] p-6 md:p-10 relative overflow-hidden"
         >
           {/* Quote Category Toggle */}
           <div className="flex bg-[#F7FBFF] border border-[#062B55]/10 rounded-[12px] p-1.5 relative overflow-hidden h-[50px] mb-8 max-w-[400px] mx-auto">
@@ -366,10 +366,12 @@ export default function InstantQuoteMaker() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.4 }}
-          className="mt-6 flex flex-col sm:flex-row items-center justify-center gap-2 text-[12px] font-[600] text-[#062B55]/70 text-center"
+          className="mt-6 flex flex-col sm:flex-row items-start sm:items-center justify-center gap-2 text-[13px] font-[500] text-white/80 text-left sm:text-center max-w-[600px] mx-auto"
         >
-          <span className="text-[16px] text-[#18AFFF] font-bold leading-none">*</span>
-          This is an approximate estimate. Final quotation will be provided after site visit, discussion, and design confirmation.
+          <span className="text-[18px] text-[#18AFFF] font-bold leading-none mt-1 sm:mt-0">*</span>
+          <p>
+            <span className="font-bold text-white">Note:</span> This is an estimated cost. The final quotation will be provided following a comprehensive site visit, consultation, and design confirmation.
+          </p>
         </motion.div>
 
       </div>
