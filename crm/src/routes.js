@@ -92,27 +92,6 @@ const routes = [
     component: <Tasks />,
   },
   {
-    name: "Finance",
-    layout: "/admin",
-    icon: <MdAttachMoney className="h-6 w-6" />,
-    path: "finance",
-    component: <Finance />,
-  },
-  {
-    name: "Documents",
-    layout: "/admin",
-    icon: <MdFolder className="h-6 w-6" />,
-    path: "documents",
-    component: <Documents />,
-  },
-  {
-    name: "Vendors",
-    layout: "/admin",
-    icon: <MdLocalShipping className="h-6 w-6" />,
-    path: "vendors",
-    component: <Vendors />,
-  },
-  {
     name: "Sign In",
     layout: "/auth",
     path: "sign-in",
