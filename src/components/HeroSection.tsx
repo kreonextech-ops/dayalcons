@@ -3,8 +3,11 @@
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { TypeAnimation } from 'react-type-animation';
+import { useState } from 'react';
 
 export default function HeroSection() {
+  const [textColor, setTextColor] = useState('text-white');
+
   // Stage 4: CTA Buttons (0.95s)
   const ctaContainer = {
     hidden: { opacity: 0 },
@@ -60,15 +63,19 @@ export default function HeroSection() {
           >
             <TypeAnimation
               sequence={[
+                () => setTextColor('text-white'),
                 'DAYAL CONSTRUCTIONS & CO.',
                 2000,
-                'DAYAL BORN TO BUILD.',
+                '',
+                () => setTextColor('text-[#18AFFF]'),
+                'BORN TO BUILD.',
                 2500,
+                '',
               ]}
               wrapper="h1"
               cursor={true}
               repeat={Infinity}
-              className="font-['Manrope',_sans-serif] text-[40px] md:text-[60px] lg:text-[76px] font-[800] leading-[1.2] text-white"
+              className={`font-['Manrope',_sans-serif] text-[40px] md:text-[60px] lg:text-[76px] font-[800] leading-[1.2] transition-colors duration-200 ${textColor}`}
             />
           </motion.div>
 
