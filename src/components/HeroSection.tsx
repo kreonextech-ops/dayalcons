@@ -6,7 +6,7 @@ import { TypeAnimation } from 'react-type-animation';
 import { useState } from 'react';
 
 export default function HeroSection() {
-  const [textColor, setTextColor] = useState('text-white');
+  const [textColor, setTextColor] = useState('#FFFFFF');
 
   // Stage 4: CTA Buttons (0.95s)
   const ctaContainer = {
@@ -54,29 +54,35 @@ export default function HeroSection() {
       {/* Content Container */}
       <div className="relative z-10 w-full max-w-[1440px] mx-auto px-6 md:px-12 h-full flex flex-col justify-center text-left pt-[10vh]">
         
-        <div className="w-full flex flex-col mb-16 cursor-default min-h-[160px] md:min-h-[220px] justify-center">
+        {/* Adjusted mb-16 to mb-6 and justify-end to bring it closer to buttons */}
+        <div className="w-full flex flex-col mb-6 cursor-default min-h-[160px] md:min-h-[220px] justify-end pb-2">
           
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
           >
-            <TypeAnimation
-              sequence={[
-                () => setTextColor('text-white'),
-                'DAYAL CONSTRUCTIONS & CO.',
-                2000,
-                '',
-                () => setTextColor('text-cyan-400'),
-                'BORN TO BUILD.',
-                2500,
-                '',
-              ]}
-              wrapper="h1"
-              cursor={true}
-              repeat={Infinity}
-              className={`font-['Manrope',_sans-serif] text-[40px] md:text-[60px] lg:text-[76px] font-[800] leading-[1.2] transition-colors duration-200 ${textColor}`}
-            />
+            {/* Wrapper handles the color dynamically to prevent Tailwind purging issues */}
+            <h1 
+              className="font-['Manrope',_sans-serif] text-[40px] md:text-[60px] lg:text-[76px] font-[800] leading-[1.2] transition-colors duration-300"
+              style={{ color: textColor }}
+            >
+              <TypeAnimation
+                sequence={[
+                  () => setTextColor('#FFFFFF'),
+                  'DAYAL CONSTRUCTIONS & CO.',
+                  2000,
+                  '',
+                  () => setTextColor('#00FFFF'),
+                  'BORN TO BUILD.',
+                  2500,
+                  '',
+                ]}
+                wrapper="span"
+                cursor={true}
+                repeat={Infinity}
+              />
+            </h1>
           </motion.div>
 
         </div>
