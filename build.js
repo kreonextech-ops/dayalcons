@@ -2,7 +2,7 @@ const fs = require('fs');
 const { execSync } = require('child_process');
 
 console.log('--- Building CRM ---');
-execSync('npm install --legacy-peer-deps', { cwd: './crm', stdio: 'inherit' });
+execSync('npm install --legacy-peer-deps --include=dev', { cwd: './crm', stdio: 'inherit' });
 execSync('npm run build', { 
   cwd: './crm', 
   stdio: 'inherit',
