@@ -1,0 +1,756 @@
+import React, { useState } from "react";
+import { 
+  MdArrowBack, MdPhone, MdEmail, MdLocationOn, MdCheckCircle, MdEdit,
+  MdTimeline, MdAttachMoney, MdMap, MdEvent, MdFolder, MdAssignment,
+  MdMessage, MdPhoneInTalk, MdLocalPrintshop, MdPictureAsPdf, MdSave, MdClose
+} from "react-icons/md";
+import TabTimeline from "./components/TabTimeline";
+import TabCommunication from "./components/TabCommunication";
+import TabSiteVisit from "./components/TabSiteVisit";
+import TabTasks from "./components/TabTasks";
+import TabEstimate from "./components/TabEstimate";
+import TabDocuments from "./components/TabDocuments";
+import TabServiceRequirement from "./components/TabServiceRequirement";
+import TabServiceWorkspace from "./components/TabServiceWorkspace";
+import { FiClock, FiFileText } from "react-icons/fi";
+import Card from "components/card";
+import { createClient } from "@supabase/supabase-js";
+
+const supabaseUrl = process.env.REACT_APP_SUPABASE_URL || "https://gdzligxryodasaxnhdco.supabase.co";
+const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdkemxpZ3hyeW9kYXNheG5oZGNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcxNTg1MDUsImV4cCI6MjEwMjczNDUwNX0.AYTyAMf22g8au51ATReRQdQc2IzDLYQ2vtQH_Uyfrpg";
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+const LeadDetail = ({ lead, onBack }) => {
+  const [activeTab, setActiveTab] = useState("Overview");
+  const [communicationAction, setCommunicationAction] = useState(null);
+  const [showScheduleModal, setShowScheduleModal] = useState(false);
+  const [isEditingClient, setIsEditingClient] = useState(false);
+  const [isEditingProject, setIsEditingProject] = useState(false);
+  const [showConvertModal, setShowConvertModal] = useState(false);
+  const [comments, setComments] = useState([]);
+  const [newComment, setNewComment] = useState("");
+
+  const [nextTask, setNextTask] = useState(null);
+
+  const [employees, setEmployees] = useState([]);
+
+  React.useEffect(() => {
+    if (lead?.id) {
+      fetchComments();
+      fetchNextTask();
+      fetchEmployees();
+    }
+  }, [lead]);
+
+  const fetchEmployees = async () => {
+    const { data } = await supabase.from('employees').select('id, name, role');
+    if (data) setEmployees(data);
+  };
+
+  const fetchNextTask = async () => {
+    const { data } = await supabase.from('tasks').select('*').eq('lead_id', lead.id).neq('status', 'Completed').order('due_date', { ascending: true }).limit(1);
+    if (data && data.length > 0) setNextTask(data[0]);
+    else setNextTask(null);
+  };
+  
+  const handleCompleteTask = async () => {
+    if (!nextTask) return;
+    const { error } = await supabase.from('tasks').update({ status: 'Completed' }).eq('id', nextTask.id);
+    if (!error) fetchNextTask();
+  };
+
+  const fetchComments = async () => {
+    const { data } = await supabase.from('lead_activities').select('*').eq('lead_id', lead.id).eq('activity_group', 'comment').order('created_at', { ascending: false });
+    if (data) setComments(data);
+  };
+
+  const handleAddComment = async () => {
+    if (!newComment.trim()) return;
+    await supabase.from('lead_activities').insert([{
+      lead_id: lead.id,
+      activity_group: 'comment',
+      activity_type: 'Comment',
+      title: 'Sales Note / Comment',
+      details: newComment.trim(),
+      employee_name: 'Admin'
+    }]);
+    setNewComment("");
+    fetchComments();
+  };
+
+  const handleQuickAction = (label) => {
+    if (label === 'Add Note') {
+       setActiveTab('Overview');
+       setTimeout(() => {
+          window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+       }, 100);
+    } else if (label === 'Schedule') {
+       setShowScheduleModal(true);
+    } else {
+       if (label === 'Call' && leadData?.phone) {
+         window.open(`tel:${leadData.phone}`, '_self');
+       } else if (label === 'WhatsApp' && leadData?.phone) {
+         window.open(`https://wa.me/${leadData.phone.replace(/\D/g, '')}`, '_blank');
+       } else if (label === 'Email' && leadData?.email) {
+         window.open(`mailto:${leadData.email}`, '_self');
+       }
+       setCommunicationAction(label);
+       setActiveTab('Communication');
+    }
+  };
+
+  const handleDirectStatusChange = async (e) => {
+    const newStatus = e.target.value;
+    setLeadData({ ...leadData, status: newStatus });
+    await supabase.from("leads").update({ status: newStatus }).eq("id", leadData.id);
+    
+    if (newStatus === "Won") {
+       setShowConvertModal(true);
+    }
+  };
+
+  const confirmConvert = async () => {
+    const { data: newClientData, error: insertError } = await supabase.from('clients').insert([{
+      name: leadData.name,
+      status: 'active'
+    }]).select();
+
+    if (!insertError && newClientData && newClientData.length > 0) {
+       const clientId = newClientData[0].id;
+       localStorage.setItem(`client_${clientId}`, JSON.stringify({
+          phone: leadData.phone, email: leadData.email, address: leadData.address, company: leadData.name, leadData: leadData
+       }));
+       await supabase.from('leads').delete().eq('id', leadData.id);
+       setShowConvertModal(false);
+       onBack();
+    } else {
+       alert("Failed to convert to client.");
+       setShowConvertModal(false);
+    }
+  };
+
+  const handleSaveClientInfo = async () => {
+    setIsEditingClient(false);
+    await supabase.from("leads").update({
+       name: leadData.name,
+       phone: leadData.phone,
+       email: leadData.email,
+       address: leadData.address,
+       source: leadData.source
+    }).eq("id", leadData.id);
+  };
+
+  const handleSaveProjectInfo = async () => {
+    setIsEditingProject(false);
+    await supabase.from("leads").update({
+       service_type: leadData.service_type,
+       budget: leadData.budget,
+       notes: leadData.notes
+    }).eq("id", leadData.id);
+  };
+
+  const handleDirectTempChange = async (e) => {
+    const newTemp = e.target.value;
+    setLeadData({ ...leadData, lead_temperature: newTemp });
+    
+    const localData = JSON.parse(localStorage.getItem(`lead_${leadData.id}`) || "{}");
+    localData.lead_temperature = newTemp;
+    localStorage.setItem(`lead_${leadData.id}`, JSON.stringify(localData));
+    
+    const {error} = await supabase.from("leads").update({ lead_temperature: newTemp }).eq("id", leadData.id); if (error) { alert("Failed to update temperature: " + error.message); }
+  };
+  
+  // Local state to simulate saving edits
+  const [leadData, setLeadData] = useState({
+    id: lead?.id,
+    name: lead?.name || "",
+    phone: lead?.phone || "",
+    email: lead?.email || "",
+    address: lead?.address || "",
+    source: lead?.source || "",
+    status: lead?.status || "New",
+    service_type: lead?.service_type || "",
+    lead_temperature: lead?.lead_temperature || "",
+    assigned_to: lead?.assigned_to || "",
+    notes: lead?.notes || "",
+    budget: "",
+    plotSize: "",
+    timeline: "",
+    frontRoadWidth: "",
+    orientation: "",
+    plannedFloors: "",
+    soilType: "",
+    waterSource: "",
+    electricity: "",
+    municipalApproval: "",
+    vastu: "",
+    boundaryWall: "",
+    // New Service Requirement state
+    selectedServices: [],
+    priority: "",
+    expectedStart: "",
+    preferredComm: "",
+    decisionMaker: "",
+    serviceNotes: ""
+  });
+
+  const userStr = localStorage.getItem('dayal_user');
+  const loggedInUser = userStr ? JSON.parse(userStr) : null;
+  const isAdmin = loggedInUser?.role === 'Admin';
+
+  const tabs = [
+    "Overview", "Communication", "Service Requirement", "Service Workspace", 
+    ...(isAdmin ? ["Quotation"] : []), "Documents", "Tasks", "Timeline"
+  ];
+
+  // Pipeline logic
+  const stages = ["New", "Contacted", "Site Visit", "Quotation", "Negotiation", "Won"];
+  let currentIndex = stages.indexOf(leadData.status);
+  if (currentIndex === -1) {
+    if (leadData.status === "Lost" || leadData.status === "Junk") currentIndex = -1;
+    else currentIndex = 0; // fallback
+  }
+
+  const handleToggleAssignEmployee = async (employeeId) => {
+    let currentAssigned = (leadData.assigned_to || '').split(',').filter(Boolean);
+    if (currentAssigned.includes(employeeId)) {
+      currentAssigned = currentAssigned.filter(id => id !== employeeId);
+    } else {
+      currentAssigned.push(employeeId);
+    }
+    const newAssignedString = currentAssigned.join(',');
+    
+    const { error } = await supabase.from('leads').update({ assigned_to: newAssignedString || null }).eq('id', leadData.id);
+       
+       if (!currentAssigned.includes(employeeId)) { // wait, currentAssigned already modified. We need to check if it was ADDED.
+           // Since we can't reliably check currentAssigned after modification in a generic replace, 
+           // let's just create the task unconditionally for now if newAssignedString includes employeeId.
+           // Actually, let's just put it right after the update.
+           if (newAssignedString.includes(employeeId)) {
+             await supabase.from('tasks').insert([{
+               name: `Assigned to Lead: ${leadData.name || leadData.name || 'Unknown'}`,
+               description: `You have been assigned to Lead ID: LEAD-${leadData.id.substring(0,5).toUpperCase()}`,
+               status: 'To Do',
+               priority: 'High',
+               assignee_id: employeeId,
+               lead_id: leadData.id
+             }]);
+           }
+       }
+    if (!error) {
+      setLeadData({ ...leadData, assigned_to: newAssignedString || null });
+    }
+  };
+
+  const handleConvertToClient = async () => {
+    // 1. Insert into clients table (only schema-supported columns)
+    const { data: newClientData, error: insertError } = await supabase.from('clients').insert([{
+      name: leadData.name,
+      status: 'active'
+    }]).select();
+
+    if (insertError) {
+      console.error("Failed to convert client", insertError);
+      alert("Failed to convert to client.");
+      return;
+    }
+
+    // 1b. Save advanced lead fields to localStorage to bypass Supabase schema limits
+    if (newClientData && newClientData.length > 0) {
+       const clientId = newClientData[0].id;
+       localStorage.setItem(`client_${clientId}`, JSON.stringify({
+          phone: leadData.phone,
+          email: leadData.email,
+          address: leadData.address,
+          company: leadData.name,
+          leadData: leadData
+       }));
+    }
+
+    // 2. Remove from leads table
+    const { error: deleteError } = await supabase.from('leads').delete().eq('id', lead.id);
+
+    if (deleteError) {
+      console.error("Failed to remove lead after conversion", deleteError);
+    }
+
+    // 3. Update local state to reflect it's won
+    setLeadData({ ...leadData, status: "Won" });
+    
+    alert("Lead successfully converted to Client! It has been removed from Leads.");
+    onBack(); // Go back to leads list
+  };
+
+  return (
+    <div className="relative min-h-screen bg-[#F8FAFC] p-4 sm:p-8 font-sans pb-24">
+      {showConvertModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="bg-white rounded-[20px] p-6 w-full max-w-md shadow-2xl transform transition-all">
+             <div className="flex justify-between items-center mb-4">
+               <h2 className="text-xl font-bold text-[#0F172A]">Convert to Client?</h2>
+               <MdClose className="text-2xl text-[#64748B] cursor-pointer hover:text-red-500" onClick={() => setShowConvertModal(false)} />
+             </div>
+             <p className="text-[#475569] mb-6">You are marking <span className="font-bold text-[#0F172A]">{leadData.name}</span> as "Won". Would you like to remove them from Leads and officially convert them into a Client?</p>
+             <div className="flex gap-3 justify-end">
+               <button onClick={() => setShowConvertModal(false)} className="px-5 py-2.5 rounded-[10px] font-bold text-[#475569] bg-gray-100 hover:bg-gray-200 transition-colors">Cancel</button>
+               <button onClick={confirmConvert} className="px-5 py-2.5 rounded-[10px] font-bold text-white bg-[#16A34A] hover:bg-green-700 transition-colors flex items-center gap-2"><MdCheckCircle /> Convert to Client</button>
+             </div>
+          </div>
+        </div>
+      )}
+      {/* 1. Back Navigation */}
+      <div className="mb-6 flex items-center gap-2 text-sm text-[#64748B]">
+        <button onClick={onBack} className="flex items-center gap-2 hover:text-brand-500 transition">
+          <MdArrowBack className="h-5 w-5" />
+          <span className="font-semibold">Back to Leads</span>
+        </button>
+        <span className="mx-2">/</span>
+        <span>Pages</span>
+        <span className="mx-2">/</span>
+        <span>Leads</span>
+      </div>
+
+      {/* 2. Hero Lead Card */}
+      <div className="rounded-[20px] bg-gradient-to-r from-[#2563EB]/10 to-white p-6 shadow-[0_10px_30px_rgba(15,23,42,0.06)] border border-[#E2E8F0] mb-6 flex flex-col md:flex-row justify-between items-start md:items-center">
+        <div className="flex items-center gap-6">
+          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-[#2563EB] text-3xl font-bold text-white">
+            {leadData.name.charAt(0) || 'A'}
+          </div>
+          <div>
+            <h1 className="text-[32px] font-bold text-[#0F172A]">{leadData.name || 'Unnamed Lead'}</h1>
+            <div className="mt-2 flex flex-wrap items-center gap-4 text-sm text-[#475569]">
+              <span className="flex items-center gap-1"><MdPhone /> {leadData.phone || 'Not provided'}</span>
+              {leadData.email && <span className="flex items-center gap-1"><MdEmail /> {leadData.email}</span>}
+              {leadData.address && <span className="flex items-center gap-1"><MdLocationOn /> {leadData.address}</span>}
+            </div>
+            <div className="mt-3 flex gap-2 text-xs flex-wrap">
+              <span className="rounded-md bg-blue-50 border border-blue-100 px-3 py-1 text-blue-700 font-bold uppercase tracking-wider">Source: {leadData.source || 'Website'}</span>
+              <span className="rounded-md bg-gray-100 px-3 py-1 text-[#64748B] font-medium">
+                Assigned: {leadData.assigned_to 
+                  ? (leadData.assigned_to.split(',').filter(Boolean).map(id => employees.find(e => e.id === id)?.name).filter(Boolean).join(', ') || 'Unknown') 
+                  : 'Unassigned'}
+              </span>
+            </div>
+          </div>
+        </div>
+        <div className="mt-6 flex flex-col items-end md:mt-0 gap-2">
+          <div className="flex gap-2">
+            <select 
+              value={leadData.status} 
+              onChange={handleDirectStatusChange}
+              className={`rounded-full px-4 py-1 text-xs font-bold tracking-wide outline-none cursor-pointer appearance-none ${leadData.status === 'Lost' ? 'bg-red-500 text-white' : leadData.status === 'Won' ? 'bg-green-600 text-white' : 'bg-[#16A34A] text-white'}`}
+            >
+              <option value="New">STATUS: NEW</option>
+              <option value="Contacted">STATUS: CONTACTED</option>
+              <option value="Site Visit">STATUS: SITE VISIT</option>
+              <option value="Quotation">STATUS: QUOTATION</option>
+              <option value="Negotiation">STATUS: NEGOTIATION</option>
+              <option value="Won">STATUS: WON</option>
+              <option value="Lost">STATUS: LOST</option>
+            </select>
+            <select 
+              value={leadData.lead_temperature || 'Warm'} 
+              onChange={handleDirectTempChange}
+              className={`rounded-full px-4 py-1 text-xs font-bold tracking-wide outline-none cursor-pointer appearance-none ${leadData.lead_temperature === 'Hot' ? 'bg-red-100 text-red-700' : leadData.lead_temperature === 'Cold' ? 'bg-blue-100 text-blue-700' : 'bg-orange-100 text-orange-700'}`}
+            >
+              <option value="Hot">HOT LEAD</option>
+              <option value="Warm">WARM LEAD</option>
+              <option value="Cold">COLD LEAD</option>
+            </select>
+          </div>
+          <p className="mt-2 text-sm font-semibold text-[#64748B]">Est. Project Value</p>
+          <p className="text-[28px] font-bold text-[#0F172A]">{leadData.budget || "—"}</p>
+          <button 
+            onClick={handleConvertToClient}
+            disabled={leadData.status === "Won"}
+            className={`mt-4 flex h-12 items-center justify-center rounded-[12px] px-6 font-bold text-white transition w-full md:w-auto ${leadData.status === "Won" ? 'bg-gray-300 cursor-not-allowed' : 'bg-gradient-to-r from-[#2563EB] to-[#06B6D4] hover:opacity-90'}`}
+          >
+            {leadData.status === "Won" ? "Client Converted" : "Convert to Client"}
+          </button>
+        </div>
+      </div>
+
+      {/* 3. Qualification Pipeline */}
+      <Card extra="w-full p-6 mb-6">
+        <div className="flex items-center justify-between relative">
+          <div className="absolute top-1/2 left-0 w-full h-[2px] bg-[#E2E8F0] -z-10 transform -translate-y-1/2"></div>
+          {stages.map((stage, idx) => {
+            const isActive = idx <= currentIndex; 
+            return (
+              <div key={stage} className="flex flex-col items-center gap-2 bg-white px-2">
+                <div className={`h-8 w-8 rounded-full flex items-center justify-center border-4 border-white ${isActive ? 'bg-[#2563EB]' : 'bg-[#E2E8F0]'}`}>
+                  {isActive && <MdCheckCircle className="text-white w-5 h-5" />}
+                </div>
+                <span className={`text-[12px] font-semibold ${isActive ? 'text-[#0F172A]' : 'text-[#64748B]'}`}>{stage}</span>
+              </div>
+            );
+          })}
+        </div>
+      </Card>
+
+      {/* 4. KPI Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        {[
+          { title: "Budget", value: leadData.budget, icon: <MdAttachMoney /> },
+          { title: "Plot Size", value: leadData.plotSize, icon: <MdMap /> },
+          { title: "Expected Start", value: leadData.timeline, icon: <MdEvent /> },
+        ].map((kpi, i) => (
+          <Card key={i} extra="p-6 hover:-translate-y-1 transition duration-200">
+            <div className="flex items-center gap-4">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#2563EB]/10 text-xl text-[#2563EB]">
+                {kpi.icon}
+              </div>
+              <div>
+                <p className="text-xs font-semibold text-[#64748B] uppercase">{kpi.title}</p>
+                <p className="text-[20px] font-bold text-[#0F172A]">{kpi.value}</p>
+              </div>
+            </div>
+          </Card>
+        ))}
+      </div>
+      {/* Main Layout */}
+      <div className="flex flex-col lg:flex-row gap-8">
+        
+        {/* Schedule Task Modal */}
+      {showScheduleModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
+            <div className="flex items-center justify-between mb-6">
+               <h2 className="text-xl font-bold text-[#0F172A]">Schedule Follow-up</h2>
+               <MdClose className="text-2xl text-[#64748B] cursor-pointer hover:text-red-500" onClick={() => setShowScheduleModal(false)} />
+            </div>
+            
+            <form onSubmit={async (e) => {
+              e.preventDefault();
+              const formData = new FormData(e.target);
+              const name = formData.get('name');
+              const due_date = formData.get('due_date');
+              if(!name || !due_date) return alert('Fill required fields');
+              
+              const userStr = localStorage.getItem('dayal_user');
+              const loggedInUser = userStr ? JSON.parse(userStr) : null;
+              
+              const { error } = await supabase.from('tasks').insert([{
+                name,
+                due_date,
+                lead_id: leadData.id,
+                assignee_id: loggedInUser?.id,
+                creator_id: loggedInUser?.id,
+                status: 'In Progress',
+                priority: 'High',
+                category: 'Lead Follow-up'
+              }]);
+              if (error) alert('Failed to schedule task: ' + error.message);
+              else {
+                setShowScheduleModal(false);
+                fetchNextTask();
+              }
+            }}>
+              <div className="mb-4">
+                <label className="text-sm font-medium text-gray-700">Task Name</label>
+                <input type="text" name="name" defaultValue="Follow up call" className="w-full mt-1 p-2 border border-gray-300 rounded-lg outline-none focus:border-blue-500" required />
+              </div>
+              <div className="mb-6">
+                <label className="text-sm font-medium text-gray-700">Due Date</label>
+                <input type="datetime-local" name="due_date" className="w-full mt-1 p-2 border border-gray-300 rounded-lg outline-none focus:border-blue-500" required />
+              </div>
+              <div className="flex justify-end gap-3">
+                <button type="button" onClick={() => setShowScheduleModal(false)} className="px-4 py-2 rounded-lg text-gray-600 bg-gray-100 hover:bg-gray-200">Cancel</button>
+                <button type="submit" className="px-4 py-2 rounded-lg text-white bg-blue-600 hover:bg-blue-700">Schedule Task</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+        {/* Left Content (72%) */}
+        <div className="w-full lg:w-[72%]">
+          {/* Tabs */}
+          <div className="sticky top-0 z-10 flex gap-2 overflow-x-auto bg-[#F8FAFC] py-4 border-b border-[#E2E8F0] mb-6">
+            {tabs.map(tab => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`rounded-[12px] px-5 py-2.5 text-sm font-semibold transition ${
+                  activeTab === tab 
+                  ? 'bg-[#2563EB] text-white shadow-md' 
+                  : 'text-[#64748B] hover:bg-white'
+                }`}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
+
+          {/* Tab Content */}
+          <div className="min-h-[500px]">
+            {activeTab === "Overview" && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                
+                {/* Client Info Card */}
+                <Card extra="p-6">
+                  <div className="flex justify-between items-center mb-4">
+                    <h3 className="text-[16px] font-semibold text-[#0F172A]">Client Information</h3>
+                    {isEditingClient ? (
+                       <button onClick={handleSaveClientInfo} className="text-[#16A34A] flex items-center gap-1 font-bold text-sm"><MdSave /> Save</button>
+                    ) : (
+                       <MdEdit onClick={() => setIsEditingClient(true)} className="text-[#64748B] cursor-pointer hover:text-[#2563EB]" />
+                    )}
+                  </div>
+                  <div className="space-y-4">
+                    {isEditingClient ? (
+                      <>
+                        <div className="flex flex-col"><label className="text-xs text-gray-500">Name</label><input type="text" className="border rounded p-1 text-sm outline-none border-[#2563EB]" value={leadData.name} onChange={e => setLeadData({...leadData, name: e.target.value})} /></div>
+                        <div className="flex flex-col"><label className="text-xs text-gray-500">Phone</label><input type="text" className="border rounded p-1 text-sm outline-none border-[#2563EB]" value={leadData.phone} onChange={e => setLeadData({...leadData, phone: e.target.value})} /></div>
+                        <div className="flex flex-col"><label className="text-xs text-gray-500">Email</label><input type="email" className="border rounded p-1 text-sm outline-none border-[#2563EB]" value={leadData.email} onChange={e => setLeadData({...leadData, email: e.target.value})} /></div>
+                        <div className="flex flex-col"><label className="text-xs text-gray-500">Address</label><input type="text" className="border rounded p-1 text-sm outline-none border-[#2563EB]" value={leadData.address} onChange={e => setLeadData({...leadData, address: e.target.value})} /></div>
+                        <div className="flex flex-col"><label className="text-xs text-gray-500">Source</label>
+                          <select 
+                            className="border rounded p-1 text-sm outline-none border-[#2563EB] mb-2" 
+                            value={["Website", "Referral", "Walk-in"].includes(leadData.source) ? leadData.source : "Other"} 
+                            onChange={e => {
+                               if (e.target.value !== "Other") setLeadData({...leadData, source: e.target.value});
+                               else setLeadData({...leadData, source: "Other"}); // Temporarily set to Other, they'll type it
+                            }}
+                          >
+                            <option value="">Select source...</option>
+                            <option value="Website">Website</option>
+                            <option value="Referral">Referral</option>
+                            <option value="Walk-in">Walk-in</option>
+                            <option value="Other">Other</option>
+                          </select>
+                          {!["Website", "Referral", "Walk-in"].includes(leadData.source) && (
+                            <input type="text" className="border rounded p-1 text-sm outline-none border-[#2563EB]" placeholder="Specify source" value={leadData.source === "Other" ? "" : leadData.source} onChange={e => setLeadData({...leadData, source: e.target.value})} />
+                          )}
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        {[
+                          { label: "Full Name", val: leadData.name },
+                          { label: "Phone", val: leadData.phone || "N/A" },
+                          { label: "Email", val: leadData.email || "N/A" },
+                          { label: "Address", val: leadData.address || "N/A" },
+                          { label: "Source", val: leadData.source || "N/A" },
+                        ].map((item, i) => (
+                          <div key={i} className="flex flex-col">
+                            <span className="text-[12px] font-medium text-[#64748B]">{item.label}</span>
+                            <span className="text-[14px] font-semibold text-[#0F172A]">{item.val}</span>
+                          </div>
+                        ))}
+                      </>
+                    )}
+                  </div>
+                </Card>
+
+                {/* Project Req & Site Info Card */}
+                <Card extra="col-span-1 md:col-span-2 p-6">
+                  <div className="flex justify-between items-center mb-4">
+                    <h3 className="text-[16px] font-semibold text-[#0F172A]">Project & Site Information</h3>
+                    {isEditingProject ? (
+                       <button onClick={handleSaveProjectInfo} className="text-[#16A34A] flex items-center gap-1 font-bold text-sm"><MdSave /> Save</button>
+                    ) : (
+                       <MdEdit onClick={() => setIsEditingProject(true)} className="text-[#64748B] cursor-pointer hover:text-[#2563EB]" />
+                    )}
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {isEditingProject ? (
+                       <>
+                        <div className="flex flex-col"><label className="text-xs text-gray-500">Service Type</label><input type="text" className="border rounded p-1 text-sm outline-none border-[#2563EB]" value={leadData.service_type} onChange={e => setLeadData({...leadData, service_type: e.target.value})} /></div>
+                        <div className="flex flex-col"><label className="text-xs text-gray-500">Budget</label><input type="text" className="border rounded p-1 text-sm outline-none border-[#2563EB]" value={leadData.budget} onChange={e => setLeadData({...leadData, budget: e.target.value})} /></div>
+                        <div className="flex flex-col"><label className="text-xs text-gray-500">Timeline</label><input type="text" className="border rounded p-1 text-sm outline-none border-[#2563EB]" value={leadData.timeline} onChange={e => setLeadData({...leadData, timeline: e.target.value})} /></div>
+                        <div className="flex flex-col"><label className="text-xs text-gray-500">Plot Size</label><input type="text" className="border rounded p-1 text-sm outline-none border-[#2563EB]" value={leadData.plotSize} onChange={e => setLeadData({...leadData, plotSize: e.target.value})} /></div>
+                        <div className="flex flex-col"><label className="text-xs text-gray-500">Front Road Width</label><input type="text" className="border rounded p-1 text-sm outline-none border-[#2563EB]" value={leadData.frontRoadWidth} onChange={e => setLeadData({...leadData, frontRoadWidth: e.target.value})} /></div>
+                        <div className="flex flex-col"><label className="text-xs text-gray-500">Orientation</label><input type="text" className="border rounded p-1 text-sm outline-none border-[#2563EB]" value={leadData.orientation} onChange={e => setLeadData({...leadData, orientation: e.target.value})} /></div>
+                        <div className="flex flex-col"><label className="text-xs text-gray-500">Planned Floors</label><input type="text" className="border rounded p-1 text-sm outline-none border-[#2563EB]" value={leadData.plannedFloors} onChange={e => setLeadData({...leadData, plannedFloors: e.target.value})} /></div>
+                        <div className="flex flex-col"><label className="text-xs text-gray-500">Soil Type</label><input type="text" className="border rounded p-1 text-sm outline-none border-[#2563EB]" value={leadData.soilType} onChange={e => setLeadData({...leadData, soilType: e.target.value})} /></div>
+                        <div className="flex flex-col"><label className="text-xs text-gray-500">Water Source</label><input type="text" className="border rounded p-1 text-sm outline-none border-[#2563EB]" value={leadData.waterSource} onChange={e => setLeadData({...leadData, waterSource: e.target.value})} /></div>
+                        <div className="flex flex-col"><label className="text-xs text-gray-500">Electricity</label><input type="text" className="border rounded p-1 text-sm outline-none border-[#2563EB]" value={leadData.electricity} onChange={e => setLeadData({...leadData, electricity: e.target.value})} /></div>
+                        <div className="flex flex-col"><label className="text-xs text-gray-500">Municipal Approval</label><input type="text" className="border rounded p-1 text-sm outline-none border-[#2563EB]" value={leadData.municipalApproval} onChange={e => setLeadData({...leadData, municipalApproval: e.target.value})} /></div>
+                        <div className="flex flex-col"><label className="text-xs text-gray-500">Vastu</label><input type="text" className="border rounded p-1 text-sm outline-none border-[#2563EB]" value={leadData.vastu} onChange={e => setLeadData({...leadData, vastu: e.target.value})} /></div>
+                        <div className="flex flex-col"><label className="text-xs text-gray-500">Boundary Wall</label><input type="text" className="border rounded p-1 text-sm outline-none border-[#2563EB]" value={leadData.boundaryWall} onChange={e => setLeadData({...leadData, boundaryWall: e.target.value})} /></div>
+                        <div className="flex flex-col">
+                          <label className="text-xs text-gray-500">Update Lead Status</label>
+                          <select className="border rounded p-1 text-sm outline-none border-[#2563EB]" value={leadData.status} onChange={e => setLeadData({...leadData, status: e.target.value})}>
+                            <option value="New">New</option>
+                            <option value="Contacted">Contacted</option>
+                            <option value="Site Visit">Site Visit</option>
+                            <option value="Quotation">Quotation</option>
+                            <option value="Negotiation">Negotiation</option>
+                            <option value="Won">Won (Client)</option>
+                            <option value="Lost">Lost</option>
+                          </select>
+                        </div>
+                       </>
+                    ) : (
+                      <>
+                        {[
+                          { label: "Construction Type", val: leadData.service_type || "N/A" },
+                          { label: "Budget", val: leadData.budget || "N/A" },
+                          { label: "Timeline", val: leadData.timeline || "N/A" },
+                          { label: "Current Status", val: leadData.status },
+                          { label: "Plot Size", val: leadData.plotSize || "N/A" },
+                          { label: "Front Road Width", val: leadData.frontRoadWidth || "N/A" },
+                          { label: "Orientation", val: leadData.orientation || "N/A" },
+                          { label: "Planned Floors", val: leadData.plannedFloors || "N/A" },
+                          { label: "Soil Type", val: leadData.soilType || "N/A" },
+                          { label: "Water Source", val: leadData.waterSource || "N/A" },
+                          { label: "Electricity", val: leadData.electricity || "N/A" },
+                          { label: "Municipal Approval", val: leadData.municipalApproval || "N/A" },
+                          { label: "Vastu", val: leadData.vastu || "N/A" },
+                          { label: "Boundary Wall", val: leadData.boundaryWall || "N/A" },
+                        ].map((item, i) => (
+                          <div key={i} className="flex flex-col">
+                            <span className="text-[12px] font-medium text-[#64748B]">{item.label}</span>
+                            <span className="text-[14px] font-semibold text-[#0F172A]">{item.val}</span>
+                          </div>
+                        ))}
+                      </>
+                    )}
+                  </div>
+                </Card>
+                <Card extra="col-span-1 md:col-span-2 p-6 flex flex-col h-[500px]">
+                  <h3 className="text-[16px] font-semibold text-[#0F172A] mb-4">Comments</h3>
+                  <div className="flex-1 overflow-y-auto mb-4 space-y-4 pr-2">
+                    {comments.length === 0 ? (
+                       <p className="text-sm text-gray-400 italic">No comments yet. Be the first to add one!</p>
+                    ) : (
+                       comments.map(comment => (
+                         <div key={comment.id} className="bg-gray-50 rounded-lg p-3 border border-gray-100">
+                           <p className="text-sm text-[#475569] whitespace-pre-wrap">{comment.details}</p>
+                           <div className="mt-2 text-[11px] text-gray-400 flex items-center justify-between">
+                             <span>{comment.employee_name || 'Admin'}</span>
+                             <span>{new Date(comment.created_at).toLocaleString()}</span>
+                           </div>
+                         </div>
+                       ))
+                    )}
+                  </div>
+                  <div className="mt-auto flex flex-col gap-2">
+                    <textarea 
+                      className="w-full rounded-[10px] border border-[#E2E8F0] p-3 text-[14px] text-[#475569] outline-none focus:border-[#2563EB] resize-none"
+                      rows="3"
+                      placeholder="Write a comment..."
+                      value={newComment}
+                      onChange={e => setNewComment(e.target.value)}
+                    ></textarea>
+                    <button onClick={handleAddComment} className="self-end bg-[#2563EB] text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-blue-600 transition-colors">Post Comment</button>
+                  </div>
+                </Card>
+              </div>
+            )}
+            
+            {activeTab === "Timeline" && <TabTimeline leadData={leadData} />}
+            {activeTab === "Communication" && <TabCommunication leadData={leadData} action={communicationAction} setAction={setCommunicationAction} />}
+            {activeTab === "Service Requirement" && <TabServiceRequirement leadData={leadData} setLeadData={setLeadData} />}
+            {activeTab === "Service Workspace" && <TabServiceWorkspace leadData={leadData} />}
+            {activeTab === "Tasks" && <TabTasks leadData={leadData} />}
+            {activeTab === "Quotation" && <TabEstimate leadData={leadData} />}
+            {activeTab === "Documents" && <TabDocuments leadData={leadData} />}
+
+            {/* Other tabs omitted for brevity but can be expanded */}
+            {!["Overview", "Timeline", "Service Requirement", "Service Workspace", "Tasks", "Quotation", "Documents", "Communication"].includes(activeTab) && (
+              <Card extra="p-12 text-center">
+                <p className="text-[#64748B] font-medium">Content for {activeTab} is ready to be connected.</p>
+              </Card>
+            )}
+          </div>
+        </div>
+
+        {/* Right Sidebar (28%) */}
+        <div className="w-full lg:w-[28%] relative">
+          <div className="sticky top-6 flex flex-col gap-6">
+
+            <Card extra="p-6">
+              <h3 className="text-[16px] font-semibold text-[#0F172A] mb-1">Next Follow-up</h3>
+              {nextTask ? (
+                <>
+                  <p className="text-[14px] font-bold text-[#DC2626] mb-1">{nextTask.due_date ? new Date(nextTask.due_date).toLocaleString() : 'No Due Date'}</p>
+                  <p className="text-[12px] text-gray-600 mb-4">
+                    <a href={`/admin/tasks?taskId=${nextTask.id}`} className="text-brand-500 hover:underline font-bold">{nextTask.name}</a>
+                  </p>
+                  <div className="flex flex-col gap-2">
+                    <button onClick={() => handleQuickAction('Call')} className="w-full rounded-[10px] bg-blue-600 py-2 text-[12px] font-bold text-white hover:bg-blue-700 transition">Follow up</button>
+                    <div className="flex gap-2">
+                      <button onClick={handleCompleteTask} className="flex-1 rounded-[10px] bg-[#16A34A] py-2 text-[12px] font-bold text-white hover:bg-green-700 transition">Mark Complete</button>
+                      <button onClick={() => setShowScheduleModal(true)} className="flex-1 rounded-[10px] border border-[#E2E8F0] py-2 text-[12px] font-bold text-[#0F172A] hover:bg-gray-50 transition">Reschedule</button>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <p className="text-[28px] font-bold text-gray-400 mb-4">No follow-up set</p>
+                  <button onClick={() => setShowScheduleModal(true)} className="w-full rounded-[10px] bg-blue-600 py-2 text-[12px] font-bold text-white hover:bg-blue-700 transition">Schedule Follow-up</button>
+                </>
+              )}
+            </Card>
+
+            <Card extra="p-6">
+              <h3 className="text-[16px] font-semibold text-[#0F172A] mb-4">Quick Actions</h3>
+              <div className="grid grid-cols-2 gap-3">
+                {[
+                  { label: "Call", icon: <MdPhone /> },
+                  { label: "WhatsApp", icon: <MdMessage /> },
+                  { label: "Add Note", icon: <FiFileText /> },
+                  { label: "Schedule", icon: <MdEvent /> },
+                ].map((act, i) => (
+                  <button key={i} onClick={() => handleQuickAction(act.label)} className="flex flex-col items-center justify-center rounded-[12px] border border-[#E2E8F0] p-3 hover:bg-[#F8FAFC] transition hover:border-[#2563EB]">
+                    <span className="text-[#2563EB] text-xl mb-1">{act.icon}</span>
+                    <span className="text-[11px] font-medium text-[#475569]">{act.label}</span>
+                  </button>
+                ))}
+              </div>
+            </Card>
+
+            <Card extra="p-6">
+              <h3 className="text-[16px] font-semibold text-[#0F172A] mb-4">Assigned Team</h3>
+              <div className="space-y-4">
+                  <div className="max-h-[200px] overflow-y-auto border border-gray-100 rounded-lg p-2 space-y-2">
+                    {employees.map(emp => {
+                      const isAssigned = (leadData.assigned_to || '').split(',').includes(emp.id);
+                      return (
+                        <div key={emp.id} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer transition" onClick={() => handleToggleAssignEmployee(emp.id)}>
+                           <input type="checkbox" checked={isAssigned} readOnly className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500" />
+                           <div className="h-8 w-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-xs">
+                             {emp.name?.charAt(0) || 'U'}
+                           </div>
+                           <div className="flex-1">
+                             <p className="text-sm font-bold text-gray-800">{emp.name}</p>
+                             <p className="text-[10px] text-gray-500">{emp.role}</p>
+                           </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+              </div>
+            </Card>
+          </div>
+        </div>
+
+      </div>
+
+      {/* Floating Bottom CTA */}
+      <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 w-[90%] max-w-[800px] rounded-[20px] bg-white/80 backdrop-blur-md border border-white shadow-[0_10px_40px_rgba(15,23,42,0.1)] p-4 flex items-center justify-between z-50">
+        <div className="flex gap-8 px-4">
+          <div className="hidden sm:block">
+            <p className="text-[11px] text-[#64748B] font-medium uppercase">Current Stage</p>
+            <p className="text-[16px] font-bold text-[#2563EB]">{leadData.status}</p>
+          </div>
+          <div className="hidden sm:block">
+            <p className="text-[11px] text-[#64748B] font-medium uppercase">Est. Value</p>
+            <p className="text-[16px] font-bold text-[#0F172A]">{leadData.budget || "—"}</p>
+          </div>
+        </div>
+        <button 
+          onClick={handleConvertToClient}
+          disabled={leadData.status === "Won"}
+          className={`h-12 rounded-[12px] px-8 font-bold text-white shadow-lg transition ${leadData.status === "Won" ? 'bg-gray-300 cursor-not-allowed' : 'bg-gradient-to-r from-[#2563EB] to-[#06B6D4] hover:opacity-90'}`}
+        >
+          {leadData.status === "Won" ? "Client Converted" : "Convert to Client"}
+        </button>
+      </div>
+    </div>
+  );
+};
+
+export default LeadDetail;

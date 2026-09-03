@@ -53,10 +53,19 @@ export default function Header() {
           <Link className="hover:text-accent transition-colors drop-shadow-md" href="/projects">Projects</Link>
           <Link className="hover:text-accent transition-colors drop-shadow-md" href="/about">About</Link>
         </nav>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
           <Link className="hidden md:inline-flex items-center justify-center bg-accent text-white font-medium rounded-full px-6 py-2.5 transition-all duration-250 hover:bg-white hover:text-primary hover:-translate-y-0.5 hover:shadow-[0_4px_20px_rgba(22,181,255,0.3)] text-sm uppercase tracking-wider" href="/contact">
             Contact Us
           </Link>
+          <a 
+            href="/crm/auth/sign-in"
+            className="hidden md:inline-flex items-center justify-center border border-white/60 text-white font-medium rounded-full px-5 py-2.5 transition-all duration-250 hover:bg-white/10 hover:-translate-y-0.5 text-sm uppercase tracking-wider gap-2"
+          >
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+            </svg>
+            Login
+          </a>
           <button 
             className="md:hidden text-white hover:text-accent transition-colors p-2"
             onClick={toggleMobileMenu}
@@ -81,6 +90,16 @@ export default function Header() {
             <Link className="mt-4 bg-accent text-white font-medium rounded-full px-8 py-3 transition-all duration-250 hover:bg-white hover:text-primary" href="/contact" onClick={closeMobileMenu}>
               Contact Us
             </Link>
+            <a 
+              href="/crm/auth/sign-in"
+              className="flex items-center gap-2 border border-white/60 text-white font-medium rounded-full px-8 py-3 transition-all duration-250 hover:bg-white/10"
+              onClick={closeMobileMenu}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1" />
+              </svg>
+              Login
+            </a>
           </nav>
         </div>
       )}

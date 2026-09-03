@@ -39,3 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# CRM sub-project
+/crm/node_modules/
+/crm/.env
+/crm/build/
+/crm/.next/

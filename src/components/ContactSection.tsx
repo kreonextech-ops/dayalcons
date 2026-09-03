@@ -1,6 +1,8 @@
 'use client';
 
+import { useState } from 'react';
 import { motion } from 'framer-motion';
+import { supabase } from '@/lib/supabase';
 
 const fadeUp = {
   hidden: { opacity: 0, y: 30 },
@@ -15,7 +17,35 @@ const staggerContainer = {
 const GBP_MAP_URL = "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3564.6932550036963!2d88.4109791!3d26.6902912!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x39e443068c78db77%3A0x9740700f682e1132!2sDayal%20Constructions%20%26%20Co.!5e0!3m2!1sen!2sin!4v1724594100000!5m2!1sen!2sin";
 
 export default function ContactSection() {
+  const [form, setForm] = useState({ name: '', email: '', phone: '', projectType: '', message: '' });
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState('');
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!form.name || !form.email) { setError('Name and Email are required.'); return; }
+    setSubmitting(true);
+    setError('');
+    try {
+      const { error: dbError } = await supabase.from('leads').insert([{
+        name: form.name,
+        email: form.email,
+        phone: form.phone || null,
+        service_type: form.projectType || null,
+        notes: form.message || null,
+        source: 'Website Contact',
+        status: 'New',
+        lead_temperature: 'Warm',
+      }]);
+      if (dbError) throw dbError;
+      setSubmitted(true);
+      setForm({ name: '', email: '', phone: '', projectType: '', message: '' });
+    } catch (err) {
+      setError('Something went wrong. Please try again.');
+    }
+    setSubmitting(false);
+  };
   return (
     <section className="w-full relative bg-[#F8FAFC] py-[80px] lg:py-[100px] overflow-hidden">
       
@@ -131,41 +161,56 @@ export default function ContactSection() {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="w-full lg:w-[32%] bg-white rounded-[20px] shadow-[0_20px_60px_rgba(0,0,0,0.06)] p-6 lg:p-8"
           >
-            <form className="flex flex-col gap-4">
-              <div className="flex flex-col gap-1.5">
-                <label className="font-['Inter',_sans-serif] text-[12px] font-semibold text-[#5B6472]">Your Name*</label>
-                <input type="text" placeholder="Enter your name" className="w-full px-4 py-2.5 rounded-[8px] bg-white border border-[#E2E8F0] text-[14px] focus:outline-none focus:border-[#1EA7FF]" />
-              </div>
-              
-              <div className="flex flex-col gap-1.5">
-                <label className="font-['Inter',_sans-serif] text-[12px] font-semibold text-[#5B6472]">Email Address*</label>
-                <input type="email" placeholder="Enter your email" className="w-full px-4 py-2.5 rounded-[8px] bg-white border border-[#E2E8F0] text-[14px] focus:outline-none focus:border-[#1EA7FF]" />
-              </div>
-              
-              <div className="flex flex-col gap-1.5">
-                <label className="font-['Inter',_sans-serif] text-[12px] font-semibold text-[#5B6472]">Phone Number</label>
-                <input type="tel" placeholder="Enter your phone number" className="w-full px-4 py-2.5 rounded-[8px] bg-white border border-[#E2E8F0] text-[14px] focus:outline-none focus:border-[#1EA7FF]" />
-              </div>
-              
-              <div className="flex flex-col gap-1.5">
-                <label className="font-['Inter',_sans-serif] text-[12px] font-semibold text-[#5B6472]">Project Type</label>
-                <select className="w-full px-4 py-2.5 rounded-[8px] bg-white border border-[#E2E8F0] text-[14px] text-[#8B95A5] focus:outline-none focus:border-[#1EA7FF] appearance-none cursor-pointer bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiM1QjY0NzIiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cG9seWxpbmUgcG9pbnRzPSI2IDkgMTIgMTUgMTggOSIvPjwvc3ZnPg==')] bg-[length:20px_20px] bg-[position:right_12px_center] bg-no-repeat">
-                  <option value="">Select project type</option>
-                  <option value="residential">Residential</option>
-                  <option value="commercial">Commercial</option>
-                  <option value="industrial">Industrial</option>
-                </select>
-              </div>
-              
-              <div className="flex flex-col gap-1.5 mb-2">
-                <label className="font-['Inter',_sans-serif] text-[12px] font-semibold text-[#5B6472]">Your Message*</label>
-                <textarea placeholder="Tell us about your project..." className="w-full px-4 py-2.5 rounded-[8px] bg-white border border-[#E2E8F0] text-[14px] focus:outline-none focus:border-[#1EA7FF] h-[100px] resize-none" />
-              </div>
+            <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+              {submitted ? (
+                <div className="flex flex-col items-center justify-center py-10 gap-4 text-center">
+                  <div className="w-16 h-16 rounded-full bg-green-100 flex items-center justify-center">
+                    <span className="material-symbols-outlined text-green-600 text-[32px]">check_circle</span>
+                  </div>
+                  <h3 className="font-['Plus_Jakarta_Sans',_sans-serif] text-[20px] font-bold text-[#071A2F]">Message Received!</h3>
+                  <p className="font-['Inter',_sans-serif] text-[14px] text-[#5B6472]">We&apos;ll get back to you within 24 hours.</p>
+                  <button type="button" onClick={() => setSubmitted(false)} className="text-[#1EA7FF] text-[13px] font-semibold hover:underline">Send another message</button>
+                </div>
+              ) : (
+                <>
+                  <div className="flex flex-col gap-1.5">
+                    <label className="font-['Inter',_sans-serif] text-[12px] font-semibold text-[#5B6472]">Your Name*</label>
+                    <input type="text" placeholder="Enter your name" value={form.name} onChange={e => setForm({...form, name: e.target.value})} className="w-full px-4 py-2.5 rounded-[8px] bg-white border border-[#E2E8F0] text-[14px] focus:outline-none focus:border-[#1EA7FF]" />
+                  </div>
+                  
+                  <div className="flex flex-col gap-1.5">
+                    <label className="font-['Inter',_sans-serif] text-[12px] font-semibold text-[#5B6472]">Email Address*</label>
+                    <input type="email" placeholder="Enter your email" value={form.email} onChange={e => setForm({...form, email: e.target.value})} className="w-full px-4 py-2.5 rounded-[8px] bg-white border border-[#E2E8F0] text-[14px] focus:outline-none focus:border-[#1EA7FF]" />
+                  </div>
+                  
+                  <div className="flex flex-col gap-1.5">
+                    <label className="font-['Inter',_sans-serif] text-[12px] font-semibold text-[#5B6472]">Phone Number</label>
+                    <input type="tel" placeholder="Enter your phone number" value={form.phone} onChange={e => setForm({...form, phone: e.target.value})} className="w-full px-4 py-2.5 rounded-[8px] bg-white border border-[#E2E8F0] text-[14px] focus:outline-none focus:border-[#1EA7FF]" />
+                  </div>
+                  
+                  <div className="flex flex-col gap-1.5">
+                    <label className="font-['Inter',_sans-serif] text-[12px] font-semibold text-[#5B6472]">Project Type</label>
+                    <select value={form.projectType} onChange={e => setForm({...form, projectType: e.target.value})} className="w-full px-4 py-2.5 rounded-[8px] bg-white border border-[#E2E8F0] text-[14px] text-[#8B95A5] focus:outline-none focus:border-[#1EA7FF] appearance-none cursor-pointer bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IiM1QjY0NzIiIHN0cm9rZS13aWR0aD0iMiIgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIiBzdHJva2UtbGluZWpvaW49InJvdW5kIj48cG9seWxpbmUgcG9pbnRzPSI2IDkgMTIgMTUgMTggOSIvPjwvc3ZnPg==')] bg-[length:20px_20px] bg-[position:right_12px_center] bg-no-repeat">
+                      <option value="">Select project type</option>
+                      <option value="Residential">Residential</option>
+                      <option value="Commercial">Commercial</option>
+                      <option value="Industrial">Industrial</option>
+                    </select>
+                  </div>
+                  
+                  <div className="flex flex-col gap-1.5 mb-2">
+                    <label className="font-['Inter',_sans-serif] text-[12px] font-semibold text-[#5B6472]">Your Message*</label>
+                    <textarea placeholder="Tell us about your project..." value={form.message} onChange={e => setForm({...form, message: e.target.value})} className="w-full px-4 py-2.5 rounded-[8px] bg-white border border-[#E2E8F0] text-[14px] focus:outline-none focus:border-[#1EA7FF] h-[100px] resize-none" />
+                  </div>
 
-              <button type="button" className="w-full h-[48px] rounded-full bg-[#0062CC] text-white font-['Plus_Jakarta_Sans',_sans-serif] font-bold text-[15px] flex items-center justify-center gap-2 hover:bg-[#0052AB] transition-colors">
-                Send Message
-                <span className="material-symbols-outlined text-[18px]">arrow_forward</span>
-              </button>
+                  {error && <p className="text-red-500 text-[13px] font-medium">{error}</p>}
+
+                  <button type="submit" disabled={submitting} className="w-full h-[48px] rounded-full bg-[#0062CC] text-white font-['Plus_Jakarta_Sans',_sans-serif] font-bold text-[15px] flex items-center justify-center gap-2 hover:bg-[#0052AB] transition-colors disabled:opacity-60">
+                    {submitting ? 'Sending...' : 'Send Message'}
+                    {!submitting && <span className="material-symbols-outlined text-[18px]">arrow_forward</span>}
+                  </button>
+                </>
+              )}
             </form>
           </motion.div>
 

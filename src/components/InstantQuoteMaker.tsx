@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { supabase } from "@/lib/supabase";
+
 
 // --- Types ---
 type QuoteCategory = "Construction" | "Service";
@@ -76,7 +78,7 @@ export default function InstantQuoteMaker() {
     }
   }, [serviceType]);
 
-  const handleShowQuote = () => {
+  const handleShowQuote = async () => {
     if (!phone) {
       setPhoneError("Please enter your mobile number.");
       return;
@@ -87,6 +89,28 @@ export default function InstantQuoteMaker() {
     }
     setPhoneError("");
     setIsQuoteGenerated(true);
+
+    try {
+      const serviceTypeVal = quoteCategory === 'Construction' 
+        ? `Construction - ${constPackage}` 
+        : serviceType;
+      const plotSizeVal = quoteCategory === 'Construction' ? constArea : serviceSize;
+      const budgetVal = getEstimate();
+      
+      await supabase.from('leads').insert([{
+        name: `Quote Lead - ${phone}`,
+        phone: phone,
+        service_type: serviceTypeVal,
+        plot_size: plotSizeVal,
+        budget: budgetVal,
+        source: 'Website Quote',
+        status: 'New',
+        lead_temperature: 'Warm',
+        notes: `Auto-generated from Instant Quote Maker. Category: ${quoteCategory}`
+      }]);
+    } catch (e) {
+      // silent fail - don't interrupt user experience
+    }
   };
 
   // --- Formatting ---
