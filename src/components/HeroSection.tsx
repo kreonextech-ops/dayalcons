@@ -2,60 +2,9 @@
 
 import { motion } from 'framer-motion';
 import Link from 'next/link';
+import { TypeAnimation } from 'react-type-animation';
 
 export default function HeroSection() {
-  const line2Words = "CONSTRUCTIONS & CO.".split(" ");
-
-  // Stage 1: DAYAL (0.0s)
-  const dayalVariant = {
-    hidden: { opacity: 0, y: 40 },
-    visible: { 
-      opacity: 1, 
-      y: 0, 
-      transition: { duration: 0.6, ease: "easeOut", delay: 0 } 
-    }
-  };
-
-  // Stage 2: CONSTRUCTIONS & CO. Container (0.15s stagger)
-  const line2Container = {
-    hidden: { opacity: 1 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.06,
-        delayChildren: 0.15
-      }
-    }
-  };
-
-  const wordVariant = {
-    hidden: { opacity: 0, y: 28, filter: "blur(6px)" },
-    visible: { 
-      opacity: 1, 
-      y: 0, 
-      filter: "blur(0px)",
-      transition: { duration: 0.55, ease: "easeOut" } 
-    }
-  };
-
-  // Stage 3: BORN TO BUILD. (0.55s)
-  const bornToBuildVariant = {
-    hidden: { opacity: 0, scale: 0.96, filter: "blur(8px)" },
-    visible: { 
-      opacity: 1, 
-      scale: 1, 
-      filter: "blur(0px)",
-      transition: { 
-        delay: 0.55, 
-        duration: 0.7, 
-        type: "spring", 
-        stiffness: 100, 
-        damping: 15,
-        mass: 1
-      } 
-    }
-  };
-
   // Stage 4: CTA Buttons (0.95s)
   const ctaContainer = {
     hidden: { opacity: 0 },
@@ -102,49 +51,26 @@ export default function HeroSection() {
       {/* Content Container */}
       <div className="relative z-10 w-full max-w-[1440px] mx-auto px-6 md:px-12 h-full flex flex-col justify-center text-left pt-[10vh]">
         
-        <div className="w-full flex flex-col mb-16 cursor-default">
+        <div className="w-full flex flex-col mb-16 cursor-default min-h-[160px] md:min-h-[220px] justify-center">
           
-          {/* DAYAL */}
-          <div className="overflow-hidden">
-            <motion.div
-              variants={dayalVariant}
-              initial="hidden"
-              animate="visible"
-              className="font-['Manrope',_sans-serif] text-[48px] md:text-[64px] lg:text-[80px] font-[800] leading-[1.0] text-white whitespace-nowrap"
-            >
-              DAYAL
-            </motion.div>
-          </div>
-
-          {/* CONSTRUCTIONS & CO. */}
           <motion.div
-            variants={line2Container}
-            initial="hidden"
-            animate="visible"
-            className="flex flex-nowrap gap-[0.3em] font-['Manrope',_sans-serif] text-[48px] md:text-[64px] lg:text-[80px] font-[800] leading-[1.0] text-white overflow-hidden mt-2 whitespace-nowrap"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
           >
-            {line2Words.map((word, i) => (
-              <motion.span
-                key={i}
-                variants={wordVariant}
-                className="inline-block"
-              >
-                {word}
-              </motion.span>
-            ))}
+            <TypeAnimation
+              sequence={[
+                'DAYAL CONSTRUCTIONS & CO.',
+                2000,
+                'DAYAL BORN TO BUILD.',
+                2500,
+              ]}
+              wrapper="h1"
+              cursor={true}
+              repeat={Infinity}
+              className="font-['Manrope',_sans-serif] text-[40px] md:text-[60px] lg:text-[76px] font-[800] leading-[1.2] text-white"
+            />
           </motion.div>
-
-          {/* BORN TO BUILD. */}
-          <div className="overflow-hidden mt-2">
-            <motion.div
-              variants={bornToBuildVariant}
-              initial="hidden"
-              animate="visible"
-              className="font-['Manrope',_sans-serif] text-[48px] md:text-[64px] lg:text-[80px] font-[800] leading-[1.0] text-[#18AFFF] origin-left whitespace-nowrap"
-            >
-              BORN TO BUILD.
-            </motion.div>
-          </div>
 
         </div>
         
