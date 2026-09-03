@@ -67,7 +67,7 @@ export default function HeroSection() {
                 'DAYAL CONSTRUCTIONS & CO.',
                 2000,
                 '',
-                () => setTextColor('text-[#18AFFF]'),
+                () => setTextColor('text-cyan-400'),
                 'BORN TO BUILD.',
                 2500,
                 '',
