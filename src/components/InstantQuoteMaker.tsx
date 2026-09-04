@@ -97,7 +97,7 @@ export default function InstantQuoteMaker() {
       const plotSizeVal = quoteCategory === 'Construction' ? constArea : serviceSize;
       const budgetVal = getEstimate();
       
-      await supabase.from('leads').insert([{
+      const { error } = await supabase.from('leads').insert([{
         name: `Quote Lead - ${phone}`,
         phone: phone,
         service_type: serviceTypeVal,
@@ -108,7 +108,11 @@ export default function InstantQuoteMaker() {
         lead_temperature: 'Warm',
         notes: `Auto-generated from Instant Quote Maker. Category: ${quoteCategory}`
       }]);
+      if (error) {
+        console.error("Supabase insert error (Quote):", error);
+      }
     } catch (e) {
+      console.error("Quote Maker Exception:", e);
       // silent fail - don't interrupt user experience
     }
   };

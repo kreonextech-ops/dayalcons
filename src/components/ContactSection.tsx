@@ -42,6 +42,7 @@ export default function ContactSection() {
       setSubmitted(true);
       setForm({ name: '', email: '', phone: '', projectType: '', message: '' });
     } catch (err) {
+      console.error("Supabase insert error:", err);
       setError('Something went wrong. Please try again.');
     }
     setSubmitting(false);
