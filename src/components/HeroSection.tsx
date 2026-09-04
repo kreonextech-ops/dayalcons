@@ -35,7 +35,7 @@ export default function HeroSection() {
   };
 
   return (
-    <section className="relative w-full h-[75vh] min-h-[600px] flex items-center overflow-hidden bg-black">
+    <section className="relative w-full h-[100vh] min-h-[800px] flex items-center overflow-hidden bg-black">
       
       {/* Background Container - Video Background */}
       <div className="absolute inset-0 z-0 bg-black">
