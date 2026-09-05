@@ -1,11 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import Card from "components/card";
 import { 
-  MdAdd, MdEdit, MdDelete, MdContentCopy, MdArrowUpward, 
-  MdArrowDownward, MdPictureAsPdf, MdSend, MdFileDownload, MdSave,
-  MdClose, MdCheckCircle
+  MdAdd, MdCheckCircle, MdEdit, MdUploadFile, MdFileDownload, 
+  MdClose, MdAttachMoney, MdPictureAsPdf, MdOutlineDescription
 } from "react-icons/md";
-
 import { createClient } from "@supabase/supabase-js";
 
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL || "https://gdzligxryodasaxnhdco.supabase.co";
@@ -13,21 +11,18 @@ const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 const TabEstimate = ({ leadData, isClient = false }) => {
-  const [dbEstimates, setDbEstimates] = useState([]);
-  const [versions, setVersions] = useState([]);
-  const [activeVersion, setActiveVersion] = useState(null);
+  const [activeEstimateId, setActiveEstimateId] = useState(null);
   
-  // Summary Edit States
-  const [summaryData, setSummaryData] = useState({ estimatedCost: "", clientBudget: "", profitMargin: "", builtUpArea: "" });
-  const [editingSummary, setEditingSummary] = useState(null);
-
-  // BOQ Table State
-  const [boqItems, setBoqItems] = useState([]);
-  const [drawerItem, setDrawerItem] = useState(null);
-
-  // Notes & Workflow
-  const [workflowStage, setWorkflowStage] = useState("Draft");
-  const [notes, setNotes] = useState("");
+  // High-level summary
+  const [projectEstimate, setProjectEstimate] = useState("");
+  const [clientBudget, setClientBudget] = useState("");
+  
+  // Proposals list
+  const [proposals, setProposals] = useState([]);
+  
+  // Modals
+  const [showAddProposal, setShowAddProposal] = useState(false);
+  const [newProposal, setNewProposal] = useState({ title: "", amount: "", isFinal: false, file: null, date: new Date().toISOString().split('T')[0] });
 
   React.useEffect(() => {
     if (leadData?.id) fetchEstimates();
@@ -35,353 +30,282 @@ const TabEstimate = ({ leadData, isClient = false }) => {
   
   const fetchEstimates = async () => {
     if (!leadData?.id) return;
-    const { data } = await supabase.from('lead_estimates').select('*').eq(isClient ? 'client_id' : 'lead_id', leadData.id).order('created_at', { ascending: false });
+    const { data } = await supabase.from('lead_estimates')
+      .select('*')
+      .eq(isClient ? 'client_id' : 'lead_id', leadData.id)
+      .order('created_at', { ascending: false });
+      
     if (data && data.length > 0) {
-      setDbEstimates(data);
-      setVersions(data.map(d => ({ id: d.id, name: d.version_name, status: d.workflow_stage })));
-      setActiveVersion(data[0].id);
-      setBoqItems(data[0].items || []);
-      setNotes(data[0].notes || '');
-      setWorkflowStage(data[0].workflow_stage || 'Draft');
-      setSummaryData(data[0].summary || { estimatedCost: "", clientBudget: "", profitMargin: "", builtUpArea: "" });
+      const record = data[0];
+      setActiveEstimateId(record.id);
+      setProjectEstimate(record.summary?.estimatedCost || "");
+      setClientBudget(record.summary?.clientBudget || "");
+      setProposals(record.items || []); // using items to store proposals array
     }
   };
   
-  const handleSaveDraft = async () => {
-    if (!activeVersion || String(activeVersion).startsWith('V')) {
-      const { data, error } = await supabase.from('lead_estimates').insert([{
-        lead_id: isClient ? null : leadData.id,
-        client_id: isClient ? leadData.id : null,
-        version_name: typeof activeVersion === 'string' && activeVersion.startsWith('V') ? versions.find(v => v.id === activeVersion)?.name || 'Version 1' : 'Version 1',
-        workflow_stage: workflowStage,
-        items: boqItems,
-        notes: notes,
-        summary: summaryData
-      }]).select();
-      if (error) { alert('Error: Please run the SQL script to create lead_estimates table.\n' + error.message); return; }
-      fetchEstimates();
+  const handleSaveData = async (updatedProposals = proposals, est = projectEstimate, bdg = clientBudget) => {
+    const payload = {
+      lead_id: isClient ? null : leadData.id,
+      client_id: isClient ? leadData.id : null,
+      version_name: 'Quotation Data',
+      workflow_stage: 'Active',
+      items: updatedProposals,
+      summary: { estimatedCost: est, clientBudget: bdg, profitMargin: "", builtUpArea: "" },
+      notes: ""
+    };
+
+    if (!activeEstimateId) {
+      const { data, error } = await supabase.from('lead_estimates').insert([payload]).select();
+      if (!error && data) setActiveEstimateId(data[0].id);
     } else {
-      const { error } = await supabase.from('lead_estimates').update({
-        workflow_stage: workflowStage,
-        items: boqItems,
-        notes: notes,
-        summary: summaryData
-      }).eq('id', activeVersion);
-      if (error) { alert('Error saving.\n' + error.message); return; }
-      fetchEstimates();
+      await supabase.from('lead_estimates').update(payload).eq('id', activeEstimateId);
     }
-    alert(`${isClient ? 'Amount' : 'Quotation'} Saved Successfully!`);
   };
-  // Generate dynamic BOQ template based on selected services
-  React.useEffect(() => {
-    if (boqItems.length === 0 && leadData?.selectedServices?.length > 0) {
-      let initialItems = [];
-      const services = leadData.selectedServices;
 
-      if (services.includes("Residential Construction") || services.includes("Commercial Construction")) {
-        initialItems.push(
-          { id: Date.now() + 1, item: "Excavation & Foundation", category: "Civil Works", qty: "", unit: "cu.ft", rate: "", amount: 0, tax: "", discount: "", remarks: "" },
-          { id: Date.now() + 2, item: "RCC Structure", category: "Civil Works", qty: "", unit: "cu.ft", rate: "", amount: 0, tax: "", discount: "", remarks: "" },
-          { id: Date.now() + 3, item: "Brick Work", category: "Civil Works", qty: "", unit: "sq.ft", rate: "", amount: 0, tax: "", discount: "", remarks: "" }
-        );
-      }
-      if (services.includes("Interior Design")) {
-        initialItems.push(
-          { id: Date.now() + 4, item: "Modular Kitchen", category: "Interiors", qty: "1", unit: "Lumpsum", rate: "", amount: 0, tax: "", discount: "", remarks: "" },
-          { id: Date.now() + 5, item: "Wardrobes & Carpentry", category: "Interiors", qty: "", unit: "sq.ft", rate: "", amount: 0, tax: "", discount: "", remarks: "" },
-          { id: Date.now() + 6, item: "False Ceiling", category: "Interiors", qty: "", unit: "sq.ft", rate: "", amount: 0, tax: "", discount: "", remarks: "" }
-        );
-      }
-      if (services.includes("Painting & Epoxy Flooring")) {
-        initialItems.push(
-          { id: Date.now() + 7, item: "Primer & Putty", category: "Painting", qty: "", unit: "sq.ft", rate: "", amount: 0, tax: "", discount: "", remarks: "" },
-          { id: Date.now() + 8, item: "Premium Emulsion Paint", category: "Painting", qty: "", unit: "sq.ft", rate: "", amount: 0, tax: "", discount: "", remarks: "" }
-        );
-      }
-      if (services.includes("Electrical & Plumbing")) {
-        initialItems.push(
-          { id: Date.now() + 9, item: "Concealed Wiring & DB", category: "MEP", qty: "1", unit: "Lumpsum", rate: "", amount: 0, tax: "", discount: "", remarks: "" },
-          { id: Date.now() + 10, item: "Plumbing Lines & Fixtures", category: "MEP", qty: "1", unit: "Lumpsum", rate: "", amount: 0, tax: "", discount: "", remarks: "" }
-        );
-      }
-      if (services.includes("2D Floor Plan Design") || services.includes("3D Elevation Design")) {
-        initialItems.push(
-          { id: Date.now() + 11, item: "Architectural Drawings", category: "Consultancy", qty: "1", unit: "Lumpsum", rate: "", amount: 0, tax: "", discount: "", remarks: "" }
-        );
-      }
-      setBoqItems(initialItems);
+  const handleUpdateAmounts = (field, val) => {
+    if (field === 'estimate') {
+      setProjectEstimate(val);
+      handleSaveData(proposals, val, clientBudget);
+    } else {
+      setClientBudget(val);
+      handleSaveData(proposals, projectEstimate, val);
     }
-  }, [leadData?.selectedServices]);
-
-  const handleAddVersion = () => {
-    const newV = { id: `V${versions.length + 1}`, name: `Version ${versions.length + 1}`, status: "Draft" };
-    setVersions([...versions, newV]);
-    setActiveVersion(newV.id);
   };
 
-  const handleAddBoqItem = () => {
-    setBoqItems([...boqItems, { id: Date.now(), item: "", category: "", qty: "", unit: "", rate: "", amount: 0, tax: "", discount: "", remarks: "" }]);
+  const handleAddProposal = async () => {
+    if (!newProposal.title) {
+       alert("Proposal title is required.");
+       return;
+    }
+    
+    // In a real app, upload newProposal.file to Supabase Storage here and get URL.
+    // For now, we mock the file attachment.
+    const proposalObj = {
+      id: Date.now(),
+      title: newProposal.title,
+      amount: newProposal.amount,
+      isFinal: newProposal.isFinal,
+      date: newProposal.date,
+      fileUrl: newProposal.file ? URL.createObjectURL(newProposal.file) : null,
+      fileName: newProposal.file ? newProposal.file.name : null
+    };
+
+    const updatedProposals = [proposalObj, ...proposals];
+    setProposals(updatedProposals);
+    await handleSaveData(updatedProposals);
+    setShowAddProposal(false);
+    setNewProposal({ title: "", amount: "", isFinal: false, file: null, date: new Date().toISOString().split('T')[0] });
   };
 
-  const updateBoqItem = (id, field, value) => {
-    setBoqItems(boqItems.map(item => {
-      if (item.id === id) {
-        const updated = { ...item, [field]: value };
-        const q = parseFloat(updated.qty) || 0;
-        const r = parseFloat(updated.rate) || 0;
-        updated.amount = q * r;
-        return updated;
-      }
-      return item;
-    }));
+  const markAsFinal = async (id) => {
+    const updated = proposals.map(p => ({ ...p, isFinal: p.id === id }));
+    setProposals(updated);
+    await handleSaveData(updated);
   };
 
-  const deleteBoqItem = (id) => {
-    setBoqItems(boqItems.filter(item => item.id !== id));
+  const deleteProposal = async (id) => {
+    const updated = proposals.filter(p => p.id !== id);
+    setProposals(updated);
+    await handleSaveData(updated);
   };
-
-  const calculateTotal = () => boqItems.reduce((acc, curr) => acc + (parseFloat(curr.amount) || 0), 0);
 
   return (
-    <div className="w-full space-y-4">
-      {/* 1. Header & Version Control */}
-      <Card extra="p-6 relative">
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-          <div>
-            <h2 className="text-[20px] font-semibold text-[#0F172A]">{isClient ? "Amount" : "Quotation & BOQ"}</h2>
-            <div className="flex gap-2 text-sm text-[#64748B] mt-1">
-              <span>{leadData?.name || "No Client Selected"}</span>
-              <span>•</span>
-              <span className="font-bold text-[#2563EB]">{activeVersion ? versions.find(v=>v.id===activeVersion)?.name : 'Draft V1'}</span>
+    <div className="w-full space-y-6">
+      {/* Top Section: High-level Estimate & Budget */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+         {/* Project Estimate Card */}
+         <Card extra="p-6 relative overflow-hidden group border border-[#E2E8F0]">
+            <div className="absolute top-0 right-0 p-4 opacity-10">
+               <MdOutlineDescription size={80} />
             </div>
-          </div>
-          <div className="flex items-center gap-4">
-             <div className="text-right">
-               <p className="text-[10px] font-bold text-[#64748B] uppercase">Current Version</p>
-               <p className="text-[16px] font-bold text-[#0F172A]">{activeVersion || "None"}</p>
-             </div>
-             {activeVersion && (
-               <span className="bg-[#2563EB] text-white px-3 py-1 rounded-full text-xs font-bold tracking-wide">{workflowStage.toUpperCase()}</span>
-             )}
-             <button onClick={handleAddVersion} className="flex items-center gap-2 h-10 px-4 rounded-[10px] bg-[#2563EB] font-bold text-white hover:opacity-90 transition">
-               <MdAdd /> New Version
-             </button>
-          </div>
-        </div>
-      </Card>
+            <p className="text-[14px] font-bold text-[#64748B] uppercase mb-2 tracking-wide">Project Estimate</p>
+            <div className="flex items-center gap-2">
+               <span className="text-[28px] font-bold text-[#0F172A]">₹</span>
+               <input 
+                  type="number" 
+                  value={projectEstimate}
+                  onChange={(e) => setProjectEstimate(e.target.value)}
+                  onBlur={(e) => handleUpdateAmounts('estimate', e.target.value)}
+                  placeholder="0.00"
+                  className="w-full bg-transparent text-[32px] font-bold text-[#0F172A] outline-none placeholder:text-gray-300 border-b-2 border-transparent focus:border-[#2563EB] transition-colors pb-1"
+               />
+            </div>
+            <p className="text-[13px] text-[#64748B] mt-2">Internal calculation for the total project cost.</p>
+         </Card>
 
-      {/* 2. Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        {[
-          { key: "estimatedCost", label: isClient ? "Total Amount" : "Estimated Cost", val: summaryData.estimatedCost },
-          { key: "clientBudget", label: isClient ? "Amount Paid" : "Client Budget", val: summaryData.clientBudget },
-          { key: "profitMargin", label: isClient ? "Remaining Amount" : "Profit Margin", val: isClient ? (Number(summaryData.estimatedCost || 0) - Number(summaryData.clientBudget || 0)).toString() : summaryData.profitMargin },
-          { key: "builtUpArea", label: "Built-up Area (sq.ft)", val: summaryData.builtUpArea },
-        ].map(card => (
-          <Card key={card.key} extra="p-6 cursor-pointer hover:border-[#2563EB] border border-[#E2E8F0] transition" onClick={() => setEditingSummary(card.key)}>
-             <p className="text-[12px] font-bold text-[#64748B] uppercase mb-1">{card.label}</p>
-             {editingSummary === card.key ? (
-                <input 
-                  type="text" 
-                  autoFocus 
-                  onBlur={() => setEditingSummary(null)} 
-                  onChange={e => setSummaryData({...summaryData, [card.key]: e.target.value})} 
-                  value={card.val}
-                  placeholder="Enter value"
-                  className="w-full border-b border-[#2563EB] outline-none text-[20px] font-bold text-[#0F172A] bg-transparent"
-                />
-             ) : (
-                <p className="text-[20px] font-bold text-[#0F172A]">{card.val || "—"}</p>
-             )}
-          </Card>
-        ))}
+         {/* Client Budget Card */}
+         <Card extra="p-6 relative overflow-hidden group border border-[#E2E8F0]">
+            <div className="absolute top-0 right-0 p-4 opacity-10">
+               <MdAttachMoney size={80} />
+            </div>
+            <p className="text-[14px] font-bold text-[#64748B] uppercase mb-2 tracking-wide">Client Budget</p>
+            <div className="flex items-center gap-2">
+               <span className="text-[28px] font-bold text-[#2563EB]">₹</span>
+               <input 
+                  type="number" 
+                  value={clientBudget}
+                  onChange={(e) => setClientBudget(e.target.value)}
+                  onBlur={(e) => handleUpdateAmounts('budget', e.target.value)}
+                  placeholder="0.00"
+                  className="w-full bg-transparent text-[32px] font-bold text-[#2563EB] outline-none placeholder:text-blue-200 border-b-2 border-transparent focus:border-[#2563EB] transition-colors pb-1"
+               />
+            </div>
+            <p className="text-[13px] text-[#64748B] mt-2">Maximum amount the client is willing to spend.</p>
+         </Card>
       </div>
 
-      {/* 3. Version Manager & 8. Approval Workflow */}
-      <Card extra="p-4 flex flex-col md:flex-row justify-between items-center gap-4">
-         <div className="flex gap-2 overflow-x-auto w-full">
-            {versions.length === 0 ? (
-               <div className="text-sm text-gray-500 italic py-2">No versions created yet.</div>
-            ) : (
-               versions.map(v => (
-                 <button key={v.id} onClick={() => setActiveVersion(v.id)} className={`px-4 py-2 rounded-lg text-sm font-bold transition whitespace-nowrap ${activeVersion === v.id ? 'bg-[#2563EB] text-white' : 'bg-gray-100 text-[#475569] hover:bg-gray-200'}`}>
-                   {v.name}
-                 </button>
-               ))
-            )}
-         </div>
-         {activeVersion && (
-           <div className="flex items-center gap-2 border border-[#E2E8F0] rounded-lg p-1 bg-gray-50">
-             {["Draft", "Review", "Sent", "Accepted"].map(stage => (
-               <button 
-                 key={stage} 
-                 onClick={() => setWorkflowStage(stage)}
-                 className={`px-3 py-1 rounded text-xs font-bold transition ${workflowStage === stage ? 'bg-white text-[#0F172A] shadow-sm' : 'text-[#64748B] hover:text-[#0F172A]'}`}
-               >
-                 {stage}
-               </button>
-             ))}
+      {/* Proposals Sent Section */}
+      <Card extra="p-6">
+         <div className="flex justify-between items-center mb-6 border-b border-[#E2E8F0] pb-4">
+           <div>
+             <h3 className="text-[18px] font-bold text-[#0F172A]">Proposals Sent</h3>
+             <p className="text-[13px] text-[#64748B] mt-1">Track the history of quotations sent to the client.</p>
            </div>
-         )}
-      </Card>
-
-      {/* 4. Editable BOQ Table */}
-      <Card extra="p-6 min-h-[300px]">
-         <div className="flex justify-between items-center mb-4">
-           <h3 className="text-[16px] font-semibold text-[#0F172A]">Bill of Quantities (BOQ)</h3>
-           <button onClick={handleAddBoqItem} disabled={!activeVersion} className={`flex items-center gap-2 text-sm font-bold transition ${activeVersion ? 'text-[#2563EB] hover:opacity-80' : 'text-gray-400 cursor-not-allowed'}`}>
-              <MdAdd /> Add BOQ Item
+           <button onClick={() => setShowAddProposal(true)} className="flex items-center gap-2 h-10 px-5 rounded-[10px] bg-[#2563EB] font-bold text-white hover:bg-[#1D4ED8] transition shadow-sm">
+              <MdAdd size={20} /> Add Next Proposal
            </button>
          </div>
-         
-         <div className="overflow-x-auto w-full">
-           <table className="w-full text-left border-collapse min-w-[800px]">
-             <thead>
-               <tr className="border-b border-[#E2E8F0] text-xs text-[#64748B] uppercase">
-                 <th className="pb-2 font-bold w-1/4">Item</th>
-                 <th className="pb-2 font-bold w-1/6">Category</th>
-                 <th className="pb-2 font-bold w-24">Qty</th>
-                 <th className="pb-2 font-bold w-24">Unit</th>
-                 <th className="pb-2 font-bold w-32">Rate</th>
-                 <th className="pb-2 font-bold w-32">Amount</th>
-                 <th className="pb-2 font-bold text-center w-24">Actions</th>
-               </tr>
-             </thead>
-             <tbody>
-               {boqItems.length === 0 ? (
-                 <tr><td colSpan="7" className="py-8 text-center text-sm text-gray-500 italic">No items added to this version yet.</td></tr>
-               ) : (
-                 boqItems.map(item => (
-                   <tr key={item.id} className="border-b border-[#EDF2F7] hover:bg-gray-50 transition group">
-                     <td className="py-2 pr-2">
-                       <input type="text" value={item.item} onChange={e => updateBoqItem(item.id, 'item', e.target.value)} placeholder="Enter item name" className="w-full bg-transparent border border-transparent hover:border-[#E2E8F0] focus:border-[#2563EB] rounded px-2 py-1 text-sm outline-none" />
-                     </td>
-                     <td className="py-2 pr-2">
-                       <input type="text" value={item.category} onChange={e => updateBoqItem(item.id, 'category', e.target.value)} placeholder="Category" className="w-full bg-transparent border border-transparent hover:border-[#E2E8F0] focus:border-[#2563EB] rounded px-2 py-1 text-sm outline-none" />
-                     </td>
-                     <td className="py-2 pr-2">
-                       <input type="number" value={item.qty} onChange={e => updateBoqItem(item.id, 'qty', e.target.value)} placeholder="0" className="w-full bg-transparent border border-transparent hover:border-[#E2E8F0] focus:border-[#2563EB] rounded px-2 py-1 text-sm outline-none" />
-                     </td>
-                     <td className="py-2 pr-2">
-                       <input type="text" value={item.unit} onChange={e => updateBoqItem(item.id, 'unit', e.target.value)} placeholder="Unit" className="w-full bg-transparent border border-transparent hover:border-[#E2E8F0] focus:border-[#2563EB] rounded px-2 py-1 text-sm outline-none" />
-                     </td>
-                     <td className="py-2 pr-2">
-                       <input type="number" value={item.rate} onChange={e => updateBoqItem(item.id, 'rate', e.target.value)} placeholder="0.00" className="w-full bg-transparent border border-transparent hover:border-[#E2E8F0] focus:border-[#2563EB] rounded px-2 py-1 text-sm outline-none" />
-                     </td>
-                     <td className="py-2 pr-2">
-                       <span className="px-2 py-1 text-sm font-semibold text-[#0F172A]">{item.amount > 0 ? item.amount.toFixed(2) : "—"}</span>
-                     </td>
-                     <td className="py-2 text-center text-gray-400 opacity-0 group-hover:opacity-100 transition">
-                        <div className="flex justify-center gap-2 text-lg">
-                          <MdEdit className="cursor-pointer hover:text-[#2563EB]" onClick={() => setDrawerItem(item)} />
-                          <MdDelete className="cursor-pointer hover:text-red-500" onClick={() => deleteBoqItem(item.id)} />
-                        </div>
-                     </td>
-                   </tr>
-                 ))
-               )}
-             </tbody>
-           </table>
+
+         <div className="space-y-4">
+            {proposals.length === 0 ? (
+               <div className="text-center py-10 border-2 border-dashed border-[#E2E8F0] rounded-[16px] bg-gray-50">
+                  <div className="text-gray-400 mb-2 flex justify-center"><MdPictureAsPdf size={48} /></div>
+                  <h4 className="text-[16px] font-bold text-[#0F172A]">No proposals sent yet</h4>
+                  <p className="text-[14px] text-[#64748B] max-w-sm mx-auto mt-1">Create and attach your first proposal to keep track of quotation versions.</p>
+               </div>
+            ) : (
+               <div className="relative border-l-2 border-[#E2E8F0] ml-4 pl-6 space-y-6">
+                 {proposals.map((prop, index) => (
+                    <div key={prop.id} className="relative group">
+                       {/* Timeline dot */}
+                       <div className={`absolute -left-[31px] top-1 h-4 w-4 rounded-full border-4 border-white ${prop.isFinal ? 'bg-[#10B981]' : 'bg-[#2563EB] shadow-sm'}`}></div>
+                       
+                       <div className={`p-5 rounded-[12px] border ${prop.isFinal ? 'border-[#10B981] bg-[#ECFDF5]' : 'border-[#E2E8F0] bg-white hover:border-[#CBD5E1]'} transition-all`}>
+                          <div className="flex justify-between items-start flex-wrap gap-4">
+                             <div>
+                                <div className="flex items-center gap-3 mb-1">
+                                  <h4 className="text-[16px] font-bold text-[#0F172A]">{prop.title}</h4>
+                                  {prop.isFinal && <span className="bg-[#10B981] text-white text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wide flex items-center gap-1"><MdCheckCircle size={12}/> Final</span>}
+                                  {index === 0 && !prop.isFinal && <span className="bg-blue-100 text-[#2563EB] text-[10px] px-2 py-0.5 rounded-full font-bold uppercase tracking-wide">Latest</span>}
+                                </div>
+                                <p className="text-[13px] text-[#64748B]">{new Date(prop.date).toLocaleDateString('en-US', { weekday: 'short', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                             </div>
+                             
+                             <div className="text-right">
+                                <p className="text-[12px] font-bold text-[#64748B] uppercase">Amount Quoted</p>
+                                <p className="text-[18px] font-bold text-[#0F172A]">₹ {prop.amount ? Number(prop.amount).toLocaleString('en-IN') : "—"}</p>
+                             </div>
+                          </div>
+
+                          <div className="mt-4 pt-4 border-t border-[#E2E8F0]/60 flex items-center justify-between">
+                             <div className="flex items-center gap-3">
+                                {prop.fileName ? (
+                                   <div className="flex items-center gap-2 bg-gray-100 px-3 py-1.5 rounded-lg text-sm text-[#0F172A] font-medium border border-gray-200">
+                                      <MdPictureAsPdf className="text-red-500" size={18} />
+                                      {prop.fileName}
+                                      {prop.fileUrl && (
+                                         <a href={prop.fileUrl} target="_blank" rel="noreferrer" className="ml-2 text-[#2563EB] hover:underline flex items-center"><MdFileDownload/></a>
+                                      )}
+                                   </div>
+                                ) : (
+                                   <span className="text-[13px] text-gray-400 italic">No file attached</span>
+                                )}
+                             </div>
+                             
+                             <div className="flex items-center gap-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                                {!prop.isFinal && (
+                                   <button onClick={() => markAsFinal(prop.id)} className="text-[13px] font-bold text-[#10B981] hover:underline">Mark as Final</button>
+                                )}
+                                <button onClick={() => deleteProposal(prop.id)} className="text-[13px] font-bold text-red-500 hover:underline">Delete</button>
+                             </div>
+                          </div>
+                       </div>
+                    </div>
+                 ))}
+               </div>
+            )}
          </div>
       </Card>
 
-      {/* 5. Cost Summary & 6. Negotiation Notes */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-         {/* Notes */}
-         <Card extra="p-6">
-            <h3 className="text-[16px] font-semibold text-[#0F172A] mb-4">Negotiation Notes</h3>
-            <textarea 
-               className="w-full min-h-[200px] rounded-[10px] border border-[#E2E8F0] p-4 text-sm text-[#475569] outline-none focus:border-[#2563EB]"
-               placeholder="Add negotiation discussion, client objections, price revisions, or approval notes..."
-               value={notes}
-               onChange={e => setNotes(e.target.value)}
-            ></textarea>
-         </Card>
+      {/* Add Proposal Modal */}
+      {showAddProposal && (
+         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+            <div className="w-full max-w-[500px] bg-white rounded-[20px] shadow-2xl overflow-hidden animate-slide-up">
+               <div className="flex justify-between items-center p-6 border-b border-[#E2E8F0] bg-gray-50/50">
+                  <h3 className="text-[18px] font-bold text-[#0F172A]">Add Next Proposal</h3>
+                  <MdClose className="text-2xl cursor-pointer text-gray-500 hover:text-black transition" onClick={() => setShowAddProposal(false)} />
+               </div>
+               
+               <div className="p-6 space-y-5">
+                  <div>
+                     <label className="block text-[13px] font-bold text-[#475569] mb-1">Proposal Title *</label>
+                     <input 
+                        type="text" 
+                        value={newProposal.title}
+                        onChange={(e) => setNewProposal({...newProposal, title: e.target.value})}
+                        className="w-full h-11 border border-[#E2E8F0] rounded-[10px] px-3 outline-none focus:border-[#2563EB] text-[14px]" 
+                        placeholder="e.g., Initial Quotation V1" 
+                     />
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-4">
+                     <div>
+                        <label className="block text-[13px] font-bold text-[#475569] mb-1">Quoted Amount (₹)</label>
+                        <input 
+                           type="number" 
+                           value={newProposal.amount}
+                           onChange={(e) => setNewProposal({...newProposal, amount: e.target.value})}
+                           className="w-full h-11 border border-[#E2E8F0] rounded-[10px] px-3 outline-none focus:border-[#2563EB] text-[14px]" 
+                           placeholder="0.00" 
+                        />
+                     </div>
+                     <div>
+                        <label className="block text-[13px] font-bold text-[#475569] mb-1">Date Sent</label>
+                        <input 
+                           type="date" 
+                           value={newProposal.date}
+                           onChange={(e) => setNewProposal({...newProposal, date: e.target.value})}
+                           className="w-full h-11 border border-[#E2E8F0] rounded-[10px] px-3 outline-none focus:border-[#2563EB] text-[14px]" 
+                        />
+                     </div>
+                  </div>
 
-         {/* Summary */}
-         <Card extra="p-6 bg-[#F8FAFC]">
-            <h3 className="text-[16px] font-semibold text-[#0F172A] mb-4">Cost Summary</h3>
-            <div className="space-y-4 text-sm text-[#475569]">
-               <div className="flex justify-between border-b border-[#E2E8F0] pb-2">
-                 <span>Subtotal</span>
-                 <span className="font-semibold text-[#0F172A]">{calculateTotal() > 0 ? calculateTotal().toFixed(2) : "—"}</span>
+                  <div>
+                     <label className="block text-[13px] font-bold text-[#475569] mb-1">Attach Proposal File (PDF/Doc)</label>
+                     <label className="flex flex-col items-center justify-center w-full h-24 border-2 border-dashed border-[#E2E8F0] hover:border-[#2563EB] rounded-[12px] cursor-pointer bg-gray-50 hover:bg-blue-50/50 transition">
+                        <MdUploadFile size={24} className={newProposal.file ? "text-[#2563EB]" : "text-gray-400"} />
+                        <span className="text-[13px] font-medium text-gray-500 mt-2">
+                           {newProposal.file ? newProposal.file.name : "Click to browse file"}
+                        </span>
+                        <input 
+                           type="file" 
+                           className="hidden" 
+                           onChange={(e) => setNewProposal({...newProposal, file: e.target.files[0]})}
+                        />
+                     </label>
+                  </div>
+
+                  <label className="flex items-center gap-3 cursor-pointer p-3 border border-[#E2E8F0] rounded-[10px] hover:bg-gray-50">
+                     <input 
+                        type="checkbox" 
+                        checked={newProposal.isFinal}
+                        onChange={(e) => setNewProposal({...newProposal, isFinal: e.target.checked})}
+                        className="w-5 h-5 rounded border-gray-300 text-[#2563EB] focus:ring-[#2563EB]" 
+                     />
+                     <div>
+                        <p className="text-[14px] font-bold text-[#0F172A]">Mark as Final Proposal</p>
+                        <p className="text-[12px] text-[#64748B]">This indicates the client has accepted this specific quote.</p>
+                     </div>
+                  </label>
                </div>
-               <div className="flex justify-between border-b border-[#E2E8F0] pb-2">
-                 <span>GST</span>
-                 <span className="font-semibold text-[#0F172A]">—</span>
-               </div>
-               <div className="flex justify-between border-b border-[#E2E8F0] pb-2">
-                 <span>Discount</span>
-                 <span className="font-semibold text-[#0F172A]">—</span>
-               </div>
-               <div className="flex justify-between border-b border-[#E2E8F0] pb-2">
-                 <span>Other Charges</span>
-                 <span className="font-semibold text-[#0F172A]">—</span>
-               </div>
-               <div className="flex justify-between pt-2">
-                 <span className="text-[16px] font-bold text-[#0F172A]">Grand Total</span>
-                 <span className="text-[20px] font-bold text-[#2563EB]">{calculateTotal() > 0 ? calculateTotal().toFixed(2) : "—"}</span>
+               
+               <div className="p-6 border-t border-[#E2E8F0] flex gap-3 bg-gray-50/50">
+                  <button className="flex-1 h-11 border border-[#E2E8F0] bg-white rounded-[10px] text-[14px] font-bold text-[#0F172A] hover:bg-gray-50 transition" onClick={() => setShowAddProposal(false)}>Cancel</button>
+                  <button className="flex-1 h-11 bg-[#2563EB] rounded-[10px] text-[14px] font-bold text-white hover:bg-[#1D4ED8] transition shadow-sm" onClick={handleAddProposal}>Save Proposal</button>
                </div>
             </div>
-         </Card>
-      </div>
-
-      {/* 7. Actions */}
-      <div className="flex flex-wrap justify-end gap-3 mt-4">
-        <button onClick={handleSaveDraft} className="h-10 px-6 rounded-[10px] border border-[#E2E8F0] bg-white text-sm font-bold text-[#0F172A] hover:bg-gray-50 transition">Save Draft</button>
-        <button disabled={boqItems.length === 0} className={`h-10 flex items-center gap-2 px-6 rounded-[10px] border border-[#E2E8F0] bg-white text-sm font-bold transition ${boqItems.length > 0 ? 'text-[#0F172A] hover:bg-gray-50' : 'text-gray-400 cursor-not-allowed opacity-50'}`}>
-           <MdFileDownload /> Export Excel
-        </button>
-        <button disabled={boqItems.length === 0} className={`h-10 flex items-center gap-2 px-6 rounded-[10px] border border-[#E2E8F0] bg-white text-sm font-bold transition ${boqItems.length > 0 ? 'text-[#0F172A] hover:bg-gray-50' : 'text-gray-400 cursor-not-allowed opacity-50'}`}>
-           <MdPictureAsPdf /> Generate PDF
-        </button>
-        <button disabled={boqItems.length === 0} className={`h-10 flex items-center gap-2 px-6 rounded-[10px] bg-gradient-to-r from-[#2563EB] to-[#06B6D4] text-sm font-bold text-white transition ${boqItems.length > 0 ? 'hover:opacity-90 shadow-md' : 'opacity-50 cursor-not-allowed'}`}>
-           <MdSend /> Send to Client
-        </button>
-      </div>
-
-      {/* Right-side Edit Drawer (Overlay) */}
-      {drawerItem && (
-        <div className="fixed inset-0 z-[100] flex justify-end bg-black/20 backdrop-blur-sm">
-           <div className="w-full max-w-[420px] bg-white h-full shadow-2xl flex flex-col animate-slide-left">
-              <div className="flex justify-between items-center p-6 border-b border-[#E2E8F0]">
-                 <h3 className="text-lg font-bold text-[#0F172A]">Edit BOQ Row</h3>
-                 <MdClose className="text-2xl cursor-pointer text-gray-500 hover:text-black" onClick={() => setDrawerItem(null)} />
-              </div>
-              <div className="p-6 flex-1 overflow-y-auto space-y-4">
-                 <div className="flex flex-col"><label className="text-xs font-bold text-gray-500 mb-1">Item Name</label><input type="text" value={drawerItem.item} onChange={e => setDrawerItem({...drawerItem, item: e.target.value})} className="border border-[#E2E8F0] rounded p-2 text-sm outline-none focus:border-[#2563EB]" placeholder="Enter item" /></div>
-                 <div className="flex flex-col"><label className="text-xs font-bold text-gray-500 mb-1">Category</label><input type="text" value={drawerItem.category} onChange={e => setDrawerItem({...drawerItem, category: e.target.value})} className="border border-[#E2E8F0] rounded p-2 text-sm outline-none focus:border-[#2563EB]" placeholder="Category" /></div>
-                 
-                 <div className="grid grid-cols-2 gap-4">
-                   <div className="flex flex-col"><label className="text-xs font-bold text-gray-500 mb-1">Quantity</label><input type="number" value={drawerItem.qty} onChange={e => setDrawerItem({...drawerItem, qty: e.target.value})} className="border border-[#E2E8F0] rounded p-2 text-sm outline-none focus:border-[#2563EB]" placeholder="0" /></div>
-                   <div className="flex flex-col"><label className="text-xs font-bold text-gray-500 mb-1">Unit</label><input type="text" value={drawerItem.unit} onChange={e => setDrawerItem({...drawerItem, unit: e.target.value})} className="border border-[#E2E8F0] rounded p-2 text-sm outline-none focus:border-[#2563EB]" placeholder="Unit" /></div>
-                 </div>
-
-                 <div className="flex flex-col"><label className="text-xs font-bold text-gray-500 mb-1">Rate</label><input type="number" value={drawerItem.rate} onChange={e => setDrawerItem({...drawerItem, rate: e.target.value})} className="border border-[#E2E8F0] rounded p-2 text-sm outline-none focus:border-[#2563EB]" placeholder="0.00" /></div>
-                 
-                 <div className="grid grid-cols-2 gap-4">
-                   <div className="flex flex-col"><label className="text-xs font-bold text-gray-500 mb-1">Tax %</label><input type="number" value={drawerItem.tax} onChange={e => setDrawerItem({...drawerItem, tax: e.target.value})} className="border border-[#E2E8F0] rounded p-2 text-sm outline-none focus:border-[#2563EB]" placeholder="0" /></div>
-                   <div className="flex flex-col"><label className="text-xs font-bold text-gray-500 mb-1">Discount %</label><input type="number" value={drawerItem.discount} onChange={e => setDrawerItem({...drawerItem, discount: e.target.value})} className="border border-[#E2E8F0] rounded p-2 text-sm outline-none focus:border-[#2563EB]" placeholder="0" /></div>
-                 </div>
-
-                 <div className="flex flex-col"><label className="text-xs font-bold text-gray-500 mb-1">Remarks</label><textarea value={drawerItem.remarks} onChange={e => setDrawerItem({...drawerItem, remarks: e.target.value})} className="border border-[#E2E8F0] rounded p-2 text-sm outline-none focus:border-[#2563EB] min-h-[80px]" placeholder="Enter remarks" /></div>
-              </div>
-              <div className="p-6 border-t border-[#E2E8F0] flex gap-3">
-                 <button className="flex-1 h-10 border border-[#E2E8F0] rounded-[10px] text-sm font-bold text-[#0F172A] hover:bg-gray-50" onClick={() => setDrawerItem(null)}>Cancel</button>
-                 <button className="flex-1 h-10 bg-[#2563EB] rounded-[10px] text-sm font-bold text-white hover:bg-[#2563EB]/90" onClick={() => {
-                    updateBoqItem(drawerItem.id, 'item', drawerItem.item);
-                    updateBoqItem(drawerItem.id, 'category', drawerItem.category);
-                    updateBoqItem(drawerItem.id, 'qty', drawerItem.qty);
-                    updateBoqItem(drawerItem.id, 'unit', drawerItem.unit);
-                    updateBoqItem(drawerItem.id, 'rate', drawerItem.rate);
-                    updateBoqItem(drawerItem.id, 'tax', drawerItem.tax);
-                    updateBoqItem(drawerItem.id, 'discount', drawerItem.discount);
-                    updateBoqItem(drawerItem.id, 'remarks', drawerItem.remarks);
-                    setDrawerItem(null);
-                 }}>Save Changes</button>
-              </div>
-           </div>
-        </div>
+         </div>
       )}
     </div>
   );
