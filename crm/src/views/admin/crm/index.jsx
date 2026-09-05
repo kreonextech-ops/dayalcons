@@ -73,7 +73,6 @@ const CRMLeads = () => {
                 clientInserts.push({
                    name: clientName,
                    status: "Active",
-                   source: row["SOURCE"] || null,
                    created_at: createdAt
                    // Other fields like phone, email can be added if DB supports it or synced via localStorage later.
                 });
@@ -328,7 +327,7 @@ const CRMLeads = () => {
   }
 
   return (
-    <div className="w-full bg-[#F8FAFC] min-h-screen pt-12 pb-24">
+    <div className="w-full max-w-full bg-[#F8FAFC] min-h-screen pt-12 pb-24">
       {convertLeadData && (
         <div className="fixed inset-0 z-[99] flex items-center justify-center bg-black/50 backdrop-blur-sm">
           <div className="bg-white rounded-[20px] p-6 w-full max-w-md shadow-2xl transform transition-all">

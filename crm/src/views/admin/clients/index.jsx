@@ -187,7 +187,7 @@ const Clients = () => {
   }
 
   return (
-    <div className="w-full bg-[#F8FAFC] min-h-screen pt-12 pb-24">
+    <div className="w-full max-w-full bg-[#F8FAFC] min-h-screen pt-12 pb-24">
       <div className="max-w-[1180px] mx-auto px-4 sm:px-6 lg:px-8 font-sans text-[#475569]">
         
         {/* 1. Breadcrumb & Header */}
