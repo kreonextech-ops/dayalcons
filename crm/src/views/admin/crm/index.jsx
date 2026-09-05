@@ -25,6 +25,9 @@ const CRMLeads = () => {
   const [filterStatus, setFilterStatus] = useState("");
   const [sortOrder, setSortOrder] = useState("newest");
   const [filterTemp, setFilterTemp] = useState("");
+  const [filterMonth, setFilterMonth] = useState("");
+  const [filterStartDate, setFilterStartDate] = useState("");
+  const [filterEndDate, setFilterEndDate] = useState("");
   const [loading, setLoading] = useState(true);
   const [selectedLead, setSelectedLead] = useState(null);
   const [convertLeadData, setConvertLeadData] = useState(null);
@@ -400,33 +403,39 @@ const CRMLeads = () => {
                   className="w-full pl-10 pr-4 h-10 rounded-[10px] border border-[#E2E8F0] text-[14px] outline-none focus:border-[#2563EB] transition-colors" 
                 />
               </div>
-              <div className="flex gap-3 w-full lg:w-auto">
-                <select 
-                  value={filterTemp}
-                  onChange={(e) => setFilterTemp(e.target.value)}
-                  className="h-10 px-4 rounded-[10px] border border-[#E2E8F0] text-[14px] text-[#475569] outline-none focus:border-[#2563EB] bg-white cursor-pointer"
-                >
-                  <option value="">All Temperatures</option>
-                  <option value="Hot">Hot</option>
-                  <option value="Warm">Warm</option>
-                  <option value="Cold">Cold</option>
-                </select>
-                <select 
-                  value={filterStatus}
-                  onChange={(e) => setFilterStatus(e.target.value)}
-                  className="h-10 px-4 rounded-[10px] border border-[#E2E8F0] text-[14px] text-[#475569] outline-none focus:border-[#2563EB] bg-white cursor-pointer"
-                >
-                  <option value="">All Statuses</option>
-                  <option value="New">New</option>
-                  <option value="Contacted">Contacted</option>
-                  <option value="Qualified">Qualified</option>
-                  <option value="Proposal Sent">Proposal Sent</option>
-                  <option value="Negotiation">Negotiation</option>
-                  <option value="Won">Won</option>
-                  <option value="Lost">Lost</option>
-                </select>
+                <div className="flex gap-3 w-full lg:w-auto flex-wrap">
+                  <input type="month" value={filterMonth} onChange={(e) => setFilterMonth(e.target.value)} className="h-10 px-3 rounded-[10px] border border-[#E2E8F0] text-[14px] text-[#475569] outline-none focus:border-[#2563EB] bg-white cursor-pointer" title="Filter by Month" />
+                  <div className="flex items-center gap-1">
+                     <input type="date" value={filterStartDate} onChange={(e) => setFilterStartDate(e.target.value)} className="h-10 px-2 rounded-[10px] border border-[#E2E8F0] text-[14px] text-[#475569] outline-none focus:border-[#2563EB] bg-white cursor-pointer" title="Start Date" />
+                     <span className="text-[#64748B] text-sm">to</span>
+                     <input type="date" value={filterEndDate} onChange={(e) => setFilterEndDate(e.target.value)} className="h-10 px-2 rounded-[10px] border border-[#E2E8F0] text-[14px] text-[#475569] outline-none focus:border-[#2563EB] bg-white cursor-pointer" title="End Date" />
+                  </div>
                   <select 
-                    value={sortOrder}
+                    value={filterTemp}
+                    onChange={(e) => setFilterTemp(e.target.value)}
+                    className="h-10 px-4 rounded-[10px] border border-[#E2E8F0] text-[14px] text-[#475569] outline-none focus:border-[#2563EB] bg-white cursor-pointer"
+                  >
+                    <option value="">All Temperatures</option>
+                    <option value="Hot">Hot</option>
+                    <option value="Warm">Warm</option>
+                    <option value="Cold">Cold</option>
+                  </select>
+                  <select 
+                    value={filterStatus}
+                    onChange={(e) => setFilterStatus(e.target.value)}
+                    className="h-10 px-4 rounded-[10px] border border-[#E2E8F0] text-[14px] text-[#475569] outline-none focus:border-[#2563EB] bg-white cursor-pointer"
+                  >
+                    <option value="">All Statuses</option>
+                    <option value="New">New</option>
+                    <option value="Contacted">Contacted</option>
+                    <option value="Qualified">Qualified</option>
+                    <option value="Proposal Sent">Proposal Sent</option>
+                    <option value="Negotiation">Negotiation</option>
+                    <option value="Won">Won</option>
+                    <option value="Lost">Lost</option>
+                  </select>
+                    <select 
+                      value={sortOrder}
                     onChange={(e) => setSortOrder(e.target.value)}
                     className="h-10 px-4 rounded-[10px] border border-[#E2E8F0] text-[14px] text-[#475569] outline-none focus:border-[#2563EB] bg-white cursor-pointer"
                   >
@@ -460,12 +469,30 @@ const CRMLeads = () => {
               <tbody>
                   {(() => {
                      let filtered = leads;
-                     if (filterStatus) {
-                        filtered = filtered.filter(x => x.status === filterStatus);
-                     }
-                     if (filterTemp) {
-                        filtered = filtered.filter(x => x.lead_temperature === filterTemp);
-                     }
+                       if (filterStatus) {
+                          filtered = filtered.filter(x => x.status === filterStatus);
+                       }
+                       if (filterTemp) {
+                          filtered = filtered.filter(x => x.lead_temperature === filterTemp);
+                       }
+                       if (filterMonth) {
+                          const [y, m] = filterMonth.split("-");
+                          filtered = filtered.filter(x => {
+                             if (!x.created_at) return false;
+                             const date = new Date(x.created_at);
+                             return date.getFullYear() === parseInt(y) && (date.getMonth() + 1) === parseInt(m);
+                          });
+                       }
+                       if (filterStartDate) {
+                          const start = new Date(filterStartDate);
+                          start.setHours(0,0,0,0);
+                          filtered = filtered.filter(x => x.created_at && new Date(x.created_at) >= start);
+                       }
+                       if (filterEndDate) {
+                          const end = new Date(filterEndDate);
+                          end.setHours(23,59,59,999);
+                          filtered = filtered.filter(x => x.created_at && new Date(x.created_at) <= end);
+                       }
                      if (sortOrder === "oldest") {
                         filtered.sort((a,b) => new Date(a.created_at) - new Date(b.created_at));
                      } else if (sortOrder === "name_asc") {
