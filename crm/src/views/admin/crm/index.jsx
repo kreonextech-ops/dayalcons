@@ -452,7 +452,7 @@ const CRMLeads = () => {
                   <th className="py-4 px-4 text-[12px] font-medium text-[#64748B] uppercase tracking-wider">Service</th>
                   <th className="py-4 px-4 text-[12px] font-medium text-[#64748B] uppercase tracking-wider">Status</th>
                   <th className="py-4 px-4 text-[12px] font-medium text-[#64748B] uppercase tracking-wider">Temperature</th>
-                  <th className="py-4 px-4 text-[12px] font-medium text-[#64748B] uppercase tracking-wider">Follow-up</th>
+                  <th className="py-4 px-4 text-[12px] font-medium text-[#64748B] uppercase tracking-wider">Arriving Date</th>
                   <th className="py-4 px-4 text-[12px] font-medium text-[#64748B] uppercase tracking-wider">Assigned</th>
                   <th className="py-4 px-6 text-[12px] font-medium text-[#64748B] uppercase tracking-wider text-right">Actions</th>
                 </tr>
