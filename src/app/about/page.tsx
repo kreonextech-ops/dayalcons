@@ -10,7 +10,7 @@ export default function AboutPage() {
   return (
     <main ref={containerRef} className="bg-white min-h-screen relative overflow-hidden font-['Manrope',_sans-serif] text-[#062B55]">
       {/* Background Subtle Blueprint Grid */}
-      <div className="fixed inset-0 z-0 pointer-events-none opacity-5 bg-[url('/images/footer-blueprint.jpg')] bg-repeat bg-[length:400px_400px] grayscale invert"></div>
+      <div className="fixed inset-0 z-0 pointer-events-none opacity-5 bg-[url(/images/footer-blueprint.jpg)] bg-repeat bg-[length:400px_400px] grayscale invert"></div>
       
       <HeroSection />
       
@@ -125,7 +125,7 @@ function HeroSection() {
 function AboutIntro() {
   return (
     <section className="pt-[120px] relative px-6 md:px-12">
-      <div className="absolute inset-0 bg-[url('/images/footer-blueprint.jpg')] opacity-5 bg-repeat bg-center grayscale invert pointer-events-none mix-blend-multiply"></div>
+      <div className="absolute inset-0 bg-[url(/images/footer-blueprint.jpg)] opacity-5 bg-repeat bg-center grayscale invert pointer-events-none mix-blend-multiply"></div>
       
       <motion.div 
         initial={{ opacity: 0, y: 50, filter: "blur(10px)" }}
@@ -211,7 +211,7 @@ function FounderSection() {
   return (
     <section className="px-6 md:px-12 relative">
       {/* Background blueprint faint */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-[120%] bg-[url('/images/footer-blueprint.jpg')] opacity-[0.03] bg-repeat grayscale invert mix-blend-multiply pointer-events-none"></div>
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-[120%] bg-[url(/images/footer-blueprint.jpg)] opacity-[0.03] bg-repeat grayscale invert mix-blend-multiply pointer-events-none"></div>
 
       <div className="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center relative z-10">
         
@@ -437,7 +437,7 @@ function CTASection() {
   return (
     <section className="px-6 md:px-12 py-[120px] relative bg-white">
       {/* Background blueprint city skyline */}
-      <div className="absolute bottom-0 left-0 w-full h-[300px] bg-[url('/images/contact-bg.jpg')] opacity-10 bg-cover bg-bottom mix-blend-multiply pointer-events-none filter grayscale"></div>
+      <div className="absolute bottom-0 left-0 w-full h-[300px] bg-[url(/images/contact-bg.jpg)] opacity-10 bg-cover bg-bottom mix-blend-multiply pointer-events-none filter grayscale"></div>
       
       <div className="max-w-[1000px] mx-auto text-center relative z-10">
         <motion.h2 

@@ -8,7 +8,7 @@ export default function ProcessPage() {
   return (
     <main className="bg-white min-h-screen relative overflow-x-hidden font-['Manrope',_sans-serif] text-[#062B55]">
       {/* Background Subtle Blueprint Grid */}
-      <div className="fixed inset-0 z-0 pointer-events-none opacity-[0.04] bg-[url('/images/footer-blueprint.jpg')] bg-repeat bg-[length:400px_400px] grayscale invert mix-blend-multiply"></div>
+      <div className="fixed inset-0 z-0 pointer-events-none opacity-[0.04] bg-[url(/images/footer-blueprint.jpg)] bg-repeat bg-[length:400px_400px] grayscale invert mix-blend-multiply"></div>
       
       <HeroSection />
       
