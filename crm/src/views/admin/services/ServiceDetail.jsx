@@ -193,7 +193,7 @@ const ServiceDetail = ({ serviceCase, onBack, onUpdate }) => {
                      <div className="flex flex-col"><span className="text-[12px] font-medium text-[#64748B]">Client / Company Name</span><span className="text-[14px] font-semibold text-[#0F172A]">{clientName}</span></div>
                      <div className="flex flex-col"><span className="text-[12px] font-medium text-[#64748B]">Contact Email</span><span className="text-[14px] font-semibold text-[#0F172A]">{serviceCase.client?.email || "—"}</span></div>
                      <div className="flex flex-col"><span className="text-[12px] font-medium text-[#64748B]">Contact Phone</span><span className="text-[14px] font-semibold text-[#0F172A]">{serviceCase.client?.phone || "—"}</span></div>
-                     <div className="flex flex-col"><span className="text-[12px] font-medium text-[#64748B]">Project Creation Date</span><span className="text-[14px] font-semibold text-[#0F172A]">{new Date(serviceCase.created_at).toLocaleDateString()}</span></div>
+                     <div className="flex flex-col"><span className="text-[12px] font-medium text-[#64748B]">Project Creation Date</span><span className="text-[14px] font-semibold text-[#0F172A]">{new Date(serviceCase.created_at).toLocaleDateString('en-GB')}</span></div>
                    </div>
                  </Card>
 

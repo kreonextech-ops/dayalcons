@@ -77,7 +77,7 @@ const TabMyTasks = ({ employee }) => {
                   </div>
                 </div>
                 <div className="text-right shrink-0">
-                  <p className="text-[12px] font-bold text-[#64748B] mb-2">{new Date(task.created_at).toLocaleDateString()}</p>
+                  <p className="text-[12px] font-bold text-[#64748B] mb-2">{new Date(task.created_at).toLocaleDateString('en-GB')}</p>
                   <button onClick={() => handleDelete(task.id)} className="text-red-500 hover:bg-red-50 p-1.5 rounded-lg transition inline-flex" title="Delete Task">
                      <MdDelete size={18} />
                   </button>

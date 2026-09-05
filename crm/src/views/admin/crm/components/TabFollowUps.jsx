@@ -145,7 +145,7 @@ const TabFollowUps = ({ moduleType, recordId }) => {
                       <h4 className="text-[14px] font-bold text-[#0F172A]">{f.title}</h4>
                       {f.description && <p className="text-[12px] text-[#64748B] mt-1">{f.description}</p>}
                       <span className={`inline-block mt-2 text-[11px] font-bold px-2 py-0.5 rounded ${new Date(f.due_date).toISOString().split('T')[0] < new Date().toISOString().split('T')[0] ? 'bg-red-100 text-red-700' : 'bg-blue-50 text-blue-700'}`}>
-                         Due: {new Date(f.due_date).toLocaleDateString()}
+                         Due: {new Date(f.due_date).toLocaleDateString('en-GB')}
                       </span>
                    </div>
                    <div className="flex gap-2">

@@ -261,7 +261,7 @@ const Dashboard = () => {
                       <td className="py-3 text-sm font-medium text-navy-700 dark:text-white">
                         <span className="bg-orange-50 text-orange-500 px-2 py-1 rounded-md capitalize">{project.status}</span>
                       </td>
-                      <td className="py-3 text-sm font-bold text-navy-700 dark:text-white">{project.created_at ? new Date(project.created_at).toLocaleDateString() : ''}</td>
+                      <td className="py-3 text-sm font-bold text-navy-700 dark:text-white">{project.created_at ? new Date(project.created_at).toLocaleDateString('en-GB') : ''}</td>
                     </tr>
                   ))
                 )}

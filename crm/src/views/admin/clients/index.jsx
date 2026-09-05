@@ -117,7 +117,7 @@ const Clients = () => {
          "ADDRESS": c.address || "",
          "PHONE NO.": c.phone || "",
          "COMPANY": c.company || "",
-         "CLIENT DATE": c.created_at ? new Date(c.created_at).toLocaleDateString() : "",
+         "CLIENT DATE": c.created_at ? new Date(c.created_at).toLocaleDateString('en-GB') : "",
          "STATUS": c.status,
          "REMARKS": c.notes || ""
       }));

@@ -92,7 +92,7 @@ const TabTasks = ({ leadData, isClient = false, entityType, entityId }) => {
                  <span className="text-brand-500">{task.name}</span>
                </h4>
              </div>
-             {task.due_date && <p className="text-xs text-gray-500 mb-2">Due: {new Date(task.due_date).toLocaleDateString()}</p>}
+             {task.due_date && <p className="text-xs text-gray-500 mb-2">Due: {new Date(task.due_date).toLocaleDateString('en-GB')}</p>}
              <div className="flex justify-between items-center mt-3">
                 <span className={`text-[10px] font-bold px-2 py-1 rounded-md uppercase ${task.priority === 'High' ? 'bg-red-50 text-red-600' : task.priority === 'Medium' ? 'bg-orange-50 text-orange-600' : 'bg-blue-50 text-blue-600'}`}>
                   {task.priority || 'Normal'}

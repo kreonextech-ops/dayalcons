@@ -160,7 +160,7 @@ export default function ClientLogins() {
                       </td>
                       <td className="py-4 px-4">
                         <span className="text-sm text-gray-600">
-                          {new Date(login.created_at).toLocaleDateString()}
+                          {new Date(login.created_at).toLocaleDateString('en-GB')}
                         </span>
                       </td>
                       <td className="py-4 px-4 text-right">

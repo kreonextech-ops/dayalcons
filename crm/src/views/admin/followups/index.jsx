@@ -178,7 +178,7 @@ const FollowUps = () => {
            </div>
            <span className="text-[11px] font-semibold text-[#64748B] flex items-center gap-1">
               <MdAccessTime />
-              {new Date(item.due_date).toLocaleDateString()}
+              {new Date(item.due_date).toLocaleDateString('en-GB')}
            </span>
         </div>
         <h4 className="text-[14px] font-bold text-[#0F172A] mb-1 line-clamp-2">{item.title}</h4>

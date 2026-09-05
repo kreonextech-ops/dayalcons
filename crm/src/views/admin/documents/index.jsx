@@ -71,7 +71,7 @@ const Documents = () => {
                     <td className="pt-[14px] pb-[18px] sm:text-[14px]">
                       <a href={doc.file_url} target="_blank" rel="noreferrer" className="text-brand-500 hover:underline text-sm font-bold">View File</a>
                     </td>
-                    <td className="pt-[14px] pb-[18px] sm:text-[14px]"><p className="text-sm font-bold text-navy-700 dark:text-white">{new Date(doc.created_at).toLocaleDateString()}</p></td>
+                    <td className="pt-[14px] pb-[18px] sm:text-[14px]"><p className="text-sm font-bold text-navy-700 dark:text-white">{new Date(doc.created_at).toLocaleDateString('en-GB')}</p></td>
                   </tr>
                 ))
               )}

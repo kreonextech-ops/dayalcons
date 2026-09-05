@@ -93,7 +93,7 @@ const TabAssignedWork = ({ employee }) => {
                          <td className="py-4 px-4 text-sm">
                            <span className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs font-bold">{item.status || "Active"}</span>
                          </td>
-                         <td className="py-4 px-4 text-sm text-gray-500">{new Date(item.created_at).toLocaleDateString()}</td>
+                         <td className="py-4 px-4 text-sm text-gray-500">{new Date(item.created_at).toLocaleDateString('en-GB')}</td>
                       </tr>
                     ))
                   )}

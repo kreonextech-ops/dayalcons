@@ -146,7 +146,7 @@ const CRMLeads = () => {
          "PHONE NO.": l.phone || "",
          "SOURCE": l.source || "",
          "REQUIREMENT": l.service_type || "",
-         "LEAD ARRIVING DATE": l.created_at ? new Date(l.created_at).toLocaleDateString() : "",
+         "LEAD ARRIVING DATE": l.created_at ? new Date(l.created_at).toLocaleDateString('en-GB') : "",
          "STATUS": l.status,
          "TEMPERATURE": l.lead_temperature || "",
          "FOLLOW BY": l.assigned_to || "",
@@ -538,7 +538,7 @@ const CRMLeads = () => {
                                lead.lead_temperature === 'Warm' ? <span className="text-orange-500">Warm</span> : 
                                lead.lead_temperature === 'Cold' ? <span className="text-blue-500">Cold</span> : "-"}
                            </td>
-                           <td className="py-4 px-4 text-sm text-gray-600">{lead.created_at ? new Date(lead.created_at).toLocaleDateString() : "-"}</td>
+                           <td className="py-4 px-4 text-sm text-gray-600">{lead.created_at ? new Date(lead.created_at).toLocaleDateString('en-GB') : "-"}</td>
                            <td className="py-4 px-4 text-sm font-medium text-gray-800">
                               {lead.assigned_to ? (lead.assigned_to.includes("-") ? `EMP-${lead.assigned_to.substring(0, 5).toUpperCase()}` : lead.assigned_to) : "Unassigned"}
                            </td>

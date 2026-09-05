@@ -96,7 +96,7 @@ const TabOverview = ({ task, contextData = {} }) => {
                         className="text-[14px] font-medium text-[#0F172A] cursor-pointer hover:bg-gray-50 rounded p-1 -ml-1 transition"
                         onClick={() => setIsEditingDate(true)}
                      >
-                        {task.due_date ? new Date(task.due_date).toLocaleDateString() : "No due date"}
+                        {task.due_date ? new Date(task.due_date).toLocaleDateString('en-GB') : "No due date"}
                      </p>
                   )}
                </div>
