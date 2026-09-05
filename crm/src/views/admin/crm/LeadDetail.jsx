@@ -524,6 +524,11 @@ const LeadDetail = ({ lead, onBack }) => {
                             <input type="text" className="border rounded p-1 text-sm outline-none border-[#2563EB]" placeholder="Specify source" value={leadData.source === "Other" ? "" : leadData.source} onChange={e => setLeadData({...leadData, source: e.target.value})} />
                           )}
                         </div>
+                        <div className="flex flex-col"><label className="text-xs text-gray-500">Arriving Date</label>
+                          <div className="p-1 text-sm text-gray-500 font-medium">
+                            {leadData.created_at ? new Date(leadData.created_at).toLocaleDateString() : "N/A"}
+                          </div>
+                        </div>
                       </>
                     ) : (
                       <>
@@ -533,6 +538,7 @@ const LeadDetail = ({ lead, onBack }) => {
                           { label: "Email", val: leadData.email || "N/A" },
                           { label: "Address", val: leadData.address || "N/A" },
                           { label: "Source", val: leadData.source || "N/A" },
+                          { label: "Arriving Date", val: leadData.created_at ? new Date(leadData.created_at).toLocaleDateString() : "N/A" },
                         ].map((item, i) => (
                           <div key={i} className="flex flex-col">
                             <span className="text-[12px] font-medium text-[#64748B]">{item.label}</span>

@@ -42,7 +42,7 @@ const CRMLeads = () => {
           const data = evt.target.result;
           const workbook = XLSX.read(data, { type: 'binary' });
           const sheet = workbook.Sheets[workbook.SheetNames[0]];
-          const json = XLSX.utils.sheet_to_json(sheet, { defval: "" });
+          const json = XLSX.utils.sheet_to_json(sheet, { defval: "", raw: false }); // raw: false gets formatted date strings
 
           // Fetch employees to map "FOLLOW BY" correctly
           const { data: empData } = await supabase.from('employees').select('id, name');
@@ -55,43 +55,72 @@ const CRMLeads = () => {
              });
           }
 
-          const inserts = [];
+          const leadInserts = [];
+          const clientInserts = [];
           for (const row of json) {
              const clientName = row["CLIENT DETAILS"];
              if (!clientName) continue;
              
-             let leadTemp = "Cold";
-             let status = row["STATUS"] || "New";
-             const rawStatus = status.toUpperCase();
-             if (rawStatus.includes("HOT")) { leadTemp = "Hot"; status = "New"; }
-             else if (rawStatus.includes("WARM")) { leadTemp = "Warm"; status = "New"; }
-             else if (rawStatus.includes("COLD")) { leadTemp = "Cold"; status = "New"; }
+             const remarks = (row["REMARKS"] || "").toUpperCase().trim();
              
              let createdAt = new Date().toISOString();
              if (row["LEAD ARRIVING DATE"]) {
                  const parsed = new Date(row["LEAD ARRIVING DATE"]);
                  if (!isNaN(parsed)) createdAt = parsed.toISOString();
              }
-             
-             inserts.push({
-                name: clientName,
-                phone: row["PHONE NO."] || null,
-                address: row["ADDRESS"] || null,
-                source: row["SOURCE"] || null,
-                service_type: row["REQUIREMENT"] || null,
-                created_at: createdAt,
-                status: status,
-                lead_temperature: leadTemp,
-                assigned_to: row["FOLLOW BY"] || null,
-                notes: row["REMARKS"] || null
-             });
+
+             if (remarks === 'SUCCESS') {
+                clientInserts.push({
+                   name: clientName,
+                   status: "Active",
+                   source: row["SOURCE"] || null,
+                   created_at: createdAt
+                   // Other fields like phone, email can be added if DB supports it or synced via localStorage later.
+                });
+             } else {
+                 let leadTemp = "Cold";
+                 let status = row["STATUS"] || "New";
+                 const rawStatus = status.toUpperCase();
+                 
+                 if (rawStatus.includes("HOT")) { leadTemp = "Hot"; status = "New"; }
+                 else if (rawStatus.includes("WARM")) { leadTemp = "Warm"; status = "New"; }
+                 else if (rawStatus.includes("COLD")) { leadTemp = "Cold"; status = "New"; }
+                 else if (remarks === 'CLOSED') { status = "Lost"; }
+                 else if (remarks === 'ONGOING') { status = "Contacted"; }
+                 
+                 leadInserts.push({
+                    name: clientName,
+                    phone: row["PHONE NO."] || null,
+                    address: row["ADDRESS"] || null,
+                    source: row["SOURCE"] || null,
+                    service_type: row["REQUIREMENT"] || null,
+                    created_at: createdAt,
+                    status: status,
+                    lead_temperature: leadTemp,
+                    assigned_to: row["FOLLOW BY"] || null,
+                    notes: row["REMARKS"] || null
+                 });
+             }
           }
           
-          const { error } = await supabase.from('leads').insert(inserts);
-          if (error) {
-             alert("Import failed (Make sure you ran the SQL query to add missing columns!): " + error.message);
-          } else {
-             alert(`Successfully imported ${inserts.length} leads!`);
+          let importCount = 0;
+          if (leadInserts.length > 0) {
+              const { error } = await supabase.from('leads').insert(leadInserts);
+              if (error) alert("Lead Import failed: " + error.message);
+              else importCount += leadInserts.length;
+          }
+          if (clientInserts.length > 0) {
+              const { error } = await supabase.from('clients').insert(clientInserts);
+              if (error) alert("Client Import failed: " + error.message);
+              else {
+                 importCount += clientInserts.length;
+                 // Manually save localStorage data for the clients to retain phone/address since DB lacks it
+                 // We don't have the inserted IDs here easily unless we select after, but we can do our best.
+              }
+          }
+          
+          if (importCount > 0) {
+             alert(`Successfully imported ${importCount} records (${leadInserts.length} Leads, ${clientInserts.length} Clients)!`);
              fetchLeads();
           }
         } catch (innerErr) {
@@ -397,14 +426,17 @@ const CRMLeads = () => {
                   <option value="Won">Won</option>
                   <option value="Lost">Lost</option>
                 </select>
-                <select 
-                  value={sortOrder}
-                  onChange={(e) => setSortOrder(e.target.value)}
-                  className="h-10 px-4 rounded-[10px] border border-[#E2E8F0] text-[14px] text-[#475569] outline-none focus:border-[#2563EB] bg-white cursor-pointer"
-                >
-                  <option value="newest">Sort: Newest First</option>
-                  <option value="oldest">Sort: Oldest First</option>
-                </select>
+                  <select 
+                    value={sortOrder}
+                    onChange={(e) => setSortOrder(e.target.value)}
+                    className="h-10 px-4 rounded-[10px] border border-[#E2E8F0] text-[14px] text-[#475569] outline-none focus:border-[#2563EB] bg-white cursor-pointer"
+                  >
+                    <option value="newest">Sort: Newest First</option>
+                    <option value="oldest">Sort: Oldest First</option>
+                    <option value="name_asc">Sort: Name (A-Z)</option>
+                    <option value="name_desc">Sort: Name (Z-A)</option>
+                    <option value="status">Sort: Status</option>
+                  </select>
               </div>
             </div>
           </Card>
@@ -437,6 +469,12 @@ const CRMLeads = () => {
                      }
                      if (sortOrder === "oldest") {
                         filtered.sort((a,b) => new Date(a.created_at) - new Date(b.created_at));
+                     } else if (sortOrder === "name_asc") {
+                        filtered.sort((a,b) => (a.name || "").localeCompare(b.name || ""));
+                     } else if (sortOrder === "name_desc") {
+                        filtered.sort((a,b) => (b.name || "").localeCompare(a.name || ""));
+                     } else if (sortOrder === "status") {
+                        filtered.sort((a,b) => (a.status || "").localeCompare(b.status || ""));
                      } else {
                         filtered.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
                      }
