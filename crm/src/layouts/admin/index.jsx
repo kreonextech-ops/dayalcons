@@ -96,7 +96,7 @@ export default function Admin(props) {
           <div className="h-full">
             <Navbar
               onOpenSidenav={() => setOpen(true)}
-              logoText={"Dayal Construction CRM"}
+              logoText={"Dayal Constructions & Co. CRM"}
               brandText={currentRoute}
               secondary={getActiveNavbar(routes)}
               {...rest}

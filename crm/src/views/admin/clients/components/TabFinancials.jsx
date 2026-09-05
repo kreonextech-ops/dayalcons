@@ -1,432 +1,268 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Card from "components/card";
-import { 
-  MdEdit, MdCheckCircle, MdAdd, MdPictureAsPdf, MdEmail, 
-  MdDownload, MdOutlineClose, MdMoreVert, MdVisibility, MdSave,
-  MdDeleteOutline, MdHistory, MdReceipt, MdWarningAmber, MdContentCopy
-} from "react-icons/md";
-import { FiFileText, FiClock } from "react-icons/fi";
+import { createClient } from "@supabase/supabase-js";
+import { MdAttachMoney, MdAccountBalanceWallet, MdMoneyOff, MdPayment, MdAdd, MdClose } from "react-icons/md";
 
-const TabFinancials = () => {
-  // -------------------------------------------------------------
-  // STATE MANAGEMENT
-  // -------------------------------------------------------------
-  const [isEditingContract, setIsEditingContract] = useState(false);
-  const [contractData, setContractData] = useState({
-    contractNo: "—",
-    agreementDate: "",
-    projectName: "—",
-    projectType: "—",
-    contractValue: "—",
-    currency: "INR (₹)",
-    clientGst: "—",
-    paymentTerms: "—",
-    retentionPercent: "—",
-    expectedCompletion: "",
-    billingCycle: "—",
-    taxType: "—"
-  });
+const supabaseUrl = process.env.REACT_APP_SUPABASE_URL || "https://gdzligxryodasaxnhdco.supabase.co";
+const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdkemxpZ3hyeW9kYXNheG5oZGNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcxNTg1MDUsImV4cCI6MjEwMjczNDUwNX0.AYTyAMf22g8au51ATReRQdQc2IzDLYQ2vtQH_Uyfrpg";
+const supabase = createClient(supabaseUrl, supabaseKey);
 
-  const [milestones, setMilestones] = useState([]);
-  const [invoices, setInvoices] = useState([]);
-  const [receipts, setReceipts] = useState([]);
-  const [changeOrders, setChangeOrders] = useState([]);
-  const [ledgerEntries, setLedgerEntries] = useState([]);
-  const [drawerOpen, setDrawerOpen] = useState(false);
+const TabFinancials = ({ clientData }) => {
+  const [loading, setLoading] = useState(true);
+  const [financialItems, setFinancialItems] = useState([]);
+  const [totals, setTotals] = useState({ amount: 0, paid: 0, due: 0 });
 
-  // -------------------------------------------------------------
-  // 1. FINANCIAL OVERVIEW
-  // -------------------------------------------------------------
-  const renderFinancialOverview = () => {
-    const kpis = [
-      { label: "Contract Value", val: "₹ —" },
-      { label: "Total Invoiced", val: "₹ —" },
-      { label: "Total Received", val: "₹ —" },
-      { label: "Outstanding", val: "₹ —", color: "text-[#DC2626]" },
-      { label: "Retention Amount", val: "₹ —" },
-      { label: "Profit Margin", val: "— %" }
-    ];
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [selectedItem, setSelectedItem] = useState("");
+  const [newPayment, setNewPayment] = useState({ amount: "", date: new Date().toISOString().split("T")[0], mode: "Bank Transfer", note: "" });
 
-    return (
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
-        {kpis.map((kpi, i) => (
-          <Card key={i} extra="p-5 border border-[#E2E8F0] hover:shadow-[0_8px_24px_rgba(15,23,42,0.06)] hover:-translate-y-0.5 transition-all duration-200 cursor-pointer group">
-            <p className="text-[12px] font-semibold text-[#64748B] uppercase tracking-wide mb-1 flex justify-between items-center">
-              {kpi.label} <MdEdit className="opacity-0 group-hover:opacity-100 transition-opacity" />
-            </p>
-            <p className={`text-[24px] font-bold ${kpi.color || 'text-[#0F172A]'}`}>{kpi.val}</p>
-          </Card>
-        ))}
-      </div>
-    );
+  const fetchData = async () => {
+    setLoading(true);
+    if (clientData?.id) {
+       const [servicesRes, projectsRes] = await Promise.all([
+          supabase.from("services").select("*").eq("client_id", clientData.id),
+          supabase.from("projects").select("*").eq("client_id", clientData.id)
+       ]);
+       
+       let combined = [];
+       if (!servicesRes.error && servicesRes.data) {
+          combined = [...combined, ...servicesRes.data.map(s => ({ ...s, _type: 'service', _name: s.title }))];
+       }
+       if (!projectsRes.error && projectsRes.data) {
+          combined = [...combined, ...projectsRes.data.map(p => ({ ...p, _type: 'project', _name: p.title || p.name }))];
+       }
+       
+       let tAmount = 0;
+       let tPaid = 0;
+       
+       const parsedItems = combined.map(item => {
+          let total = 0, advance = 0, payments = [];
+          try {
+             const meta = JSON.parse(item.description || "{}");
+             total = parseFloat(meta.financials?.total) || 0;
+             advance = parseFloat(meta.financials?.advance) || 0;
+             payments = Array.isArray(meta.payments) ? meta.payments : [];
+          } catch(e) {}
+          
+          const paid = advance + payments.reduce((acc, p) => acc + (parseFloat(p.amount) || 0), 0);
+          const due = total - paid;
+          
+          tAmount += total;
+          tPaid += paid;
+          
+          return { ...item, _total: total, _paid: paid, _due: due, _payments: payments, _advance: advance };
+       });
+       
+       setFinancialItems(parsedItems);
+       setTotals({ amount: tAmount, paid: tPaid, due: tAmount - tPaid });
+    }
+    setLoading(false);
   };
 
-  // -------------------------------------------------------------
-  // 2. CONTRACT DETAILS
-  // -------------------------------------------------------------
-  const renderContractDetails = () => (
-    <Card extra="p-6 mb-8 border border-[#E2E8F0]">
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-[18px] font-bold text-[#0F172A]">Contract Information</h2>
-        <div className="flex gap-3">
-          <button className="flex items-center gap-2 text-[13px] font-bold text-[#64748B] hover:text-[#0F172A] transition">
-             <MdPictureAsPdf /> Upload Agreement
-          </button>
-          <button onClick={() => setIsEditingContract(!isEditingContract)} className="flex items-center gap-2 text-[13px] font-bold text-[#2563EB] hover:text-[#1D4ED8] transition">
-             {isEditingContract ? <><MdSave /> Save Contract</> : <><MdEdit /> Edit Contract</>}
-          </button>
-        </div>
-      </div>
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-6">
-        {/* Left Column */}
-        <div className="space-y-4">
-          <div className="flex flex-col"><label className="text-[12px] font-semibold text-[#64748B] uppercase mb-1">Contract Number</label>
-            {isEditingContract ? <input type="text" className="border rounded-lg p-2 text-sm outline-none focus:border-[#2563EB]" value={contractData.contractNo} onChange={e=>setContractData({...contractData, contractNo: e.target.value})} /> : <span className="text-[14px] font-bold text-[#0F172A]">{contractData.contractNo}</span>}
-          </div>
-          <div className="flex flex-col"><label className="text-[12px] font-semibold text-[#64748B] uppercase mb-1">Agreement Date</label>
-            {isEditingContract ? <input type="date" className="border rounded-lg p-2 text-sm outline-none focus:border-[#2563EB]" value={contractData.agreementDate} onChange={e=>setContractData({...contractData, agreementDate: e.target.value})} /> : <span className="text-[14px] font-bold text-[#0F172A]">{contractData.agreementDate || "Select date"}</span>}
-          </div>
-          <div className="flex flex-col"><label className="text-[12px] font-semibold text-[#64748B] uppercase mb-1">Project Name</label>
-            {isEditingContract ? <input type="text" className="border rounded-lg p-2 text-sm outline-none focus:border-[#2563EB]" value={contractData.projectName} onChange={e=>setContractData({...contractData, projectName: e.target.value})} /> : <span className="text-[14px] font-bold text-[#0F172A]">{contractData.projectName}</span>}
-          </div>
-          <div className="flex flex-col"><label className="text-[12px] font-semibold text-[#64748B] uppercase mb-1">Project Type</label>
-            {isEditingContract ? <input type="text" className="border rounded-lg p-2 text-sm outline-none focus:border-[#2563EB]" value={contractData.projectType} onChange={e=>setContractData({...contractData, projectType: e.target.value})} /> : <span className="text-[14px] font-bold text-[#0F172A]">{contractData.projectType}</span>}
-          </div>
-          <div className="flex flex-col"><label className="text-[12px] font-semibold text-[#64748B] uppercase mb-1">Contract Value</label>
-            {isEditingContract ? <input type="text" className="border rounded-lg p-2 text-sm outline-none focus:border-[#2563EB]" value={contractData.contractValue} onChange={e=>setContractData({...contractData, contractValue: e.target.value})} /> : <span className="text-[14px] font-bold text-[#0F172A]">{contractData.contractValue}</span>}
-          </div>
-          <div className="flex flex-col"><label className="text-[12px] font-semibold text-[#64748B] uppercase mb-1">Currency</label>
-            {isEditingContract ? <input type="text" className="border rounded-lg p-2 text-sm outline-none focus:border-[#2563EB]" value={contractData.currency} onChange={e=>setContractData({...contractData, currency: e.target.value})} /> : <span className="text-[14px] font-bold text-[#0F172A]">{contractData.currency}</span>}
-          </div>
-        </div>
-        {/* Right Column */}
-        <div className="space-y-4">
-          <div className="flex flex-col"><label className="text-[12px] font-semibold text-[#64748B] uppercase mb-1">Client GST Number</label>
-            {isEditingContract ? <input type="text" className="border rounded-lg p-2 text-sm outline-none focus:border-[#2563EB]" value={contractData.clientGst} onChange={e=>setContractData({...contractData, clientGst: e.target.value})} /> : <span className="text-[14px] font-bold text-[#0F172A]">{contractData.clientGst}</span>}
-          </div>
-          <div className="flex flex-col"><label className="text-[12px] font-semibold text-[#64748B] uppercase mb-1">Payment Terms</label>
-            {isEditingContract ? <input type="text" className="border rounded-lg p-2 text-sm outline-none focus:border-[#2563EB]" value={contractData.paymentTerms} onChange={e=>setContractData({...contractData, paymentTerms: e.target.value})} /> : <span className="text-[14px] font-bold text-[#0F172A]">{contractData.paymentTerms}</span>}
-          </div>
-          <div className="flex flex-col"><label className="text-[12px] font-semibold text-[#64748B] uppercase mb-1">Retention %</label>
-            {isEditingContract ? <input type="text" className="border rounded-lg p-2 text-sm outline-none focus:border-[#2563EB]" value={contractData.retentionPercent} onChange={e=>setContractData({...contractData, retentionPercent: e.target.value})} /> : <span className="text-[14px] font-bold text-[#0F172A]">{contractData.retentionPercent}</span>}
-          </div>
-          <div className="flex flex-col"><label className="text-[12px] font-semibold text-[#64748B] uppercase mb-1">Expected Completion</label>
-            {isEditingContract ? <input type="date" className="border rounded-lg p-2 text-sm outline-none focus:border-[#2563EB]" value={contractData.expectedCompletion} onChange={e=>setContractData({...contractData, expectedCompletion: e.target.value})} /> : <span className="text-[14px] font-bold text-[#0F172A]">{contractData.expectedCompletion || "Select date"}</span>}
-          </div>
-          <div className="flex flex-col"><label className="text-[12px] font-semibold text-[#64748B] uppercase mb-1">Billing Cycle</label>
-            {isEditingContract ? <input type="text" className="border rounded-lg p-2 text-sm outline-none focus:border-[#2563EB]" value={contractData.billingCycle} onChange={e=>setContractData({...contractData, billingCycle: e.target.value})} /> : <span className="text-[14px] font-bold text-[#0F172A]">{contractData.billingCycle}</span>}
-          </div>
-          <div className="flex flex-col"><label className="text-[12px] font-semibold text-[#64748B] uppercase mb-1">Tax Type</label>
-            {isEditingContract ? <input type="text" className="border rounded-lg p-2 text-sm outline-none focus:border-[#2563EB]" value={contractData.taxType} onChange={e=>setContractData({...contractData, taxType: e.target.value})} /> : <span className="text-[14px] font-bold text-[#0F172A]">{contractData.taxType}</span>}
-          </div>
-        </div>
-      </div>
-    </Card>
-  );
+  useEffect(() => {
+    fetchData();
+  }, [clientData?.id]);
 
-  // -------------------------------------------------------------
-  // 3. PAYMENT SCHEDULE (MILESTONES)
-  // -------------------------------------------------------------
-  const renderMilestones = () => (
-    <Card extra="p-6 mb-8 border border-[#E2E8F0]">
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h2 className="text-[18px] font-bold text-[#0F172A]">Payment Schedule</h2>
-          <p className="text-[13px] text-[#64748B]">Milestone billing timeline</p>
-        </div>
-        <div className="text-right">
-          <p className="text-[12px] font-semibold text-[#64748B] uppercase mb-1">Progress</p>
-          <div className="w-32 h-2 rounded-full bg-gray-100 overflow-hidden"><div className="h-full bg-[#16A34A] w-[0%] transition-all duration-300"></div></div>
-        </div>
-      </div>
+  const handleAddPayment = async () => {
+    if (!selectedItem || !newPayment.amount || !newPayment.date) {
+      alert("Please select a project/service and enter amount & date.");
+      return;
+    }
+    
+    const itemToUpdate = financialItems.find(i => i.id === selectedItem);
+    if (!itemToUpdate) return;
 
-      <div className="space-y-4 mb-6">
-        {milestones.length === 0 ? (
-          <div className="w-full flex flex-col items-center justify-center py-12 text-center bg-[#F8FAFC] border border-dashed border-[#E2E8F0] rounded-[16px]">
-            <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center text-[#2563EB] text-2xl mb-4">
-              <FiClock />
-            </div>
-            <h3 className="text-[16px] font-bold text-[#0F172A] mb-1">No Milestones Created</h3>
-            <p className="text-[13px] text-[#64748B] mb-4">Set up a payment schedule like "Advance", "Foundation", etc.</p>
-          </div>
-        ) : (
-          <div>{/* Real milestones map here */}</div>
-        )}
-      </div>
+    try {
+       const metadata = JSON.parse(itemToUpdate.description || "{}");
+       if (!metadata.payments) metadata.payments = [];
+       
+       const paymentRecord = { id: Date.now(), ...newPayment };
+       metadata.payments.push(paymentRecord);
+       
+       await supabase.from(itemToUpdate._type === 'service' ? "services" : "projects").update({
+          description: JSON.stringify(metadata)
+       }).eq("id", itemToUpdate.id);
+       
+       // Log to timeline
+       const userStr = localStorage.getItem('dayal_user');
+       const loggedInUser = userStr ? JSON.parse(userStr) : null;
+       await supabase.from('lead_activities').insert([{
+          client_id: clientData.id,
+          employee_name: loggedInUser ? loggedInUser.name : 'System',
+          activity_group: 'Timeline',
+          activity_type: 'Payment',
+          title: `Payment Received for ${itemToUpdate._name}`,
+          details: `₹${paymentRecord.amount} via ${paymentRecord.mode}`
+       }]);
 
-      <button className="h-10 px-5 rounded-full border border-[#E2E8F0] bg-white text-[13px] font-bold text-[#0F172A] hover:bg-gray-50 flex items-center gap-2 transition mx-auto">
-         <MdAdd /> Add Milestone
-      </button>
-    </Card>
-  );
+       setShowPaymentModal(false);
+       setNewPayment({ amount: "", date: new Date().toISOString().split("T")[0], mode: "Bank Transfer", note: "" });
+       fetchData();
+       alert("Payment added successfully!");
+    } catch (e) {
+       alert("Error adding payment: " + e.message);
+    }
+  };
 
-  // -------------------------------------------------------------
-  // 4. INVOICE MANAGEMENT
-  // -------------------------------------------------------------
-  const renderInvoices = () => (
-    <Card extra="p-6 mb-8 border border-[#E2E8F0] overflow-hidden">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-        <div>
-          <h2 className="text-[18px] font-bold text-[#0F172A]">Invoices</h2>
-          <p className="text-[13px] text-[#64748B]">Manage all billing records</p>
-        </div>
-        <div className="flex gap-2">
-          <button className="h-10 w-10 flex items-center justify-center rounded-lg border border-[#E2E8F0] text-[#64748B] hover:bg-gray-50 transition" title="Download Excel"><MdDownload /></button>
-          <button onClick={() => setDrawerOpen(true)} className="h-10 px-4 rounded-lg bg-[#2563EB] text-[13px] font-bold text-white hover:bg-[#1D4ED8] flex items-center gap-2 transition">
-             <MdAdd /> New Invoice
-          </button>
-        </div>
-      </div>
-      
-      <div className="overflow-x-auto w-full">
-        <table className="w-full text-left border-collapse">
-          <thead>
-            <tr className="bg-[#F8FAFC] border-y border-[#E2E8F0]">
-              <th className="py-3 px-4 text-[12px] font-semibold text-[#64748B] uppercase">Invoice No.</th>
-              <th className="py-3 px-4 text-[12px] font-semibold text-[#64748B] uppercase">Project</th>
-              <th className="py-3 px-4 text-[12px] font-semibold text-[#64748B] uppercase">Milestone</th>
-              <th className="py-3 px-4 text-[12px] font-semibold text-[#64748B] uppercase">Amount</th>
-              <th className="py-3 px-4 text-[12px] font-semibold text-[#64748B] uppercase">GST</th>
-              <th className="py-3 px-4 text-[12px] font-semibold text-[#64748B] uppercase">Status</th>
-              <th className="py-3 px-4 text-[12px] font-semibold text-[#64748B] uppercase text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {invoices.length === 0 ? (
-              <tr>
-                <td colSpan="7" className="py-16 text-center">
-                   <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center text-gray-400 text-2xl mx-auto mb-4"><FiFileText /></div>
-                   <p className="text-[14px] font-bold text-[#0F172A]">No invoices created</p>
-                   <p className="text-[13px] text-[#64748B]">Create your first invoice to start billing.</p>
-                </td>
-              </tr>
-            ) : null}
-          </tbody>
-        </table>
-      </div>
-    </Card>
-  );
-
-  // -------------------------------------------------------------
-  // 5. PAYMENT RECEIPTS
-  // -------------------------------------------------------------
-  const renderReceipts = () => (
-    <Card extra="p-6 mb-8 border border-[#E2E8F0] overflow-hidden">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-        <div>
-          <h2 className="text-[18px] font-bold text-[#0F172A]">Payment Receipts</h2>
-          <p className="text-[13px] text-[#64748B]">Track every payment received</p>
-        </div>
-        <button className="h-10 px-4 rounded-lg bg-[#16A34A] text-[13px] font-bold text-white hover:bg-green-700 flex items-center gap-2 transition">
-           <MdAdd /> Add Receipt
-        </button>
-      </div>
-
-      <div className="overflow-x-auto w-full">
-        <table className="w-full text-left border-collapse">
-          <thead>
-            <tr className="bg-[#F8FAFC] border-y border-[#E2E8F0]">
-              <th className="py-3 px-4 text-[12px] font-semibold text-[#64748B] uppercase">Receipt No.</th>
-              <th className="py-3 px-4 text-[12px] font-semibold text-[#64748B] uppercase">Invoice</th>
-              <th className="py-3 px-4 text-[12px] font-semibold text-[#64748B] uppercase">Method</th>
-              <th className="py-3 px-4 text-[12px] font-semibold text-[#64748B] uppercase">Amount</th>
-              <th className="py-3 px-4 text-[12px] font-semibold text-[#64748B] uppercase">Date</th>
-              <th className="py-3 px-4 text-[12px] font-semibold text-[#64748B] uppercase text-right">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {receipts.length === 0 ? (
-              <tr>
-                <td colSpan="6" className="py-12 text-center text-[#64748B] text-[13px]">
-                   <p className="font-bold text-[#0F172A] mb-1">No payments recorded</p>
-                   Add a receipt when the client pays an invoice.
-                </td>
-              </tr>
-            ) : null}
-          </tbody>
-        </table>
-      </div>
-    </Card>
-  );
-
-  // -------------------------------------------------------------
-  // 6. CHANGE ORDERS
-  // -------------------------------------------------------------
-  const renderChangeOrders = () => (
-    <Card extra="p-6 mb-8 border border-[#E2E8F0] overflow-hidden border-l-4 border-l-[#F59E0B]">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-        <div>
-          <h2 className="text-[18px] font-bold text-[#0F172A]">Change Orders</h2>
-          <p className="text-[13px] text-[#64748B]">Manage revisions and extra work requests</p>
-        </div>
-        <button className="h-10 px-4 rounded-lg bg-[#F59E0B] text-[13px] font-bold text-white hover:bg-orange-600 flex items-center gap-2 transition">
-           <MdAdd /> Add Change Order
-        </button>
-      </div>
-      
-      <div className="overflow-x-auto w-full">
-        <table className="w-full text-left border-collapse">
-          <thead>
-            <tr className="bg-[#F8FAFC] border-y border-[#E2E8F0]">
-              <th className="py-3 px-4 text-[12px] font-semibold text-[#64748B] uppercase">CO No.</th>
-              <th className="py-3 px-4 text-[12px] font-semibold text-[#64748B] uppercase">Description</th>
-              <th className="py-3 px-4 text-[12px] font-semibold text-[#64748B] uppercase">Amount</th>
-              <th className="py-3 px-4 text-[12px] font-semibold text-[#64748B] uppercase">Status</th>
-              <th className="py-3 px-4 text-[12px] font-semibold text-[#64748B] uppercase">Approved By</th>
-            </tr>
-          </thead>
-          <tbody>
-            {changeOrders.length === 0 ? (
-              <tr><td colSpan="5" className="py-8 text-center text-[13px] text-[#64748B]">No change orders created.</td></tr>
-            ) : null}
-          </tbody>
-        </table>
-      </div>
-    </Card>
-  );
-
-  // -------------------------------------------------------------
-  // 7. CLIENT LEDGER
-  // -------------------------------------------------------------
-  const renderLedger = () => (
-    <Card extra="p-6 mb-8 border border-[#E2E8F0] overflow-hidden shadow-[0_10px_30px_rgba(15,23,42,0.04)]">
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
-        <div>
-          <h2 className="text-[18px] font-bold text-[#0F172A]">Centralized Client Ledger</h2>
-          <p className="text-[13px] text-[#64748B]">Auto-generated history of all financial transactions</p>
-        </div>
-        <div className="flex gap-2">
-          <select className="h-10 px-3 rounded-lg border border-[#E2E8F0] text-[13px] outline-none">
-            <option>All Types</option>
-            <option>Invoices</option>
-            <option>Receipts</option>
-          </select>
-          <button className="h-10 px-4 rounded-lg border border-[#E2E8F0] text-[13px] font-bold text-[#0F172A] hover:bg-gray-50 flex items-center gap-2 transition">
-             Export PDF
-          </button>
-        </div>
-      </div>
-      
-      <div className="overflow-x-auto w-full">
-        <table className="w-full text-left border-collapse">
-          <thead>
-            <tr className="bg-[#0F172A] text-white">
-              <th className="py-3 px-4 text-[12px] font-semibold uppercase">Date</th>
-              <th className="py-3 px-4 text-[12px] font-semibold uppercase">Type</th>
-              <th className="py-3 px-4 text-[12px] font-semibold uppercase">Reference</th>
-              <th className="py-3 px-4 text-[12px] font-semibold uppercase text-right">Debit</th>
-              <th className="py-3 px-4 text-[12px] font-semibold uppercase text-right">Credit</th>
-              <th className="py-3 px-4 text-[12px] font-semibold uppercase text-right">Balance</th>
-            </tr>
-          </thead>
-          <tbody>
-            {ledgerEntries.length === 0 ? (
-              <tr><td colSpan="6" className="py-12 text-center text-[13px] text-[#64748B]">Ledger is empty. Entries auto-generate from invoices and receipts.</td></tr>
-            ) : null}
-          </tbody>
-        </table>
-      </div>
-    </Card>
-  );
-
-  // -------------------------------------------------------------
-  // 8. GST & TAX MANAGEMENT + 9. REPORTS
-  // -------------------------------------------------------------
-  const renderTaxAndReports = () => (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-      <Card extra="p-6 border border-[#E2E8F0]">
-        <h2 className="text-[18px] font-bold text-[#0F172A] mb-4">GST & Tax Details</h2>
-        <div className="space-y-4 mb-6">
-          <div className="flex justify-between border-b border-gray-100 pb-2">
-            <span className="text-[13px] text-[#64748B]">GST Number</span>
-            <span className="text-[13px] font-bold text-[#0F172A]">—</span>
-          </div>
-          <div className="flex justify-between border-b border-gray-100 pb-2">
-            <span className="text-[13px] text-[#64748B]">Tax Regime</span>
-            <span className="text-[13px] font-bold text-[#0F172A]">—</span>
-          </div>
-          <div className="flex justify-between border-b border-gray-100 pb-2">
-            <span className="text-[13px] text-[#64748B]">TDS %</span>
-            <span className="text-[13px] font-bold text-[#0F172A]">—</span>
-          </div>
-        </div>
-        <button className="w-full h-10 rounded-lg bg-gray-50 border border-dashed border-[#E2E8F0] text-[13px] font-bold text-[#64748B] hover:bg-gray-100 transition">
-           Upload Tax Document
-        </button>
-      </Card>
-      
-      <Card extra="p-6 border border-[#E2E8F0]">
-        <h2 className="text-[18px] font-bold text-[#0F172A] mb-4">Financial Reports</h2>
-        <div className="grid grid-cols-2 gap-3">
-          {["Client Statement", "Outstanding Report", "Invoice Register", "GST Report"].map(r => (
-            <button key={r} className="p-3 border border-[#E2E8F0] rounded-lg text-left hover:border-[#2563EB] group transition">
-              <span className="block text-[13px] font-bold text-[#0F172A] mb-1 group-hover:text-[#2563EB]">{r}</span>
-              <span className="text-[11px] text-[#64748B] flex items-center gap-1"><MdDownload /> Generate PDF</span>
-            </button>
-          ))}
-        </div>
-      </Card>
-    </div>
-  );
+  if (loading) return <div className="p-12 text-center text-[#64748B]">Calculating financials...</div>;
 
   return (
-    <div className="w-full relative">
-      {renderFinancialOverview()}
-      {renderContractDetails()}
-      {renderMilestones()}
-      {renderInvoices()}
-      {renderReceipts()}
-      {renderChangeOrders()}
-      {renderLedger()}
-      {renderTaxAndReports()}
+    <div className="animate-fade-in flex flex-col gap-6">
+       
+       {/* Top Summary Cards */}
+       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <Card extra="p-6 relative overflow-hidden border border-[#E2E8F0]">
+             <div className="absolute right-0 top-0 p-4 opacity-[0.05]"><MdAccountBalanceWallet size={80}/></div>
+             <p className="text-[14px] font-bold text-[#64748B] uppercase tracking-wide mb-2">Total Project Value</p>
+             <p className="text-[32px] font-bold text-[#0F172A]">₹ {totals.amount.toLocaleString('en-IN')}</p>
+             <p className="text-[13px] text-[#64748B] mt-2">Combined value of all services and projects.</p>
+          </Card>
+          
+          <Card extra="p-6 relative overflow-hidden border border-[#E2E8F0]">
+             <div className="absolute right-0 top-0 p-4 opacity-[0.05]"><MdAttachMoney size={80}/></div>
+             <p className="text-[14px] font-bold text-[#64748B] uppercase tracking-wide mb-2">Total Received</p>
+             <p className="text-[32px] font-bold text-[#10B981]">₹ {totals.paid.toLocaleString('en-IN')}</p>
+             <p className="text-[13px] text-[#64748B] mt-2">Payments received to date.</p>
+          </Card>
+          
+          <Card extra="p-6 relative overflow-hidden border border-[#E2E8F0]">
+             <div className="absolute right-0 top-0 p-4 opacity-[0.05]"><MdMoneyOff size={80}/></div>
+             <p className="text-[14px] font-bold text-[#64748B] uppercase tracking-wide mb-2">Total Outstanding Due</p>
+             <p className="text-[32px] font-bold text-[#DC2626]">₹ {totals.due.toLocaleString('en-IN')}</p>
+             <p className="text-[13px] text-[#64748B] mt-2">Remaining balance to be collected.</p>
+          </Card>
+       </div>
 
-      {/* Invoice Drawer */}
-      {drawerOpen && (
-        <div className="fixed inset-0 z-50 flex justify-end bg-black/40 backdrop-blur-sm transition-opacity">
-          <div className="w-[500px] bg-white h-full shadow-2xl flex flex-col transform transition-transform animate-slide-left">
-            <div className="p-6 border-b border-[#E2E8F0] flex justify-between items-center bg-[#F8FAFC]">
-              <h2 className="text-[20px] font-bold text-[#0F172A]">New Invoice</h2>
-              <button onClick={() => setDrawerOpen(false)} className="text-gray-400 hover:text-black"><MdOutlineClose className="text-2xl" /></button>
-            </div>
-            <div className="p-6 flex-1 overflow-y-auto space-y-5">
-              <div><label className="text-[12px] font-bold text-[#475569] uppercase mb-1 block">Invoice Number</label><input type="text" placeholder="Enter value" className="w-full p-2 border rounded-lg text-sm outline-none focus:border-[#2563EB]" /></div>
-              <div><label className="text-[12px] font-bold text-[#475569] uppercase mb-1 block">Project</label><select className="w-full p-2 border rounded-lg text-sm outline-none focus:border-[#2563EB]"><option>Select project</option></select></div>
-              <div><label className="text-[12px] font-bold text-[#475569] uppercase mb-1 block">Milestone</label><select className="w-full p-2 border rounded-lg text-sm outline-none focus:border-[#2563EB]"><option>Select milestone</option></select></div>
-              <div className="grid grid-cols-2 gap-4">
-                 <div><label className="text-[12px] font-bold text-[#475569] uppercase mb-1 block">Invoice Date</label><input type="date" className="w-full p-2 border rounded-lg text-sm outline-none focus:border-[#2563EB]" /></div>
-                 <div><label className="text-[12px] font-bold text-[#475569] uppercase mb-1 block">Due Date</label><input type="date" className="w-full p-2 border rounded-lg text-sm outline-none focus:border-[#2563EB]" /></div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                 <div><label className="text-[12px] font-bold text-[#475569] uppercase mb-1 block">Amount (₹)</label><input type="text" placeholder="Auto-calculated" className="w-full p-2 border rounded-lg text-sm bg-gray-50 outline-none" disabled /></div>
-                 <div><label className="text-[12px] font-bold text-[#475569] uppercase mb-1 block">GST %</label><select className="w-full p-2 border rounded-lg text-sm outline-none focus:border-[#2563EB]"><option>18%</option><option>12%</option><option>5%</option><option>0%</option></select></div>
-              </div>
-              <div><label className="text-[12px] font-bold text-[#475569] uppercase mb-1 block">Notes</label><textarea rows="3" placeholder="Additional notes..." className="w-full p-2 border rounded-lg text-sm outline-none focus:border-[#2563EB]"></textarea></div>
-              
-              <div className="p-4 bg-[#F8FAFC] rounded-lg border border-[#E2E8F0]">
-                <div className="flex justify-between text-sm mb-1"><span className="text-[#64748B]">Subtotal</span><span className="font-semibold">₹ —</span></div>
-                <div className="flex justify-between text-sm mb-2"><span className="text-[#64748B]">GST Amount</span><span className="font-semibold">₹ —</span></div>
-                <div className="flex justify-between text-[16px] border-t border-[#E2E8F0] pt-2 mt-2"><span className="font-bold text-[#0F172A]">Grand Total</span><span className="font-bold text-[#2563EB]">₹ —</span></div>
-              </div>
-            </div>
-            <div className="p-6 border-t border-[#E2E8F0] flex gap-3">
-              <button onClick={() => setDrawerOpen(false)} className="flex-1 h-12 rounded-lg border border-[#E2E8F0] bg-white font-bold text-[#475569] hover:bg-gray-50">Save Draft</button>
-              <button className="flex-1 h-12 rounded-lg bg-[#2563EB] font-bold text-white shadow-md hover:bg-[#1D4ED8]">Generate Invoice</button>
-            </div>
+       {/* Detailed Breakdown */}
+       <Card extra="p-6 border border-[#E2E8F0]">
+          <div className="flex justify-between items-center mb-6">
+             <div>
+                <h3 className="text-[18px] font-bold text-[#0F172A]">Financial Breakdown</h3>
+                <p className="text-[13px] text-[#64748B]">Individual breakdown per service and project.</p>
+             </div>
+             <button onClick={() => setShowPaymentModal(true)} className="flex items-center gap-2 h-10 px-5 rounded-xl bg-[#2563EB] font-bold text-white hover:bg-[#1D4ED8] transition shadow-sm">
+                <MdAdd size={20}/> Add Payment
+             </button>
           </div>
-        </div>
-      )}
+          
+          <div className="overflow-x-auto">
+             <table className="w-full text-left border-collapse">
+                <thead>
+                   <tr className="bg-gray-50 border-y border-[#E2E8F0]">
+                      <th className="py-3 px-4 text-[12px] font-bold text-[#475569] uppercase">Project / Service</th>
+                      <th className="py-3 px-4 text-[12px] font-bold text-[#475569] uppercase">Type</th>
+                      <th className="py-3 px-4 text-[12px] font-bold text-[#475569] uppercase text-right">Total Amount</th>
+                      <th className="py-3 px-4 text-[12px] font-bold text-[#475569] uppercase text-right">Paid</th>
+                      <th className="py-3 px-4 text-[12px] font-bold text-[#475569] uppercase text-right">Due</th>
+                   </tr>
+                </thead>
+                <tbody>
+                   {financialItems.length === 0 ? (
+                      <tr><td colSpan="5" className="py-8 text-center text-[13px] text-[#64748B]">No projects or services found.</td></tr>
+                   ) : (
+                      financialItems.map(item => (
+                         <tr key={item.id} className="border-b border-[#E2E8F0] hover:bg-gray-50/50 transition">
+                            <td className="py-4 px-4">
+                               <div className="font-bold text-[#0F172A]">{item._name}</div>
+                               <div className="text-[11px] text-[#64748B] mt-0.5">{item._type === 'service' ? 'SRV-' : 'PRJ-'}{item.id.substring(0,5)}</div>
+                            </td>
+                            <td className="py-4 px-4">
+                               <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase ${item._type === 'service' ? 'bg-blue-50 text-blue-700' : 'bg-emerald-50 text-emerald-700'}`}>
+                                  {item._type}
+                               </span>
+                            </td>
+                            <td className="py-4 px-4 text-right font-bold text-[#0F172A]">₹ {item._total.toLocaleString('en-IN')}</td>
+                            <td className="py-4 px-4 text-right font-bold text-[#10B981]">₹ {item._paid.toLocaleString('en-IN')}</td>
+                            <td className="py-4 px-4 text-right font-bold text-[#DC2626]">₹ {item._due.toLocaleString('en-IN')}</td>
+                         </tr>
+                      ))
+                   )}
+                </tbody>
+             </table>
+          </div>
+       </Card>
 
-      {/* Animation Styles */}
-      <style>{`
-        @keyframes slide-left {
-          from { transform: translateX(100%); }
-          to { transform: translateX(0); }
-        }
-        .animate-slide-left {
-          animation: slide-left 0.2s cubic-bezier(0.22, 1, 0.36, 1) forwards;
-        }
-      `}</style>
+       {/* Add Payment Modal */}
+       {showPaymentModal && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+             <div className="w-full max-w-[500px] bg-white rounded-[20px] shadow-2xl overflow-hidden animate-slide-up">
+                <div className="flex justify-between items-center p-6 border-b border-[#E2E8F0] bg-gray-50/50">
+                   <h3 className="text-[18px] font-bold text-[#0F172A]">Record New Payment</h3>
+                   <MdClose className="text-2xl cursor-pointer text-gray-500 hover:text-black transition" onClick={() => setShowPaymentModal(false)} />
+                </div>
+                
+                <div className="p-6 space-y-5">
+                   <div>
+                      <label className="block text-[13px] font-bold text-[#475569] mb-1">Select Project / Service</label>
+                      <select 
+                         value={selectedItem} 
+                         onChange={e => setSelectedItem(e.target.value)}
+                         className="w-full h-11 border border-[#E2E8F0] rounded-[10px] px-3 outline-none focus:border-[#2563EB] text-[14px] bg-white"
+                      >
+                         <option value="">-- Choose --</option>
+                         {financialItems.map(item => (
+                            <option key={item.id} value={item.id}>
+                               {item._name} (Due: ₹ {item._due.toLocaleString('en-IN')})
+                            </option>
+                         ))}
+                      </select>
+                   </div>
+                   
+                   <div className="grid grid-cols-2 gap-4">
+                      <div>
+                         <label className="block text-[13px] font-bold text-[#475569] mb-1">Payment Amount (₹)</label>
+                         <input 
+                            type="number" 
+                            value={newPayment.amount}
+                            onChange={(e) => setNewPayment({...newPayment, amount: e.target.value})}
+                            className="w-full h-11 border border-[#E2E8F0] rounded-[10px] px-3 outline-none focus:border-[#2563EB] text-[14px]" 
+                            placeholder="0.00" 
+                         />
+                      </div>
+                      <div>
+                         <label className="block text-[13px] font-bold text-[#475569] mb-1">Date Received</label>
+                         <input 
+                            type="date" 
+                            value={newPayment.date}
+                            onChange={(e) => setNewPayment({...newPayment, date: e.target.value})}
+                            className="w-full h-11 border border-[#E2E8F0] rounded-[10px] px-3 outline-none focus:border-[#2563EB] text-[14px]" 
+                         />
+                      </div>
+                   </div>
+
+                   <div>
+                      <label className="block text-[13px] font-bold text-[#475569] mb-1">Payment Mode</label>
+                      <select 
+                         value={newPayment.mode}
+                         onChange={(e) => setNewPayment({...newPayment, mode: e.target.value})}
+                         className="w-full h-11 border border-[#E2E8F0] rounded-[10px] px-3 outline-none focus:border-[#2563EB] text-[14px] bg-white"
+                      >
+                         <option>Bank Transfer</option>
+                         <option>Cash</option>
+                         <option>Cheque</option>
+                         <option>UPI</option>
+                      </select>
+                   </div>
+                   
+                   <div>
+                      <label className="block text-[13px] font-bold text-[#475569] mb-1">Notes / Reference</label>
+                      <input 
+                         type="text" 
+                         value={newPayment.note}
+                         onChange={(e) => setNewPayment({...newPayment, note: e.target.value})}
+                         className="w-full h-11 border border-[#E2E8F0] rounded-[10px] px-3 outline-none focus:border-[#2563EB] text-[14px]" 
+                         placeholder="e.g. UTR Number or Cash Receipt" 
+                      />
+                   </div>
+                </div>
+                
+                <div className="p-6 border-t border-[#E2E8F0] flex gap-3 bg-gray-50/50">
+                   <button className="flex-1 h-11 border border-[#E2E8F0] bg-white rounded-[10px] text-[14px] font-bold text-[#0F172A] hover:bg-gray-50 transition" onClick={() => setShowPaymentModal(false)}>Cancel</button>
+                   <button className="flex-1 h-11 bg-[#2563EB] rounded-[10px] text-[14px] font-bold text-white hover:bg-[#1D4ED8] transition shadow-sm" onClick={handleAddPayment}>Record Payment</button>
+                </div>
+             </div>
+          </div>
+       )}
     </div>
   );
 };

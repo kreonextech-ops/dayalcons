@@ -24,7 +24,7 @@ export default function Auth() {
           <div className="relative flex">
             <div className="mx-auto flex min-h-full w-full flex-col justify-start pt-12 md:max-w-[75%]  lg:max-w-[1013px] lg:px-8 lg:pt-0 xl:min-h-[100vh] xl:max-w-[1383px] xl:px-0 xl:pl-[70px]">
               <div className="mb-auto flex flex-col pl-5 pr-5 md:pr-0 md:pl-12 lg:max-w-[48%] lg:pl-0 xl:max-w-full">
-                <Link to="/admin" className="mt-0 w-max lg:pt-10">
+                <a href="/" className="mt-0 w-max lg:pt-10">
                   <div className="mx-auto flex h-fit w-fit items-center hover:cursor-pointer">
                     <svg
                       width="8"
@@ -39,10 +39,10 @@ export default function Auth() {
                       />
                     </svg>
                     <p className="ml-3 text-sm text-gray-600">
-                      Back to Dashboard
+                      Back to Homepage
                     </p>
                   </div>
-                </Link>
+                </a>
                 <Routes>
                   {getRoutes(routes)}
                   <Route
@@ -53,12 +53,12 @@ export default function Auth() {
                 <div className="absolute right-0 hidden h-full min-h-screen md:block lg:w-[49vw] 2xl:w-[44vw]">
                   <div className="absolute flex h-full w-full items-center justify-center bg-gradient-to-br from-[#1E293B] to-[#0F172A] lg:rounded-bl-[120px] xl:rounded-bl-[200px] shadow-2xl">
                      <div className="text-center px-12">
-                        <div className="w-24 h-24 bg-white rounded-2xl mx-auto mb-8 flex items-center justify-center shadow-xl rotate-3">
-                           <div className="w-12 h-12 bg-[#2563EB] rounded-lg -rotate-6 flex items-center justify-center text-white font-black text-2xl">
-                              D
-                           </div>
-                        </div>
-                        <h2 className="text-4xl font-bold text-white mb-4 tracking-tight">Dayal Construction CRM</h2>
+                        <img 
+                          src="/images/logo-v2.png" 
+                          alt="Dayal Constructions & Co." 
+                          className="w-32 h-auto mx-auto mb-8 bg-white p-4 rounded-xl shadow-xl"
+                        />
+                        <h2 className="text-4xl font-bold text-white mb-4 tracking-tight">Dayal Constructions & Co. CRM</h2>
                         <p className="text-gray-400 text-lg max-w-md mx-auto leading-relaxed">
                            Streamlined management for leads, clients, projects, and workforce all in one centralized platform.
                         </p>

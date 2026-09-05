@@ -208,14 +208,14 @@ const Dashboard = () => {
                 <tr className="border-b border-gray-200 dark:border-white/10">
                   <th className="py-3 text-left text-sm font-bold text-gray-600 dark:text-white">NAME</th>
                   <th className="py-3 text-left text-sm font-bold text-gray-600 dark:text-white">STATUS</th>
-                  <th className="py-3 text-left text-sm font-bold text-gray-600 dark:text-white">SCORE</th>
+                  
                 </tr>
               </thead>
               <tbody>
                 {loading ? (
-                  <tr><td colSpan="3" className="py-4 text-center">Loading...</td></tr>
-                ) : recentLeads.length === 0 ? (
-                  <tr><td colSpan="3" className="py-4 text-center text-gray-500">No recent leads.</td></tr>
+                  <tr><td colSpan="2" className="py-4 text-center">Loading...</td></tr>
+                  ) : recentLeads.length === 0 ? (
+                    <tr><td colSpan="2" className="py-4 text-center text-gray-500">No recent leads.</td></tr>
                 ) : (
                   recentLeads.map((lead) => (
                     <tr key={lead.id} className="border-b border-gray-50 dark:border-white/5">
@@ -223,7 +223,7 @@ const Dashboard = () => {
                       <td className="py-3 text-sm font-medium text-navy-700 dark:text-white">
                         <span className="bg-brand-50 text-brand-500 px-2 py-1 rounded-md">{lead.status}</span>
                       </td>
-                      <td className="py-3 text-sm font-bold text-navy-700 dark:text-white">{lead.score || '-'}</td>
+                      
                     </tr>
                   ))
                 )}
@@ -275,3 +275,5 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
+
+

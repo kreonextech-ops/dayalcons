@@ -20,9 +20,9 @@ const Sidebar = ({ open, onClose }) => {
         <HiX />
       </span>
 
-      <div className={`mx-[56px] mt-[50px] flex items-center`}>
-        <div className="mt-1 ml-1 h-2.5 font-poppins text-[26px] font-bold uppercase text-navy-700 dark:text-white">
-          Dayal <span class="font-medium">CRM</span>
+      <div className={`mx-[20px] mt-[50px] flex items-center justify-center`}>
+        <div className="mt-1 font-poppins text-[18px] font-bold text-center uppercase text-navy-700 dark:text-white leading-tight">
+          Dayal Constructions <br/> & Co. <span className="font-medium">CRM</span>
         </div>
       </div>
       <div class="mt-[58px] mb-7 h-px bg-gray-300 dark:bg-white/30" />

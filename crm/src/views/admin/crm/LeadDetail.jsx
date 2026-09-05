@@ -8,6 +8,7 @@ import TabTimeline from "./components/TabTimeline";
 import TabCommunication from "./components/TabCommunication";
 import TabSiteVisit from "./components/TabSiteVisit";
 import TabTasks from "./components/TabTasks";
+import TabFollowUps from "./components/TabFollowUps";
 import TabEstimate from "./components/TabEstimate";
 import TabDocuments from "./components/TabDocuments";
 import TabServiceRequirement from "./components/TabServiceRequirement";
@@ -200,7 +201,7 @@ const LeadDetail = ({ lead, onBack }) => {
 
   const tabs = [
     "Overview", "Communication", "Service Requirement", "Service Workspace", 
-    ...(isAdmin ? ["Quotation"] : []), "Documents", "Tasks", "Timeline"
+    ...(isAdmin ? ["Quotation"] : []), "Documents", "Follow Ups", "Tasks", "Timeline"
   ];
 
   // Pipeline logic
@@ -644,7 +645,8 @@ const LeadDetail = ({ lead, onBack }) => {
             {activeTab === "Communication" && <TabCommunication leadData={leadData} action={communicationAction} setAction={setCommunicationAction} />}
             {activeTab === "Service Requirement" && <TabServiceRequirement leadData={leadData} setLeadData={setLeadData} />}
             {activeTab === "Service Workspace" && <TabServiceWorkspace leadData={leadData} />}
-            {activeTab === "Tasks" && <TabTasks leadData={leadData} />}
+            {activeTab === "Tasks" && <TabTasks leadData={leadData} />} 
+            {activeTab === "Follow Ups" && <TabFollowUps moduleType="Lead" recordId={leadData.id} />}
             {activeTab === "Quotation" && <TabEstimate leadData={leadData} />}
             {activeTab === "Documents" && <TabDocuments leadData={leadData} />}
 
@@ -754,3 +756,5 @@ const LeadDetail = ({ lead, onBack }) => {
 };
 
 export default LeadDetail;
+
+

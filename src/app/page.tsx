@@ -28,7 +28,7 @@ export default function Home() {
       <HeroSection />
 
       {/* 2. STATS SECTION */}
-      <section className="w-full px-margin-mobile md:px-margin-desktop py-24 bg-white relative z-20 -mt-16 rounded-t-[3rem] shadow-[0_-10px_40px_rgba(0,0,0,0.05)] overflow-hidden">
+      <section className="w-full px-margin-mobile md:px-margin-desktop py-24 bg-white relative z-20 -mt-16 md:mt-0 rounded-t-[3rem] md:rounded-none shadow-[0_-10px_40px_rgba(0,0,0,0.05)] overflow-hidden">
         <div 
           className="absolute inset-0 z-0 bg-cover bg-center opacity-100" 
           style={{ backgroundImage: "url('/blueprint-bg.jpg')" }}

@@ -41,7 +41,11 @@ export default function SignIn() {
       } else {
         // Success! Save user to local storage and redirect
         localStorage.setItem("dayal_user", JSON.stringify(data));
-        navigate("/admin/default");
+        if (data.role === "Client") {
+          navigate("/client/default");
+        } else {
+          navigate("/admin/default");
+        }
       }
     } catch (err) {
       setError("An error occurred during sign in.");

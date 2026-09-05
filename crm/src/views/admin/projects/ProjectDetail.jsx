@@ -13,6 +13,7 @@ import TabPayments from "./components/TabPayments";
 
 // CRM shared tabs
 import TabTasks from "../crm/components/TabTasks";
+import TabFollowUps from "../crm/components/TabFollowUps";
 import TabCommunication from "../crm/components/TabCommunication";
 import TabTimeline from "../crm/components/TabTimeline";
 
@@ -122,7 +123,7 @@ const ProjectDetail = ({ projData, onBack, onUpdate }) => {
   const isAdmin = loggedInUser?.role === 'Admin';
 
   const tabs = [
-    "Overview", "Scope", "Workspace", "Steps", ...(isAdmin ? ["Payments"] : []), "Tasks", 
+    "Overview", "Scope", "Workspace", "Steps", ...(isAdmin ? ["Payments"] : []), "Follow Ups", "Tasks", 
     "Timeline", "Communication"
   ];
 
@@ -248,7 +249,8 @@ const ProjectDetail = ({ projData, onBack, onUpdate }) => {
             {activeTab === "Payments" && isAdmin && <TabPayments projData={projData} onUpdate={onUpdate} />}
             
             {/* Convert projData to client format for CRM components */}
-            {activeTab === "Tasks" && <TabTasks leadData={{ id: projData.client_id, name: clientName }} isClient={true} entityType="project" entityId={projData.id} />}
+            {activeTab === "Tasks" && <TabTasks leadData={{ id: projData.client_id, name: clientName }} isClient={true} entityType="project" entityId={projData.id} />} 
+            {activeTab === "Follow Ups" && <TabFollowUps moduleType="Project" recordId={projData.id} />}
             {activeTab === "Communication" && <TabCommunication leadData={{ id: projData.client_id, name: clientName }} isClient={true} action={communicationAction} setAction={setCommunicationAction} entityType="project" entityId={projData.id} />}
             {activeTab === "Timeline" && <TabTimeline leadData={{ id: projData.client_id, name: clientName }} isClient={true} entityType="project" entityId={projData.id} />}
           </div>
@@ -378,3 +380,4 @@ const ProjectDetail = ({ projData, onBack, onUpdate }) => {
 };
 
 export default ProjectDetail;
+

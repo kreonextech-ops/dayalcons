@@ -134,7 +134,7 @@ export default function InstantQuoteMaker() {
 
   // --- WhatsApp URLs ---
   const handleWhatsApp = () => {
-    const waPhone = "917083333000"; 
+    const waPhone = "917003070035"; 
     let text = "";
     if (quoteCategory === "Service") {
       const sizeText = serviceType === "3D Front Elevation" ? "Flat Rate" : `${serviceSize} ${getServiceUnit(serviceType)}`;

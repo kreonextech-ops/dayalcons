@@ -15,6 +15,7 @@ import TabCommunication from "../crm/components/TabCommunication";
 import TabProjects from "./components/TabProjects";
 import TabSiteVisit from "../crm/components/TabSiteVisit";
 import TabTasks from "../crm/components/TabTasks";
+import TabFollowUps from "../crm/components/TabFollowUps";
 import TabEstimate from "../crm/components/TabEstimate";
 import TabDocuments from "../crm/components/TabDocuments";
 import TabServiceRequirement from "../crm/components/TabServiceRequirement";
@@ -208,7 +209,7 @@ const ClientDetail = ({ client, onBack }) => {
 
   const tabs = [
     "Overview", "Communication", "Service Requirement", "Service Workspace", 
-    ...(isAdmin ? ["Amount"] : []), "Projects", "Tasks", "Timeline", "Site Visit", 
+    ...(isAdmin ? ["Amount"] : []), "Projects", "Follow Ups", "Tasks", "Timeline", "Site Visit", 
     "Documents"
   ];
 
@@ -471,11 +472,14 @@ const ClientDetail = ({ client, onBack }) => {
             )}
             
             {activeTab === "Amount" && (
-              <TabEstimate leadData={clientData} isClient={true} />
+              <TabFinancials clientData={clientData} />
             )}
             
             {activeTab === "Tasks" && (
               <TabTasks leadData={clientData} isClient={true} />
+            )}
+            {activeTab === "Follow Ups" && (
+              <TabFollowUps moduleType="Client" recordId={clientData.id} />
             )}
 
             {activeTab === "Timeline" && (
@@ -602,3 +606,4 @@ const ClientDetail = ({ client, onBack }) => {
 };
 
 export default ClientDetail;
+

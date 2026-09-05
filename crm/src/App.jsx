@@ -4,6 +4,7 @@ import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import RtlLayout from "layouts/rtl";
 import AdminLayout from "layouts/admin";
 import AuthLayout from "layouts/auth";
+import ClientLayout from "layouts/client";
 
 const ProtectedRoute = ({ children }) => {
   const userStr = localStorage.getItem("dayal_user");
@@ -26,9 +27,15 @@ const App = () => {
         </ProtectedRoute>
       } />
       <Route path="rtl/*" element={<RtlLayout />} />
+      <Route path="client/*" element={
+        <ProtectedRoute>
+          <ClientLayout />
+        </ProtectedRoute>
+      } />
       <Route path="/" element={<Navigate to="/auth/sign-in" replace />} />
     </Routes>
   );
 };
 
 export default App;
+

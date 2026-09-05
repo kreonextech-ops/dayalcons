@@ -7,6 +7,7 @@ import {
   MdDomainVerification, MdLayers, MdHouse, MdOutlineFoundation,
   MdPhotoSizeSelectSmall, MdWaterDrop
 } from "react-icons/md";
+import { useLocation } from "react-router-dom";
 import ProjectDetail from "./ProjectDetail";
 
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL || "https://gdzligxryodasaxnhdco.supabase.co";
@@ -23,6 +24,7 @@ const EXECUTION_PROJECTS = [
 ];
 
 const Projects = () => {
+  const location = useLocation();
   const [selectedCase, setSelectedCase] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [filterType, setFilterType] = useState("");
@@ -42,6 +44,23 @@ const Projects = () => {
      projectCharge: "", advanceAmount: "", targetDate: ""
   });
 
+  useEffect(() => {
+     if (location.state?.createForClient) {
+        const client = location.state.createForClient;
+        setNewCase(prev => ({
+           ...prev,
+           clientType: "existing",
+           clientId: client.id,
+           clientName: client.name,
+           phone: client.phone || "",
+           email: client.email || "",
+           address: client.address || ""
+        }));
+        setClientSearch(client.name);
+        setShowNewModal(true);
+        window.history.replaceState({}, document.title);
+     }
+  }, [location.state]);
   useEffect(() => {
     const fetchClients = async () => {
       const { data, error } = await supabase.from("clients").select("*");

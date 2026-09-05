@@ -13,6 +13,7 @@ import TabPayments from "./components/TabPayments";
 
 // CRM shared tabs
 import TabTasks from "../crm/components/TabTasks";
+import TabFollowUps from "../crm/components/TabFollowUps";
 import TabCommunication from "../crm/components/TabCommunication";
 import TabTimeline from "../crm/components/TabTimeline";
 
@@ -106,7 +107,7 @@ const ServiceDetail = ({ serviceCase, onBack, onUpdate }) => {
   const isAdmin = loggedInUser?.role === 'Admin';
 
   const tabs = [
-    "Overview", "Requirements", "Workspace", "Steps", ...(isAdmin ? ["Payments"] : []), "Tasks", 
+    "Overview", "Requirements", "Workspace", "Steps", ...(isAdmin ? ["Payments"] : []), "Follow Ups", "Tasks", 
     "Timeline", "Communication"
   ];
 
@@ -232,6 +233,7 @@ const ServiceDetail = ({ serviceCase, onBack, onUpdate }) => {
             
             {/* Convert serviceCase to client format for CRM components */}
             {activeTab === "Tasks" && <TabTasks leadData={{ id: serviceCase.client_id, name: clientName }} isClient={true} entityType="service" entityId={serviceCase.id} />}
+            {activeTab === "Follow Ups" && <TabFollowUps moduleType="Service" recordId={serviceCase.id} />}
             {activeTab === "Communication" && <TabCommunication leadData={{ id: serviceCase.client_id, name: clientName }} isClient={true} action={communicationAction} setAction={setCommunicationAction} entityType="service" entityId={serviceCase.id} />}
             {activeTab === "Timeline" && <TabTimeline leadData={{ id: serviceCase.client_id, name: clientName }} isClient={true} entityType="service" entityId={serviceCase.id} />}
           </div>
@@ -361,3 +363,4 @@ const ServiceDetail = ({ serviceCase, onBack, onUpdate }) => {
 };
 
 export default ServiceDetail;
+

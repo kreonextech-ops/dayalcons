@@ -35,7 +35,7 @@ export default function HeroSection() {
   };
 
   return (
-    <section className="relative w-full h-[100vh] min-h-[800px] flex items-center overflow-hidden bg-black">
+    <section className="relative w-full h-[100dvh] md:h-[calc(100vh-88px)] md:mt-[88px] flex flex-col overflow-hidden bg-black">
       
       {/* Background Container - Video Background */}
       <div className="absolute inset-0 z-0 bg-black">
@@ -44,7 +44,7 @@ export default function HeroSection() {
           loop 
           muted 
           playsInline
-          className="w-full h-full object-cover"
+          className="w-full h-full object-cover object-[center_bottom]"
         >
           <source src="/herovideo.mp4" type="video/mp4" />
         </video>
@@ -52,7 +52,7 @@ export default function HeroSection() {
       </div>
 
       {/* Content Container */}
-      <div className="relative z-10 w-full max-w-[1440px] mx-auto px-6 md:px-12 h-full flex flex-col justify-center text-left pt-[10vh]">
+      <div className="relative z-10 w-full max-w-[1440px] mx-auto px-6 md:px-12 flex-1 pt-[80px] md:pt-0 flex flex-col justify-center md:justify-end md:pb-[60px] text-left">
         
         {/* Adjusted mb-16 to mb-6 and justify-end to bring it closer to buttons */}
         <div className="w-full flex flex-col mb-6 cursor-default min-h-[160px] md:min-h-[220px] justify-end pb-2">
@@ -64,13 +64,13 @@ export default function HeroSection() {
           >
             {/* Wrapper handles the color dynamically to prevent Tailwind purging issues */}
             <h1 
-              className="font-['Manrope',_sans-serif] text-[40px] md:text-[60px] lg:text-[76px] font-[800] leading-[1.2] transition-colors duration-300"
+              className="font-['Manrope',_sans-serif] text-[40px] md:text-[60px] lg:text-[76px] font-[800] leading-[1.2] transition-colors duration-300 whitespace-pre-line"
               style={{ color: textColor }}
             >
               <TypeAnimation
                 sequence={[
                   () => setTextColor('#FFFFFF'),
-                  'DAYAL CONSTRUCTIONS & CO.',
+                  'DAYAL\nCONSTRUCTIONS & CO.',
                   2000,
                   '',
                   () => setTextColor('#00FFFF'),
@@ -78,9 +78,10 @@ export default function HeroSection() {
                   2500,
                   '',
                 ]}
-                wrapper="span"
-                cursor={true}
+                wrapper="div"
+                cursor={false}
                 repeat={Infinity}
+                style={{ whiteSpace: 'pre-line', display: 'block' }}
               />
             </h1>
           </motion.div>

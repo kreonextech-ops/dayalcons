@@ -1,99 +1,45 @@
 import React, { useState, useEffect } from "react";
 import Card from "components/card";
 import { createClient } from "@supabase/supabase-js";
-import { MdCheckCircle, MdSave, MdRadioButtonUnchecked, MdAdd, MdDelete, MdExpandMore, MdExpandLess, MdAttachFile, MdSend } from "react-icons/md";
+import { MdCheckCircle, MdRadioButtonUnchecked, MdExpandMore, MdExpandLess, MdAttachFile, MdSend } from "react-icons/md";
 
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL || "https://gdzligxryodasaxnhdco.supabase.co";
 const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdkemxpZ3hyeW9kYXNheG5oZGNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcxNTg1MDUsImV4cCI6MjEwMjczNDUwNX0.AYTyAMf22g8au51ATReRQdQc2IzDLYQ2vtQH_Uyfrpg";
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-const DEFAULT_STEPS = [
-  { id: 1, order: 1, title: "Site Setup & Mobilization", completed: false, comments: [], files: [] },
-  { id: 2, order: 2, title: "Excavation & Foundation", completed: false, comments: [], files: [] },
-  { id: 3, order: 3, title: "Structural Framework & Superstructure", completed: false, comments: [], files: [] },
-  { id: 4, order: 4, title: "Masonry & Core Works", completed: false, comments: [], files: [] },
-  { id: 5, order: 5, title: "MEP Rough-ins (Plumbing, Electrical, HVAC)", completed: false, comments: [], files: [] },
-  { id: 6, order: 6, title: "Plastering, Flooring & Finishes", completed: false, comments: [], files: [] },
-  { id: 7, order: 7, title: "Handover & Final Inspection", completed: false, comments: [], files: [] }
-];
-
-const TabSteps = ({ projData, onUpdate }) => {
+const ClientSteps = ({ entityData, tableType }) => {
   const [steps, setSteps] = useState([]);
-  const [isSaving, setIsSaving] = useState(false);
-  const [newStep, setNewStep] = useState("");
-  const [newOrder, setNewOrder] = useState("");
-  
-  // Workspace Expansion State
   const [expandedStep, setExpandedStep] = useState(null);
   const [newComment, setNewComment] = useState("");
+  const [isSaving, setIsSaving] = useState(false);
 
   const userStr = localStorage.getItem("dayal_user");
-  const loggedInUser = userStr ? JSON.parse(userStr) : { name: "Admin" };
+  const loggedInUser = userStr ? JSON.parse(userStr) : { name: "Client" };
 
   useEffect(() => {
      try {
-       const metadata = JSON.parse(projData.description || "{}");
+       const metadata = JSON.parse(entityData.description || "{}");
        if (metadata.steps && Array.isArray(metadata.steps)) {
-          const st = metadata.steps.map((s, i) => ({ 
-             ...s, 
-             order: s.order || i + 1,
-             comments: s.comments || [],
-             files: s.files || []
-          }));
-          setSteps(st);
-       } else {
-          setSteps(DEFAULT_STEPS);
+          setSteps(metadata.steps);
        }
      } catch (e) {
-        setSteps(DEFAULT_STEPS);
+        setSteps([]);
      }
-  }, [projData]);
+  }, [entityData]);
 
-  const toggleStep = (id, e) => {
-      e.stopPropagation();
-      setSteps(prev => prev.map(step => step.id === id ? { ...step, completed: !step.completed } : step));
-  };
-
-  const addStep = () => {
-     if (!newStep.trim()) return;
-     const orderNum = parseInt(newOrder) || (steps.length + 1);
-     const stepObj = { 
-        id: Date.now(), 
-        order: orderNum, 
-        title: newStep, 
-        completed: false,
-        comments: [],
-        files: []
-     };
-     setSteps([...steps, stepObj]);
-     setNewStep("");
-     setNewOrder("");
-  };
-
-  const removeStep = (id, e) => {
-      e.stopPropagation();
-      setSteps(prev => prev.filter(step => step.id !== id));
-  };
-
-  const updateStepOrder = (id, newOrderValue, e) => {
-      e.stopPropagation();
-      setSteps(prev => prev.map(step => step.id === id ? { ...step, order: parseInt(newOrderValue) || step.order } : step));
-  };
-
-  const handleSave = async () => {
+  const saveStepsToDb = async (updatedSteps) => {
      setIsSaving(true);
      try {
-       const metadata = JSON.parse(projData.description || "{}");
-       metadata.steps = steps;
+       const metadata = JSON.parse(entityData.description || "{}");
+       metadata.steps = updatedSteps;
        
-       await supabase.from("projects").update({
+       await supabase.from(tableType).update({
           description: JSON.stringify(metadata)
-       }).eq("id", projData.id);
+       }).eq("id", entityData.id);
        
-       if (onUpdate) onUpdate({ ...projData, description: JSON.stringify(metadata) });
-       alert("Workflow steps saved successfully!");
+       setSteps(updatedSteps);
      } catch (e) {
-       alert("Failed to save: " + e.message);
+       alert("Failed to save update: " + e.message);
      }
      setIsSaving(false);
   };
@@ -105,20 +51,22 @@ const TabSteps = ({ projData, onUpdate }) => {
           id: Date.now(),
           text: newComment,
           author: loggedInUser.name,
-          role: "Admin",
+          role: "Client",
           timestamp: new Date().toISOString()
       };
 
-      setSteps(prev => prev.map(step => {
+      const updatedSteps = steps.map(step => {
           if (step.id === stepId) {
               return { ...step, comments: [...(step.comments || []), commentObj] };
           }
           return step;
-      }));
+      });
+      
+      saveStepsToDb(updatedSteps);
       setNewComment("");
   };
 
-  const handleFileUpload = (stepId, e) => {
+  const handleFileUpload = async (stepId, e) => {
       const file = e.target.files[0];
       if (!file) return;
       
@@ -131,25 +79,37 @@ const TabSteps = ({ projData, onUpdate }) => {
           timestamp: new Date().toISOString()
       };
 
-      setSteps(prev => prev.map(step => {
+      const updatedSteps = steps.map(step => {
           if (step.id === stepId) {
               return { ...step, files: [...(step.files || []), fileObj] };
           }
           return step;
-      }));
+      });
+
+      saveStepsToDb(updatedSteps);
   };
 
   const sortedSteps = [...steps].sort((a, b) => a.order - b.order);
   const completedCount = steps.filter(s => s.completed).length;
   const progress = steps.length > 0 ? Math.round((completedCount / steps.length) * 100) : 0;
 
+  if (steps.length === 0) {
+     return (
+        <Card extra="p-6 bg-white border border-[#E2E8F0]">
+           <div className="text-center py-8 text-gray-500">
+              No milestones have been defined for this project yet. Please check back later!
+           </div>
+        </Card>
+     );
+  }
+
   return (
     <div className="animate-fade-in flex flex-col gap-6">
       <Card extra="p-6 border border-[#E2E8F0] bg-white">
          <div className="flex justify-between items-center mb-6">
             <div>
-               <h2 className="text-[20px] font-bold text-[#0F172A]">Execution Workspace</h2>
-               <p className="text-[14px] text-[#64748B]">Click on any step to add comments, photos, and files.</p>
+               <h2 className="text-[20px] font-bold text-[#0F172A]">Execution Progress</h2>
+               <p className="text-[14px] text-[#64748B]">Click on any milestone to view updates or ask questions.</p>
             </div>
             <div className="text-right">
                <div className="text-[24px] font-bold text-[#2563EB]">{progress}%</div>
@@ -161,29 +121,26 @@ const TabSteps = ({ projData, onUpdate }) => {
             <div className="bg-[#2563EB] h-full transition-all duration-500 rounded-full" style={{ width: `${progress}%` }}></div>
          </div>
 
-         <div className="space-y-4 mb-6">
+         <div className="space-y-4">
             {sortedSteps.map((step) => {
                const isExpanded = expandedStep === step.id;
                
                return (
-               <div key={step.id} className={`flex flex-col overflow-hidden rounded-[12px] border transition ${step.completed ? 'border-blue-200' : 'border-[#E2E8F0]'}`}>
+               <div key={step.id} className={`flex flex-col overflow-hidden rounded-[12px] border transition ${step.completed ? 'border-blue-200 shadow-sm' : 'border-[#E2E8F0]'}`}>
                   {/* Step Header */}
                   <div 
                      className={`flex items-center gap-4 p-4 cursor-pointer hover:bg-gray-50 ${step.completed ? 'bg-blue-50' : 'bg-white'}`}
                      onClick={() => setExpandedStep(isExpanded ? null : step.id)}
                   >
-                     <div onClick={(e) => toggleStep(step.id, e)}>
+                     <div>
                         {step.completed ? (
                            <MdCheckCircle className="text-[24px] text-[#2563EB]" />
                         ) : (
-                           <MdRadioButtonUnchecked className="text-[24px] text-[#CBD5E1] hover:text-[#2563EB]" />
+                           <MdRadioButtonUnchecked className="text-[24px] text-[#CBD5E1]" />
                         )}
                      </div>
-                     <div className="flex items-center gap-2" onClick={(e) => e.stopPropagation()}>
-                        <span className="text-[12px] font-bold text-[#64748B] uppercase">Step</span>
-                        <input type="number" value={step.order} onChange={(e) => updateStepOrder(step.id, e.target.value, e)} className="w-12 h-7 text-center rounded border border-[#E2E8F0] text-[13px] font-bold outline-none" />
-                     </div>
                      <span className={`flex-1 text-[15px] font-semibold ${step.completed ? 'text-[#1E40AF]' : 'text-[#0F172A]'}`}>
+                        <span className="text-[12px] font-bold text-[#64748B] uppercase mr-2">Step {step.order}</span>
                         {step.title}
                      </span>
                      
@@ -191,7 +148,6 @@ const TabSteps = ({ projData, onUpdate }) => {
                         <span className="text-xs font-bold text-gray-500 flex items-center gap-1">
                            {(step.comments?.length || 0) + (step.files?.length || 0)} Updates
                         </span>
-                        <button onClick={(e) => removeStep(step.id, e)} className="text-[#94A3B8] hover:text-[#DC2626] p-1"><MdDelete size={20} /></button>
                         {isExpanded ? <MdExpandLess size={24} className="text-gray-400" /> : <MdExpandMore size={24} className="text-gray-400" />}
                      </div>
                   </div>
@@ -210,7 +166,7 @@ const TabSteps = ({ projData, onUpdate }) => {
                                  {step.files.map(file => (
                                     <div key={file.id} className="bg-white p-2 rounded border border-gray-200 text-xs flex flex-col justify-between shadow-sm">
                                        <span className="truncate font-medium">{file.name}</span>
-                                       <span className="text-gray-400 text-[10px] mt-1">{file.author}</span>
+                                       <span className="text-gray-400 text-[10px] mt-1">{file.author === loggedInUser.name ? 'You' : 'Admin'}</span>
                                     </div>
                                  ))}
                               </div>
@@ -232,9 +188,9 @@ const TabSteps = ({ projData, onUpdate }) => {
                            <div className="space-y-3 mb-4 max-h-60 overflow-y-auto pr-2">
                               {step.comments && step.comments.length > 0 ? (
                                  step.comments.map(comment => (
-                                    <div key={comment.id} className={`p-3 rounded-xl max-w-[85%] ${comment.role === 'Client' ? 'bg-white border border-gray-200 self-start' : 'bg-brand-50 border border-brand-100 self-end ml-auto'}`}>
+                                    <div key={comment.id} className={`p-3 rounded-xl max-w-[85%] ${comment.role === 'Admin' ? 'bg-white border border-gray-200 self-start' : 'bg-brand-50 border border-brand-100 self-end ml-auto'}`}>
                                        <div className="flex justify-between items-center mb-1">
-                                          <span className="text-xs font-bold text-navy-700">{comment.author} {comment.role === 'Admin' ? '(You)' : ''}</span>
+                                          <span className="text-xs font-bold text-navy-700">{comment.author} {comment.role === 'Client' ? '(You)' : ''}</span>
                                           <span className="text-[10px] text-gray-400">{new Date(comment.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
                                        </div>
                                        <p className="text-sm text-gray-600">{comment.text}</p>
@@ -254,10 +210,12 @@ const TabSteps = ({ projData, onUpdate }) => {
                                  onChange={(e) => setNewComment(e.target.value)}
                                  onKeyDown={(e) => { if (e.key === 'Enter') handleAddComment(step.id); }}
                                  className="flex-1 bg-white border border-gray-200 rounded-lg px-4 text-sm outline-none focus:border-brand-500 shadow-sm"
+                                 disabled={isSaving}
                               />
                               <button 
                                  onClick={() => handleAddComment(step.id)}
-                                 className="bg-brand-500 text-white p-3 rounded-lg hover:bg-brand-600 transition shadow-sm"
+                                 disabled={isSaving}
+                                 className="bg-brand-500 text-white p-3 rounded-lg hover:bg-brand-600 transition shadow-sm disabled:opacity-50"
                               >
                                  <MdSend size={18} />
                               </button>
@@ -271,37 +229,9 @@ const TabSteps = ({ projData, onUpdate }) => {
             })}
          </div>
 
-         <div className="flex gap-2">
-            <input 
-              type="number" 
-              placeholder="Step No." 
-              value={newOrder} 
-              onChange={e => setNewOrder(e.target.value)} 
-              className="w-24 h-10 px-3 rounded-[10px] border border-[#E2E8F0] text-[14px] outline-none focus:border-[#2563EB]" 
-            />
-            <input 
-              type="text" 
-              placeholder="Add a new milestone or step..." 
-              value={newStep} 
-              onChange={e => setNewStep(e.target.value)} 
-              className="flex-1 h-10 px-4 rounded-[10px] border border-[#E2E8F0] text-[14px] outline-none focus:border-[#2563EB]" 
-            />
-            <button onClick={addStep} className="flex items-center gap-1 bg-[#F1F5F9] text-[#475569] px-4 rounded-[10px] text-[14px] font-bold hover:bg-[#E2E8F0] transition"><MdAdd /> Add Step</button>
-         </div>
       </Card>
-      
-      <div className="flex justify-end">
-         <button 
-           onClick={handleSave} 
-           disabled={isSaving}
-           className="flex items-center gap-2 bg-[#2563EB] text-white px-6 py-3 rounded-[12px] font-bold hover:bg-blue-700 transition shadow-sm disabled:opacity-50"
-         >
-           <MdSave className="text-xl" />
-           {isSaving ? "Saving..." : "Save Workspace Progress"}
-         </button>
-      </div>
     </div>
   );
 };
 
-export default TabSteps;
+export default ClientSteps;
