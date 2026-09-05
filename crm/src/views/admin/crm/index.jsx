@@ -165,10 +165,11 @@ const CRMLeads = () => {
   const fetchLeads = async () => {
     setLoading(true);
     let query = supabase.from("leads").select("*").order('created_at', { ascending: false });
-      if (!isAdmin && loggedInUser?.id) {
-         query = query.like('assigned_to', `%${loggedInUser.id}%`);
-      }
-      const { data, error } = await query;
+    
+    // User requested: "lead section should visible to all employee(update the permission)"
+    // So we no longer restrict leads based on assigned_to.
+    
+    const { data, error } = await query;
     if (!error && data) {
        // Merge with localStorage
        const merged = data.map(lead => {

@@ -171,7 +171,7 @@ const Navbar = (props) => {
                 <button
                   onClick={() => {
                     localStorage.removeItem("dayal_user");
-                    window.location.href = "/auth/sign-in";
+                    window.location.href = "/crm/auth/sign-in";
                   }}
                   className="mt-3 text-sm font-medium text-red-500 hover:text-red-500 transition duration-150 ease-out hover:ease-in text-left"
                 >
