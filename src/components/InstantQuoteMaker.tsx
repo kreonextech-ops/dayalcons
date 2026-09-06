@@ -389,15 +389,15 @@ export default function InstantQuoteMaker() {
         </motion.div>
 
         {/* Bottom Disclaimer */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 10 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ delay: 0.4 }}
-          className="mt-6 flex flex-col sm:flex-row items-start sm:items-center justify-center gap-2 text-[13px] font-[500] text-white/80 text-left sm:text-center max-w-[600px] mx-auto"
+          className="mt-6 text-[13px] font-[500] text-white/80 text-center max-w-[600px] mx-auto px-4"
         >
-          <span className="text-[18px] text-[#18AFFF] font-bold leading-none mt-1 sm:mt-0">*</span>
           <p>
+            <sup className="text-[16px] text-[#18AFFF] font-bold relative top-[-0.1em] mr-1">*</sup>
             <span className="font-bold text-white">Note:</span> This is an estimated cost. The final quotation will be provided following a comprehensive site visit, consultation, and design confirmation.
           </p>
         </motion.div>

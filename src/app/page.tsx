@@ -13,6 +13,7 @@ import PartneredBrands from '@/components/PartneredBrands';
 import GoogleReviews from '@/components/GoogleReviews';
 import ContactSection from '@/components/ContactSection';
 import HeroSection from '@/components/HeroSection';
+import HomeGalleryImage from '@/components/HomeGalleryImage';
 
 export const metadata: Metadata = {
   title: "Dayal Constructions & Co. | Best Construction Company in Siliguri",
@@ -96,22 +97,11 @@ export default function Home() {
             </FadeIn>
           </div>
           <StaggerContainer className="grid grid-cols-2 md:grid-cols-5 gap-4 md:gap-6">
-            {["1000579291.jpg.jpg", "1000609146.jpg.jpg", "1000630512.jpg.jpg", "1000714135.jpg.jpg", "1000714139.jpg.jpg"].map((img, idx) => (
-              <StaggerItem key={idx}>
-                <Link href="/projects">
-                  <div className="group relative rounded-3xl overflow-hidden aspect-[4/5] premium-shadow hover:-translate-y-2 transition-all duration-500 border border-transparent hover:border-accent">
-                    <img alt={`Featured Project ${idx + 1}`} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" src={`/images/project/${img}`}/>
-                    <div className="absolute inset-0 flex flex-col justify-end p-8 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      <div className="flex justify-end items-end w-full h-full">
-                        <div className="w-12 h-12 rounded-full bg-deep-navy/80 backdrop-blur flex items-center justify-center text-white bg-accent transition-colors">
-                          <span className="material-symbols-outlined">arrow_outward</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </Link>
-              </StaggerItem>
-            ))}
+              {["1000579291.jpg.jpg", "1000609146.jpg.jpg", "1000630512.jpg.jpg", "1000714135.jpg.jpg", "1000714139.jpg.jpg"].map((img, idx) => (
+                <StaggerItem key={idx}>
+                  <HomeGalleryImage img={img} idx={idx} />
+                </StaggerItem>
+              ))}
           </StaggerContainer>
         </div>
       </section>

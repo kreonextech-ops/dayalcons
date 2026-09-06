@@ -73,7 +73,7 @@ export default function Footer() {
           {/* Column 1: Brand Identity (Spans 4 columns) */}
           <motion.div variants={columnVariant} className="flex flex-col lg:col-span-4 lg:pr-8">
             <motion.div variants={logoVariant} className="mb-6 flex items-center gap-4">
-              <img src="/images/logo-v2.png" alt="Dayal Constructions & Co. Logo" className="h-16 md:h-20 w-auto object-contain" />
+              <img src="/images/footerimg.png" alt="Dayal Constructions & Co. Logo" className="h-16 md:h-20 w-auto object-contain" />
               <div className="flex flex-col mt-1">
                 <span className="font-['Plus_Jakarta_Sans',_sans-serif] text-[20px] md:text-[24px] font-[800] text-white leading-none tracking-tight">
                   Dayal Constructions & Co.

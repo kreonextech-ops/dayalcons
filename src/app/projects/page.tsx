@@ -2,7 +2,7 @@
 
 import { motion, useScroll, useTransform } from "framer-motion";
 import Link from "next/link";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 
 // ==========================================
 // ANIMATION VARIANTS
@@ -71,6 +71,7 @@ const excellenceFeatures = [
 ];
 
 export default function ProjectsPage() {
+  const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const heroRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: heroRef,
@@ -217,6 +218,7 @@ export default function ProjectsPage() {
               <motion.div 
                 key={project.id} 
                 variants={fadeUp}
+                onClick={() => setSelectedImage(project.src)}
                 className={`group relative w-full ${project.aspect} bg-[#F1F5F9] rounded-[22px] overflow-hidden border border-[#062B55]/10 cursor-pointer break-inside-avoid`}
               >
                 <div className="absolute inset-0 flex flex-col items-center justify-center transition-transform duration-500 group-hover:scale-[1.03]">
@@ -331,8 +333,27 @@ export default function ProjectsPage() {
         `}} />
       </section>
 
+      {/* LIGHTBOX MODAL */}
+      {selectedImage && (
+        <div 
+          className="fixed inset-0 z-[999] flex items-center justify-center bg-black/90 p-4 backdrop-blur-sm cursor-zoom-out"
+          onClick={() => setSelectedImage(null)}
+        >
+          <img 
+            src={selectedImage} 
+            alt="Expanded view" 
+            className="max-w-full max-h-[90vh] object-contain rounded-xl shadow-2xl cursor-default"
+            onClick={(e) => e.stopPropagation()} 
+          />
+          <button 
+            onClick={() => setSelectedImage(null)}
+            className="absolute top-6 right-6 w-12 h-12 bg-white/10 hover:bg-white/25 rounded-full flex items-center justify-center text-white text-3xl transition-colors"
+          >
+            &times;
+          </button>
+        </div>
+      )}
+
     </main>
   );
 }
-
-
