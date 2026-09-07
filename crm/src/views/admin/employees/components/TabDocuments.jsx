@@ -1,22 +1,83 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Card from "components/card";
 import { MdFolder, MdCloudUpload, MdInsertDriveFile, MdDelete, MdDownload } from "react-icons/md";
+import { createClient } from "@supabase/supabase-js";
+import { uploadFileToR2, getR2FileUrl, deleteR2File } from "utils/r2Storage";
+
+const supabaseUrl = process.env.REACT_APP_SUPABASE_URL;
+const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY;
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 const TabDocuments = ({ employee }) => {
-  const [documents, setDocuments] = useState([
-     // Mock documents for display purposes
-     { id: 1, name: "Employment_Contract_Signed.pdf", type: "PDF", size: "2.4 MB", date: "2023-11-01" },
-     { id: 2, name: "Aadhar_Card_Scan.jpg", type: "Image", size: "1.1 MB", date: "2023-11-01" }
-  ]);
+  const [documents, setDocuments] = useState([]);
+  const [isUploading, setIsUploading] = useState(false);
 
-  const handleUpload = () => {
-     alert("Document uploaded successfully! (File storage will be linked in backend)");
-     setDocuments([...documents, { id: Date.now(), name: "New_Uploaded_Doc.pdf", type: "PDF", size: "500 KB", date: new Date().toISOString().split('T')[0] }]);
+  useEffect(() => {
+     if (employee?.permissions?.documents) {
+        setDocuments(employee.permissions.documents);
+     }
+  }, [employee]);
+
+  const handleUpload = async (e) => {
+     const file = e.target.files[0];
+     if (!file) return;
+
+     setIsUploading(true);
+     try {
+         const fileKey = await uploadFileToR2(file, 'employees');
+         const newDoc = {
+            id: Date.now().toString(),
+            name: file.name,
+            type: file.type.includes('pdf') ? 'PDF' : file.type.includes('image') ? 'Image' : 'Document',
+            size: (file.size / 1024 / 1024).toFixed(2) + ' MB',
+            date: new Date().toISOString().split('T')[0],
+            fileKey: fileKey
+         };
+         
+         const currentPermissions = employee.permissions || {};
+         const updatedDocs = [...documents, newDoc];
+         const updatedPermissions = { ...currentPermissions, documents: updatedDocs };
+
+         const { error } = await supabase.from('employees').update({ permissions: updatedPermissions }).eq('id', employee.id);
+         
+         if (error) throw error;
+         
+         setDocuments(updatedDocs);
+         employee.permissions = updatedPermissions;
+     } catch (err) {
+         console.error(err);
+         alert("Upload failed.");
+     }
+     setIsUploading(false);
+     e.target.value = null; // reset input
   };
 
-  const handleDelete = (id) => {
-     if(window.confirm('Delete this document?')) {
-        setDocuments(documents.filter(d => d.id !== id));
+  const handleDelete = async (doc) => {
+     if(!window.confirm('Delete this document?')) return;
+     
+     try {
+        await deleteR2File(doc.fileKey);
+        const updatedDocs = documents.filter(d => d.id !== doc.id);
+        const currentPermissions = employee.permissions || {};
+        const updatedPermissions = { ...currentPermissions, documents: updatedDocs };
+        
+        const { error } = await supabase.from('employees').update({ permissions: updatedPermissions }).eq('id', employee.id);
+        if (error) throw error;
+
+        setDocuments(updatedDocs);
+        employee.permissions = updatedPermissions;
+     } catch(err) {
+        console.error(err);
+        alert("Delete failed.");
+     }
+  };
+
+  const handleDownload = async (doc) => {
+     try {
+        const url = await getR2FileUrl(doc.fileKey);
+        window.open(url, '_blank');
+     } catch (err) {
+        alert("Failed to get download URL");
      }
   };
 
@@ -31,13 +92,16 @@ const TabDocuments = ({ employee }) => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
          {/* Upload Section */}
-         <Card extra="p-6 border border-[#E2E8F0] shadow-sm flex flex-col items-center justify-center text-center h-fit border-dashed bg-gray-50/50 hover:bg-blue-50 transition cursor-pointer" onClick={handleUpload}>
-            <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mb-4">
-               <MdCloudUpload size={32} />
-            </div>
-            <h4 className="text-[16px] font-bold text-[#0F172A] mb-2">Upload Document</h4>
-            <p className="text-[12px] text-[#64748B]">Click here to upload ID proofs, certificates, or contracts. (Max 5MB)</p>
-         </Card>
+         <label className="relative">
+            <input type="file" className="hidden" onChange={handleUpload} disabled={isUploading} />
+            <Card extra={`p-6 border border-[#E2E8F0] shadow-sm flex flex-col items-center justify-center text-center h-full border-dashed bg-gray-50/50 hover:bg-blue-50 transition ${isUploading ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}>
+               <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mb-4">
+                  <MdCloudUpload size={32} />
+               </div>
+               <h4 className="text-[16px] font-bold text-[#0F172A] mb-2">{isUploading ? "Uploading..." : "Upload Document"}</h4>
+               <p className="text-[12px] text-[#64748B]">Click here to upload ID proofs, certificates, or contracts. (Max 5MB)</p>
+            </Card>
+         </label>
 
          {/* Document List */}
          <div className="lg:col-span-2 space-y-4">
@@ -52,16 +116,16 @@ const TabDocuments = ({ employee }) => {
                         <div className="w-10 h-10 rounded-lg bg-gray-100 flex items-center justify-center text-gray-500">
                            <MdInsertDriveFile size={24} />
                         </div>
-                        <div>
-                           <h4 className="text-[14px] font-bold text-[#0F172A]">{doc.name}</h4>
+                        <div className="max-w-[200px] sm:max-w-[300px]">
+                           <h4 className="text-[14px] font-bold text-[#0F172A] truncate">{doc.name}</h4>
                            <p className="text-[11px] font-bold text-[#64748B] uppercase">{doc.type} • {doc.size} • Uploaded {doc.date}</p>
                         </div>
                      </div>
-                     <div className="flex items-center gap-2">
-                        <button className="text-gray-500 hover:text-blue-600 p-2 transition" title="Download">
+                     <div className="flex items-center gap-2 pl-2">
+                        <button onClick={() => handleDownload(doc)} className="text-gray-500 hover:text-blue-600 p-2 transition" title="Download">
                            <MdDownload size={20} />
                         </button>
-                        <button onClick={() => handleDelete(doc.id)} className="text-gray-500 hover:text-red-500 p-2 transition" title="Delete">
+                        <button onClick={() => handleDelete(doc)} className="text-gray-500 hover:text-red-500 p-2 transition" title="Delete">
                            <MdDelete size={20} />
                         </button>
                      </div>
