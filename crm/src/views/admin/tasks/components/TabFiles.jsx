@@ -44,7 +44,7 @@ const TabFiles = ({ task }) => {
     } catch (err) {
         console.error("R2 Upload failed:", err);
         alert("Upload failed: Could not connect to R2 Storage.");
-        setUploading(false);
+        setIsUploading(false);
         return;
     }
 
@@ -176,3 +176,4 @@ const TabFiles = ({ task }) => {
 };
 
 export default TabFiles;
+

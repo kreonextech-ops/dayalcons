@@ -142,7 +142,7 @@ const TabSteps = ({ serviceCase, onUpdate }) => {
                     return step;
                 });
                 if (typeof updateStepsInDB === "function") {
-                    updateStepsInDB(newSteps);
+                    // updateStepsInDB(newSteps);
                 }
                 return newSteps;
             });
@@ -320,6 +320,7 @@ const TabSteps = ({ serviceCase, onUpdate }) => {
 };
 
 export default TabSteps;
+
 
 
 
