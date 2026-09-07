@@ -24,8 +24,7 @@ const EmployeeDetail = ({ employee, onBack, onEditProfile }) => {
     manager: "—",
     phone: employee?.phone || "—",
     email: employee?.email || "—",
-    workload: 0,
-    performance: 0
+    
   });
 
   const tabs = ["Overview", "Assigned Work", "Tasks", "Activity", "Documents"];
@@ -62,21 +61,7 @@ const EmployeeDetail = ({ employee, onBack, onEditProfile }) => {
              <button onClick={onEditProfile} className="h-9 px-4 rounded-lg border border-[#E2E8F0] text-[13px] font-bold text-[#0F172A] hover:bg-gray-50 flex items-center gap-2"><MdEdit /> Edit Profile</button>
              <button className="h-9 px-4 rounded-lg bg-[#0F172A] text-[13px] font-bold text-white hover:bg-gray-800 shadow-sm">Assign Work</button>
           </div>
-          <div className="flex gap-8 text-right mt-2">
-             <div>
-                <p className="text-[11px] font-bold text-[#64748B] uppercase mb-1">Current Workload</p>
-                <div className="flex items-center gap-2">
-                   <div className="w-20 h-2 bg-gray-200 rounded-full overflow-hidden">
-                      <div className={`h-full ${empData.workload > 90 ? 'bg-red-500' : empData.workload > 70 ? 'bg-yellow-500' : 'bg-green-500'}`} style={{width: `${empData.workload}%`}}></div>
-                   </div>
-                   <p className="text-[16px] font-bold text-[#0F172A]">{empData.workload}%</p>
-                </div>
-             </div>
-             <div>
-                <p className="text-[11px] font-bold text-[#64748B] uppercase mb-1">Performance</p>
-                <p className="text-[16px] font-bold text-[#10B981]">{empData.performance}/100</p>
-             </div>
-          </div>
+          
         </div>
       </div>
 
@@ -116,16 +101,7 @@ const EmployeeDetail = ({ employee, onBack, onEditProfile }) => {
         <div className="w-full xl:w-[25%] relative">
           <div className="sticky top-6 flex flex-col gap-6">
 
-            <Card extra="p-6 shadow-sm border border-[#E2E8F0]">
-               <h3 className="text-[12px] font-bold text-[#64748B] mb-4 uppercase tracking-widest flex items-center gap-2"><MdWarning className="text-yellow-500 text-lg"/> Capacity Meter</h3>
-               <div className="space-y-4 mb-4">
-                 <p className="text-[13px] text-[#475569]">This employee is operating at <b>{empData.workload}%</b> capacity based on active assignments.</p>
-                 <div className="w-full h-3 bg-gray-100 rounded-full overflow-hidden">
-                    <div className="h-full bg-yellow-500" style={{width: `${empData.workload}%`}}></div>
-                 </div>
-               </div>
-               <button className="w-full h-10 rounded-[10px] bg-white border border-[#E2E8F0] text-[13px] font-bold text-[#2563EB] hover:bg-blue-50 transition">Adjust Workload</button>
-            </Card>
+            
 
             <Card extra="p-6 shadow-sm border border-[#E2E8F0]">
                <h3 className="text-[12px] font-bold text-[#64748B] mb-4 uppercase tracking-widest">Contact Info</h3>

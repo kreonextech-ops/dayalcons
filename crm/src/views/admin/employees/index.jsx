@@ -6,6 +6,7 @@ import {
 } from "react-icons/md";
 import EmployeeDetail from "./EmployeeDetail";
 import { createClient } from "@supabase/supabase-js";
+import { uploadFileToR2 } from "utils/r2Storage";
 
 // Sub-components
 import TabDirectory from "./components/TabDirectory";
@@ -70,6 +71,15 @@ const Employees = () => {
 
   const handleCompleteOnboarding = async () => {
      try {
+       let uploadedAvatar = newEmp.permissions?.avatar;
+       if (newEmp.avatarFile) {
+           try {
+               uploadedAvatar = await uploadFileToR2(newEmp.avatarFile, "employees");
+           } catch (e) {
+               console.error("Avatar upload failed", e);
+           }
+       }
+
        const payload = {
          name: newEmp.fullName || "Unnamed Employee",
          email: newEmp.loginEmail || newEmp.email,
@@ -77,7 +87,7 @@ const Employees = () => {
          department: newEmp.department || "Unassigned",
          designation: newEmp.designation || "Unassigned",
          role: newEmp.role || "Employee",
-         permissions: newEmp.permissions || {},
+         permissions: { ...(newEmp.permissions || {}), avatar: uploadedAvatar },
          phone: newEmp.phone || "",
          status: newEmp.status || "Active",
          join_date: newEmp.joinDate || new Date().toISOString()
@@ -241,10 +251,21 @@ const Employees = () => {
                      <div className="animate-fade-in max-w-4xl mx-auto">
                         <h3 className="text-[18px] font-bold text-[#0F172A] mb-6">Personal Information</h3>
                         <div className="flex gap-8">
-                           <div className="w-32 h-32 bg-gray-100 rounded-full flex flex-col items-center justify-center text-gray-400 border-2 border-dashed border-gray-300 cursor-pointer hover:bg-gray-50 transition">
-                              <MdAdd size={24} />
-                              <span className="text-xs font-bold mt-1">Upload Photo</span>
-                           </div>
+                           <label className="w-32 h-32 bg-gray-100 rounded-full flex flex-col items-center justify-center text-gray-400 border-2 border-dashed border-gray-300 cursor-pointer hover:bg-gray-50 transition overflow-hidden">
+                              {newEmp.avatarFile ? (
+                                  <img src={URL.createObjectURL(newEmp.avatarFile)} alt="Preview" className="w-full h-full object-cover" />
+                              ) : (
+                                  <>
+                                      <MdAdd size={24} />
+                                      <span className="text-xs font-bold mt-1">Upload Photo</span>
+                                  </>
+                              )}
+                              <input type="file" accept="image/*" className="hidden" onChange={(e) => {
+                                  if(e.target.files && e.target.files[0]) {
+                                      setNewEmp({...newEmp, avatarFile: e.target.files[0]});
+                                  }
+                              }} />
+                           </label>
                            <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-5">
                               <div><label className="block text-[11px] font-bold text-[#475569] mb-1.5 uppercase">Full Name *</label><input type="text" value={newEmp.fullName} onChange={(e) => setNewEmp({...newEmp, fullName: e.target.value})} className="w-full h-11 px-3 rounded-[10px] border border-[#E2E8F0] text-[14px] outline-none" /></div>
                               <div>
