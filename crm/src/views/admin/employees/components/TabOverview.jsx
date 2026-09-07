@@ -92,7 +92,7 @@ const TabOverview = ({ empData }) => {
                 { label: "Pending Tasks", value: metrics.pendingTasks, icon: <MdAssignment className="text-[#F59E0B]"/>, bg: "bg-yellow-50" },
                 { label: "Site Visits (Month)", value: metrics.siteVisits, icon: <MdCheckCircle className="text-[#10B981]"/>, bg: "bg-green-50" },
              ].map((s, i) => (
-                <div key={i} className={\p-4 rounded-xl border border-[#E2E8F0] \$\{s.bg\} flex flex-col justify-between\}>
+                <div key={i} className={`p-4 rounded-xl border border-[#E2E8F0] ${s.bg} flex flex-col justify-between`}>
                    <div className="flex justify-between items-start mb-2">
                       <span className="text-2xl">{s.icon}</span>
                       <span className="text-[24px] font-bold text-[#0F172A] leading-none">{s.value}</span>
