@@ -64,9 +64,18 @@ export default function ClientChat({ clientId, userType }) {
       message: newMessage.trim(),
     };
 
+    const currentMsg = newMessage;
     setNewMessage("");
-    await supabase.from("client_messages").insert([msg]);
-    fetchMessages(); // Fallback if realtime fails
+    
+    const { error } = await supabase.from("client_messages").insert([msg]);
+    
+    if (error) {
+      console.error("Insert error:", error);
+      alert("Failed to send message: " + error.message + " (Check RLS policies)");
+      setNewMessage(currentMsg); // Restore message
+    } else {
+      fetchMessages(); // Fallback if realtime fails
+    }
   };
 
   const handleFileUpload = async (e) => {

@@ -15,6 +15,8 @@ export default function ClientLogins() {
   const [showModal, setShowModal] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [selectedClient, setSelectedClient] = useState(null); // Added for Profile/Chat
+  const [clientProjects, setClientProjects] = useState([]);
+  const [clientServices, setClientServices] = useState([]);
 
   const [formData, setFormData] = useState({
     clientId: "",
@@ -35,6 +37,17 @@ export default function ClientLogins() {
   useEffect(() => {
     fetchData();
   }, []);
+
+  useEffect(() => {
+    const fetchClientDetails = async () => {
+      if (!selectedClient) return;
+      const { data: pData } = await supabase.from("projects").select("id, name, status").eq("client_id", selectedClient.id);
+      const { data: sData } = await supabase.from("services").select("id, name, status").eq("client_id", selectedClient.id);
+      if (pData) setClientProjects(pData);
+      if (sData) setClientServices(sData);
+    };
+    fetchClientDetails();
+  }, [selectedClient]);
 
   const handleCreate = async (e) => {
     e.preventDefault();
@@ -249,9 +262,43 @@ export default function ClientLogins() {
                 <MdClose size={24} />
               </button>
             </div>
-            <div className="p-6 bg-gray-50 flex-1 overflow-hidden">
-               <h4 className="font-bold text-navy-700 mb-3 text-lg">Direct Messaging & Files</h4>
-               <ClientChat clientId={selectedClient.id} userType="admin" />
+            <div className="p-6 bg-gray-50 flex-1 overflow-hidden grid grid-cols-1 lg:grid-cols-3 gap-6">
+               <div className="lg:col-span-2 flex flex-col h-full">
+                 <h4 className="font-bold text-navy-700 mb-3 text-lg">Direct Messaging & Files</h4>
+                 <ClientChat clientId={selectedClient.id} userType="admin" />
+               </div>
+               <div className="flex flex-col gap-6 overflow-y-auto">
+                 <div>
+                   <h4 className="font-bold text-navy-700 mb-3 text-md">Execution Projects</h4>
+                   {clientProjects.length === 0 ? (
+                     <p className="text-sm text-gray-400">No active projects.</p>
+                   ) : (
+                     <div className="flex flex-col gap-2">
+                       {clientProjects.map(p => (
+                         <div key={p.id} className="bg-white p-3 rounded-xl border border-gray-100 shadow-sm">
+                           <p className="text-sm font-bold text-navy-700">{p.name}</p>
+                           <p className="text-xs text-brand-500">{p.status || "Pending"}</p>
+                         </div>
+                       ))}
+                     </div>
+                   )}
+                 </div>
+                 <div>
+                   <h4 className="font-bold text-navy-700 mb-3 text-md">Design/Legal Services</h4>
+                   {clientServices.length === 0 ? (
+                     <p className="text-sm text-gray-400">No active services.</p>
+                   ) : (
+                     <div className="flex flex-col gap-2">
+                       {clientServices.map(s => (
+                         <div key={s.id} className="bg-white p-3 rounded-xl border border-gray-100 shadow-sm">
+                           <p className="text-sm font-bold text-navy-700">{s.name}</p>
+                           <p className="text-xs text-brand-500">{s.status || "Pending"}</p>
+                         </div>
+                       ))}
+                     </div>
+                   )}
+                 </div>
+               </div>
             </div>
           </div>
         </div>
