@@ -172,16 +172,16 @@ const Tasks = () => {
      setRefreshTrigger(prev => prev + 1);
   };
 
-  const [taskScope, setTaskScope] = useState("My Tasks");
-
   const userStr = localStorage.getItem("dayal_user");
   const loggedInUser = userStr ? JSON.parse(userStr) : null;
   const isAdminOrMD = loggedInUser && (loggedInUser.role === "Admin" || loggedInUser.role === "MD");
 
+  const [taskScope, setTaskScope] = useState(isAdminOrMD ? "All Tasks" : "My Tasks");
+
   const displayedTasks = allTasks.filter(t => {
      if (!loggedInUser) return true; // fallback
      if (taskScope === "All Tasks" && isAdminOrMD) return true;
-     if (taskScope === "My Tasks") return t.assignee_id === loggedInUser.id;
+     if (taskScope === "My Tasks") return t.assignee_id && t.assignee_id.includes(loggedInUser.id);
      if (taskScope === "Given Tasks") return t.creator_id === loggedInUser.id;
      return false;
   });

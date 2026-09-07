@@ -86,7 +86,7 @@ const TabTasks = ({ leadData, isClient = false, entityType, entityId }) => {
           <div className="text-center py-12 text-sm text-gray-400 italic">No tasks</div>
         )}
         {columnTasks.map(task => (
-          <div key={task.id} onClick={(e) => { if(e.target.tagName !== 'SELECT' && e.target.tagName !== 'OPTION') window.location.href = `/admin/tasks?taskId=${task.id}`; }} className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 cursor-pointer hover:shadow-md transition-shadow">
+          <div key={task.id} onClick={(e) => { if(e.target.tagName !== 'SELECT' && e.target.tagName !== 'OPTION') window.location.href = `/crm/admin/tasks?taskId=${task.id}`; }} className="bg-white rounded-xl p-4 shadow-sm border border-gray-100 cursor-pointer hover:shadow-md transition-shadow">
              <div className="flex justify-between items-start mb-2">
                <h4 className="text-sm font-bold text-gray-800">
                  <span className="text-brand-500">{task.name}</span>

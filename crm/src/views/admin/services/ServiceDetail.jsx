@@ -249,7 +249,7 @@ const ServiceDetail = ({ serviceCase, onBack, onUpdate }) => {
                 <>
                   <p className="text-[14px] font-bold text-[#DC2626] mb-1">{nextTask.due_date ? new Date(nextTask.due_date).toLocaleString() : "No Due Date"}</p>
                   <p className="text-[12px] text-gray-600 mb-4">
-                    <a href={`/admin/tasks?taskId=${nextTask.id}`} className="text-brand-500 hover:underline font-bold">{nextTask.name}</a>
+                    <a href={`/crm/admin/tasks?taskId=${nextTask.id}`} className="text-brand-500 hover:underline font-bold">{nextTask.name}</a>
                   </p>
                   <div className="flex flex-col gap-2">
                     <button onClick={() => handleQuickAction('Call')} className="w-full rounded-[10px] bg-blue-600 py-2 text-[12px] font-bold text-white hover:bg-blue-700 transition">Follow up</button>

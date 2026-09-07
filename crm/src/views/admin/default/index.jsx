@@ -104,7 +104,7 @@ const Dashboard = () => {
                       myTasks.map(task => (
                         <tr key={task.id} className="border-b border-gray-50">
                            <td className="py-3 text-sm font-bold text-navy-700">
-                             <a href={`/admin/tasks?taskId=${task.id}`} className="text-brand-500 hover:underline">{task.title || task.name}</a>
+                             <a href={`/crm/admin/tasks?taskId=${task.id}`} className="text-brand-500 hover:underline">{task.title || task.name}</a>
                            </td>
                            <td className="py-3 text-sm font-bold text-gray-500">{task.priority || 'Normal'}</td>
                            <td className="py-3 text-sm font-medium">
