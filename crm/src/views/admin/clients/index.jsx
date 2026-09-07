@@ -135,10 +135,28 @@ const Clients = () => {
       }
       const { data, error } = await query;
     if (!error && data) {
+      const clientIds = data.map(c => c.id);
+      
+      let activitiesData = [];
+      let projectsData = [];
+      if (clientIds.length > 0) {
+          const [actRes, projRes] = await Promise.all([
+             supabase.from('lead_activities').select('client_id, created_at').in('client_id', clientIds).order('created_at', { ascending: false }),
+             supabase.from('projects').select('client_id').in('client_id', clientIds)
+          ]);
+          if (actRes.data) activitiesData = actRes.data;
+          if (projRes.data) projectsData = projRes.data;
+      }
+
       // Merge with localStorage to bypass Supabase schema limits
       const merged = data.map(client => {
          const localData = JSON.parse(localStorage.getItem(`client_${client.id}`) || "{}");
-         return { ...client, ...localData };
+         const clientActivities = activitiesData.filter(a => a.client_id === client.id);
+         const lastContact = clientActivities.length > 0 ? clientActivities[0].created_at : client.created_at; 
+         
+         const clientProjects = projectsData.filter(p => p.client_id === client.id);
+         
+         return { ...client, ...localData, lastContact, activeProjectsCount: clientProjects.length };
       });
       setClients(merged);
     }
@@ -278,7 +296,7 @@ const Clients = () => {
                   <th className="py-4 px-4 text-[12px] font-medium text-[#64748B] uppercase tracking-wider">Client Entity</th>
                   <th className="py-4 px-4 text-[12px] font-medium text-[#64748B] uppercase tracking-wider">Contact Info</th>
                   <th className="py-4 px-4 text-[12px] font-medium text-[#64748B] uppercase tracking-wider">Active Projects</th>
-                  <th className="py-4 px-4 text-[12px] font-medium text-[#64748B] uppercase tracking-wider">LTV / Value</th>
+                  <th className="py-4 px-4 text-[12px] font-medium text-[#64748B] uppercase tracking-wider">Last Contacted</th>
                   <th className="py-4 px-6 text-[12px] font-medium text-[#64748B] uppercase tracking-wider text-right">Actions</th>
                 </tr>
               </thead>
