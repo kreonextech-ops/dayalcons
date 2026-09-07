@@ -2,13 +2,14 @@ import React, { useState, useEffect } from "react";
 import { 
   MdArrowBack, MdPhone, MdEmail, MdLocationOn, MdEdit,
   MdBusinessCenter, MdAttachMoney, MdMap, MdFolder, MdAssignment,
-  MdMessage, MdSave, MdDomain, MdCheckCircle, MdPerson, MdClose, MdDownload, MdDelete
+  MdMessage, MdSave, MdDomain, MdCheckCircle, MdPerson, MdClose, MdDownload, MdDelete, MdAttachFile
 } from "react-icons/md";
 import Card from "components/card";
 import { FiClock, FiFileText } from "react-icons/fi";
 import { createClient } from "@supabase/supabase-js";
 import { uploadFileToR2, getR2FileUrl, deleteR2File } from "utils/r2Storage";
 
+import CommentRenderer from "components/chat/CommentRenderer";
 import TabFinancials from "./components/TabFinancials";
 import TabTimeline from "../crm/components/TabTimeline";
 import TabCommunication from "../crm/components/TabCommunication";
@@ -34,6 +35,8 @@ const ClientDetail = ({ client, onBack }) => {
   const [communicationAction, setCommunicationAction] = useState(null);
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
+    const [isUploadingComment, setIsUploadingComment] = useState(false);
+    const commentFileInputRef = React.useRef(null);
     const [agreements, setAgreements] = useState([]);
     const [isUploading, setIsUploading] = useState(false);
     const fileInputRef = React.useRef(null);
@@ -123,8 +126,8 @@ const ClientDetail = ({ client, onBack }) => {
     if (data) setComments(data);
   };
 
-  const handleAddComment = async () => {
-    if (!newComment.trim()) return;
+  const handleAddCommentText = async (textToPost) => {
+    if (!textToPost.trim()) return;
     const userStr = localStorage.getItem('dayal_user');
     const loggedInUser = userStr ? JSON.parse(userStr) : null;
     await supabase.from('lead_activities').insert([{
@@ -132,11 +135,31 @@ const ClientDetail = ({ client, onBack }) => {
       activity_type: 'Comment',
       activity_group: 'comment',
       title: 'Internal Note / Comment',
-      details: newComment.trim(),
+      details: textToPost.trim(),
       employee_name: loggedInUser?.name || 'Admin'
     }]);
     setNewComment("");
     fetchComments();
+  };
+
+  const handleAddComment = async () => {
+    if (!newComment.trim()) return;
+    await handleAddCommentText(newComment);
+  };
+
+  const handleCommentFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file || !clientData.id) return;
+    setIsUploadingComment(true);
+    try {
+       const fileKey = await uploadFileToR2(file, 'clients/comments');
+       const textToPost = (newComment.trim() ? newComment.trim() + '\\n\\n' : '') + `[R2_FILE::${fileKey}::${file.name}]`;
+       await handleAddCommentText(textToPost);
+    } catch (err) {
+       alert("Failed to upload file");
+    }
+    setIsUploadingComment(false);
+    if (commentFileInputRef.current) commentFileInputRef.current.value = "";
   };
 
   const fetchNextTask = async () => {
@@ -435,7 +458,7 @@ const ClientDetail = ({ client, onBack }) => {
                     ) : (
                        comments.map(comment => (
                          <div key={comment.id} className="bg-gray-50 rounded-lg p-3 border border-gray-100">
-                           <p className="text-sm text-[#475569] whitespace-pre-wrap">{comment.details}</p>
+                           <CommentRenderer text={comment.details} />
                            <div className="mt-2 text-[11px] text-gray-400 flex items-center justify-between">
                              <span>{comment.employee_name || 'Admin'}</span>
                              <span>{new Date(comment.created_at).toLocaleString()}</span>
@@ -606,4 +629,9 @@ const ClientDetail = ({ client, onBack }) => {
 };
 
 export default ClientDetail;
+
+
+
+
+
 

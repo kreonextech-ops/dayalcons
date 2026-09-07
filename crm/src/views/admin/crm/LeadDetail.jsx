@@ -2,8 +2,10 @@ import React, { useState } from "react";
 import { 
   MdArrowBack, MdPhone, MdEmail, MdLocationOn, MdCheckCircle, MdEdit,
   MdTimeline, MdAttachMoney, MdMap, MdEvent, MdFolder, MdAssignment,
-  MdMessage, MdPhoneInTalk, MdLocalPrintshop, MdPictureAsPdf, MdSave, MdClose
+  MdMessage, MdPhoneInTalk, MdLocalPrintshop, MdPictureAsPdf, MdSave, MdClose, MdAttachFile
 } from "react-icons/md";
+import CommentRenderer from "components/chat/CommentRenderer";
+import { uploadFileToR2 } from "utils/r2Storage";
 import TabTimeline from "./components/TabTimeline";
 import TabCommunication from "./components/TabCommunication";
 import TabSiteVisit from "./components/TabSiteVisit";
@@ -30,6 +32,8 @@ const LeadDetail = ({ lead, onBack }) => {
   const [showConvertModal, setShowConvertModal] = useState(false);
   const [comments, setComments] = useState([]);
   const [newComment, setNewComment] = useState("");
+  const [isUploadingComment, setIsUploadingComment] = React.useState(false);
+  const commentFileInputRef = React.useRef(null);
 
   const [nextTask, setNextTask] = useState(null);
 
@@ -65,18 +69,40 @@ const LeadDetail = ({ lead, onBack }) => {
     if (data) setComments(data);
   };
 
-  const handleAddComment = async () => {
-    if (!newComment.trim()) return;
+  const handleAddCommentText = async (textToPost) => {
+    if (!textToPost.trim()) return;
+    const userStr = localStorage.getItem('dayal_user');
+    const loggedInUser = userStr ? JSON.parse(userStr) : null;
     await supabase.from('lead_activities').insert([{
-      lead_id: lead.id,
-      activity_group: 'comment',
+      lead_id: leadData.id,
       activity_type: 'Comment',
-      title: 'Sales Note / Comment',
-      details: newComment.trim(),
-      employee_name: 'Admin'
+      activity_group: 'comment',
+      title: 'Internal Note / Comment',
+      details: textToPost.trim(),
+      employee_name: loggedInUser?.name || 'Admin'
     }]);
     setNewComment("");
     fetchComments();
+  };
+
+  const handleAddComment = async () => {
+    if (!newComment.trim()) return;
+    await handleAddCommentText(newComment);
+  };
+
+  const handleCommentFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file || !leadData.id) return;
+    setIsUploadingComment(true);
+    try {
+       const fileKey = await uploadFileToR2(file, 'leads/comments');
+       const textToPost = (newComment.trim() ? newComment.trim() + '\\n\\n' : '') + `[R2_FILE::${fileKey}::${file.name}]`;
+       await handleAddCommentText(textToPost);
+    } catch (err) {
+       alert("Failed to upload file");
+    }
+    setIsUploadingComment(false);
+    if (commentFileInputRef.current) commentFileInputRef.current.value = "";
   };
 
   const handleQuickAction = (label) => {
@@ -624,7 +650,7 @@ const LeadDetail = ({ lead, onBack }) => {
                     ) : (
                        comments.map(comment => (
                          <div key={comment.id} className="bg-gray-50 rounded-lg p-3 border border-gray-100">
-                           <p className="text-sm text-[#475569] whitespace-pre-wrap">{comment.details}</p>
+                           <CommentRenderer text={comment.details} />
                            <div className="mt-2 text-[11px] text-gray-400 flex items-center justify-between">
                              <span>{comment.employee_name || 'Admin'}</span>
                              <span>{new Date(comment.created_at).toLocaleString()}</span>
@@ -762,5 +788,10 @@ const LeadDetail = ({ lead, onBack }) => {
 };
 
 export default LeadDetail;
+
+
+
+
+
 
 
