@@ -152,7 +152,7 @@ const Clients = () => {
       const merged = data.map(client => {
          const localData = JSON.parse(localStorage.getItem(`client_${client.id}`) || "{}");
          const clientActivities = activitiesData.filter(a => a.client_id === client.id);
-         const lastContact = clientActivities.length > 0 ? clientActivities[0].created_at : client.created_at; 
+         const lastContact = clientActivities.length > 0 ? clientActivities[0].created_at : null; 
          
          const clientProjects = projectsData.filter(p => p.client_id === client.id);
          
@@ -232,7 +232,7 @@ const Clients = () => {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           {[
              { title: "Total Clients", val: clients.length || "0", icon: <MdPerson className="text-[#2563EB]" />, bg: "bg-blue-50" },
-             { title: "Active Projects", val: "0", icon: <MdBusinessCenter className="text-[#06B6D4]" />, bg: "bg-cyan-50" },
+             { title: "Active Projects", val: clients.reduce((acc, c) => acc + (c.activeProjectsCount || 0), 0), icon: <MdBusinessCenter className="text-[#06B6D4]" />, bg: "bg-cyan-50" },
              { title: "Total Lifetime Value", val: "₹0", icon: <MdAttachMoney className="text-[#16A34A]" />, bg: "bg-green-50" },
              { title: "Outstanding Dues", val: "₹0", icon: <MdAttachMoney className="text-[#DC2626]" />, bg: "bg-red-50" }
           ].map((kpi, i) => (
@@ -336,12 +336,12 @@ const Clients = () => {
                               {client.email && <p className="text-sm text-gray-600">{client.email}</p>}
                               {client.phone && <p className="text-[12px] text-gray-500">{client.phone}</p>}
                            </td>
-                           <td className="py-4 px-4 text-sm text-gray-600">
-                              0
-                           </td>
-                           <td className="py-4 px-4 text-sm text-gray-600 font-bold text-green-600">
-                              ₹0
-                           </td>
+                           <td className="py-4 px-4 text-sm text-gray-600 font-bold">
+                                {client.activeProjectsCount || 0}
+                             </td>
+                             <td className="py-4 px-4 text-[12px] text-gray-500">
+                                {client.lastContact ? new Date(client.lastContact).toLocaleDateString("en-GB", { day: '2-digit', month: 'short', year: 'numeric' }) : "-"}
+                             </td>
                            <td className="py-4 px-6 text-right">
                               <button onClick={(e) => { e.stopPropagation(); handleDeleteClient(client.id); }} className="text-red-500 hover:bg-red-50 p-2 rounded-lg transition" title="Delete Client">
                                  <MdDeleteOutline size={20} />
