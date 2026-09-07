@@ -2,10 +2,10 @@ import React, { useState } from "react";
 import { 
   MdArrowBack, MdPhone, MdEmail, MdLocationOn, MdCheckCircle, MdEdit,
   MdTimeline, MdAttachMoney, MdMap, MdEvent, MdFolder, MdAssignment,
-  MdMessage, MdPhoneInTalk, MdLocalPrintshop, MdPictureAsPdf, MdSave, MdClose, MdAttachFile
+  MdMessage, MdPhoneInTalk, MdLocalPrintshop, MdPictureAsPdf, MdSave, MdClose, MdAttachFile, MdDelete
 } from "react-icons/md";
 import CommentRenderer from "components/chat/CommentRenderer";
-import { uploadFileToR2 } from "utils/r2Storage";
+import { uploadFileToR2, deleteR2File } from "utils/r2Storage";
 import TabTimeline from "./components/TabTimeline";
 import TabCommunication from "./components/TabCommunication";
 import TabSiteVisit from "./components/TabSiteVisit";
@@ -90,12 +90,23 @@ const LeadDetail = ({ lead, onBack }) => {
     await handleAddCommentText(newComment);
   };
 
+  const handleDeleteComment = async (commentId, commentText) => {
+    if (!window.confirm("Are you sure you want to delete this comment?")) return;
+    const fileMatch = commentText?.match(/\[R2_FILE::(.*?)::(.*?)\]/);
+    if (fileMatch) {
+       try { await deleteR2File(fileMatch[1]); } catch (err) { console.error("Failed to delete R2 file", err); }
+    }
+    const { error } = await supabase.from('lead_activities').delete().eq('id', commentId);
+    if (!error) setComments(comments.filter(c => c.id !== commentId));
+    else alert("Failed to delete comment");
+  };
+
   const handleCommentFileChange = async (e) => {
     const file = e.target.files[0];
     if (!file || !leadData.id) return;
     setIsUploadingComment(true);
     try {
-       const fileKey = await uploadFileToR2(file, 'leads/comments');
+       const fileKey = await uploadFileToR2, deleteR2File(file, 'leads/comments');
        const textToPost = (newComment.trim() ? newComment.trim() + '\\n\\n' : '') + `[R2_FILE::${fileKey}::${file.name}]`;
        await handleAddCommentText(textToPost);
     } catch (err) {

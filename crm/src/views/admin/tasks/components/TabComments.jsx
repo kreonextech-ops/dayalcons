@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { createClient } from "@supabase/supabase-js";
-import { MdAttachFile } from "react-icons/md";
-import { uploadFileToR2 } from "utils/r2Storage";
+import { MdAttachFile, MdDelete } from "react-icons/md";
+import { uploadFileToR2, deleteR2File } from "utils/r2Storage";
 import CommentRenderer from "components/chat/CommentRenderer";
 
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL || "https://gdzligxryodasaxnhdco.supabase.co";
@@ -61,6 +61,17 @@ const TabComments = ({ task }) => {
     }
   };
 
+  const handleDeleteComment = async (commentId, commentText) => {
+    if (!window.confirm("Are you sure you want to delete this comment?")) return;
+    const fileMatch = commentText?.match(/\[R2_FILE::(.*?)::(.*?)\]/);
+    if (fileMatch) {
+       try { await deleteR2File(fileMatch[1]); } catch (err) { console.error("Failed to delete R2 file", err); }
+    }
+    const { error } = await supabase.from('task_comments').delete().eq('id', commentId);
+    if (!error) setComments(comments.filter(c => c.id !== commentId));
+    else alert("Failed to delete comment");
+  };
+
   const handleFileChange = async (e) => {
     const file = e.target.files[0];
     if (!file || !task) return;
@@ -94,9 +105,14 @@ const TabComments = ({ task }) => {
              <div className="space-y-4">
                 {comments.map(c => (
                    <div key={c.id} className="bg-white p-4 rounded-xl border border-gray-100 shadow-sm self-start max-w-[80%]">
-                      <div className="flex items-baseline gap-2 mb-1">
-                         <span className="text-[13px] font-bold text-[#0F172A]">{c.author_name}</span>
-                         <span className="text-[10px] text-gray-400">{new Date(c.created_at).toLocaleString()}</span>
+                      <div className="flex items-center justify-between mb-1 gap-4">
+                         <div className="flex items-baseline gap-2">
+                            <span className="text-[13px] font-bold text-[#0F172A]">{c.author_name}</span>
+                            <span className="text-[10px] text-gray-400">{new Date(c.created_at).toLocaleString()}</span>
+                         </div>
+                         <button onClick={() => handleDeleteComment(c.id, c.comment_text)} className="text-gray-400 hover:text-red-500 transition">
+                            <MdDelete size={14} />
+                         </button>
                       </div>
                       <CommentRenderer text={c.comment_text} />
                    </div>

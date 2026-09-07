@@ -147,6 +147,17 @@ const ClientDetail = ({ client, onBack }) => {
     await handleAddCommentText(newComment);
   };
 
+  const handleDeleteComment = async (commentId, commentText) => {
+    if (!window.confirm("Are you sure you want to delete this comment?")) return;
+    const fileMatch = commentText?.match(/\[R2_FILE::(.*?)::(.*?)\]/);
+    if (fileMatch) {
+       try { await deleteR2File(fileMatch[1]); } catch (err) { console.error("Failed to delete R2 file", err); }
+    }
+    const { error } = await supabase.from('lead_activities').delete().eq('id', commentId);
+    if (!error) setComments(comments.filter(c => c.id !== commentId));
+    else alert("Failed to delete comment");
+  };
+
   const handleCommentFileChange = async (e) => {
     const file = e.target.files[0];
     if (!file || !clientData.id) return;
