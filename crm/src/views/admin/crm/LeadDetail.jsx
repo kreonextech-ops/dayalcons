@@ -106,7 +106,7 @@ const LeadDetail = ({ lead, onBack }) => {
     if (!file || !leadData.id) return;
     setIsUploadingComment(true);
     try {
-       const fileKey = await uploadFileToR2, deleteR2File(file, 'leads/comments');
+       const fileKey = await uploadFileToR2(file, 'leads/comments');
        const textToPost = (newComment.trim() ? newComment.trim() + '\\n\\n' : '') + `[R2_FILE::${fileKey}::${file.name}]`;
        await handleAddCommentText(textToPost);
     } catch (err) {
@@ -799,6 +799,7 @@ const LeadDetail = ({ lead, onBack }) => {
 };
 
 export default LeadDetail;
+
 
 
 
