@@ -14,7 +14,7 @@ const ClientSidebar = ({ open, onClose }) => {
         className="absolute top-4 right-4 block cursor-pointer xl:hidden"
         onClick={onClose}
       >
-        <HiX />
+        <HiX className="h-6 w-6 text-gray-600 dark:text-white" />
       </span>
 
       <div className={`mx-[20px] mt-[50px] flex items-center justify-center`}>
