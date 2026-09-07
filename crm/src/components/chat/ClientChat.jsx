@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { createClient } from "@supabase/supabase-js";
-import { MdSend, MdAttachFile, MdInsertDriveFile, MdImage } from "react-icons/md";
-import { uploadFileToR2, getR2FileUrl } from "utils/r2Storage";
+import { MdSend, MdAttachFile, MdInsertDriveFile, MdDelete } from "react-icons/md";
+import { uploadFileToR2, getR2FileUrl, deleteR2File } from "utils/r2Storage";
 import R2Image from "components/R2Image";
 
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL || "https://gdzligxryodasaxnhdco.supabase.co";
@@ -35,15 +35,13 @@ export default function ClientChat({ clientId, userType }) {
       .channel('schema-db-changes')
       .on(
         'postgres_changes',
-        {
-          event: 'INSERT',
-          schema: 'public',
-          table: 'client_messages',
-          filter: `client_id=eq.${clientId}`
-        },
-        (payload) => {
-          setMessages((prev) => [...prev, payload.new]);
-        }
+        { event: 'INSERT', schema: 'public', table: 'client_messages', filter: `client_id=eq.${clientId}` },
+        (payload) => setMessages((prev) => [...prev, payload.new])
+      )
+      .on(
+        'postgres_changes',
+        { event: 'DELETE', schema: 'public', table: 'client_messages', filter: `client_id=eq.${clientId}` },
+        (payload) => setMessages((prev) => prev.filter(m => m.id !== payload.old.id))
       )
       .subscribe();
 
@@ -55,6 +53,26 @@ export default function ClientChat({ clientId, userType }) {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  const handleDeleteMessage = async (msg) => {
+    if (!window.confirm("Are you sure you want to delete this message?")) return;
+    
+    // If there is a file in R2, delete it first
+    if (msg.file_url) {
+      try {
+        await deleteR2File(msg.file_url);
+      } catch (e) {
+        console.error("Failed to delete from R2:", e);
+      }
+    }
+
+    const { error } = await supabase.from('client_messages').delete().eq('id', msg.id);
+    if (error) {
+      alert("Failed to delete message.");
+    } else {
+      setMessages(prev => prev.filter(m => m.id !== msg.id));
+    }
+  };
 
   const handleSendMessage = async (e) => {
     e?.preventDefault();
@@ -152,9 +170,20 @@ export default function ClientChat({ clientId, userType }) {
                   ) : (
                     <p className="text-sm whitespace-pre-wrap break-words">{msg.message}</p>
                   )}
-                  <span className={`text-[10px] mt-1 block ${isMe ? 'text-white/70' : 'text-gray-400'}`}>
-                    {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                  </span>
+                  <div className={`flex items-center justify-between gap-4 mt-1 ${isMe ? 'text-white/70' : 'text-gray-400'}`}>
+                    <span className="text-[10px] block">
+                      {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </span>
+                    {(isMe || userType === 'admin') && (
+                      <button 
+                        onClick={() => handleDeleteMessage(msg)}
+                        className={`p-1 hover:bg-black/10 rounded transition ${isMe ? 'text-white' : 'text-red-500'}`}
+                        title="Delete message"
+                      >
+                        <MdDelete size={14} />
+                      </button>
+                    )}
+                  </div>
                 </div>
               </div>
             );
