@@ -78,6 +78,103 @@ export default function ClientLogins() {
     }
   };
 
+  if (selectedClient) {
+    return (
+      <div className="mt-3 flex w-full flex-col gap-5">
+        {/* Header with Back Button */}
+        <div className="flex items-center gap-4">
+          <button 
+            onClick={() => setSelectedClient(null)} 
+            className="flex items-center justify-center p-2 bg-white rounded-full shadow-sm text-gray-600 hover:bg-gray-50 hover:text-brand-500 transition"
+          >
+            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
+          </button>
+          <h2 className="text-2xl font-bold text-navy-700">Client Hub</h2>
+        </div>
+
+        {/* Client Profile Header */}
+        <div className="bg-white rounded-[20px] shadow-sm border border-[#E2E8F0] p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div className="flex items-center gap-6">
+            <div className="h-20 w-20 rounded-full overflow-hidden bg-gray-100 border-4 border-brand-500 shadow-md">
+              {selectedClient.profile_picture ? (
+                 <R2Image fileKey={selectedClient.profile_picture} alt="Profile" className="w-full h-full object-cover" />
+              ) : (
+                 <div className="w-full h-full flex items-center justify-center text-gray-400 text-3xl font-bold bg-gray-100">
+                    {selectedClient.name?.charAt(0) || "U"}
+                 </div>
+              )}
+            </div>
+            <div>
+              <h3 className="text-3xl font-bold text-navy-700">{selectedClient.name}</h3>
+              <p className="text-gray-500 font-medium mt-1">{selectedClient.email} &nbsp;•&nbsp; {selectedClient.phone}</p>
+            </div>
+          </div>
+          
+          <div className="flex gap-3">
+             <a href="/crm/admin/projects" className="px-4 py-2 bg-brand-50 text-brand-500 font-bold rounded-lg hover:bg-brand-100 transition">
+               + Add Project
+             </a>
+             <a href="/crm/admin/services" className="px-4 py-2 bg-brand-50 text-brand-500 font-bold rounded-lg hover:bg-brand-100 transition">
+               + Add Service
+             </a>
+          </div>
+        </div>
+
+        {/* Main Content Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+           
+           {/* Communication (Chat) */}
+           <div className="lg:col-span-2 flex flex-col h-full">
+             <h4 className="font-bold text-navy-700 mb-3 text-xl">Direct Messaging & Files</h4>
+             <ClientChat clientId={selectedClient.id} userType="admin" />
+           </div>
+
+           {/* Linked Assets */}
+           <div className="flex flex-col gap-6">
+             {/* Projects */}
+             <div className="bg-white rounded-[20px] shadow-sm border border-[#E2E8F0] p-6">
+               <h4 className="font-bold text-navy-700 mb-4 text-lg">Execution Projects</h4>
+               {clientProjects.length === 0 ? (
+                 <div className="text-center py-6 text-gray-400 border-2 border-dashed border-gray-200 rounded-xl">
+                   No active projects.
+                 </div>
+               ) : (
+                 <div className="flex flex-col gap-3">
+                   {clientProjects.map(p => (
+                     <div key={p.id} className="bg-gray-50 p-4 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition">
+                       <p className="text-md font-bold text-navy-700">{p.name}</p>
+                       <p className="text-sm text-brand-500 font-medium mt-1">{p.status || "Pending"}</p>
+                     </div>
+                   ))}
+                 </div>
+               )}
+             </div>
+
+             {/* Services */}
+             <div className="bg-white rounded-[20px] shadow-sm border border-[#E2E8F0] p-6">
+               <h4 className="font-bold text-navy-700 mb-4 text-lg">Design/Legal Services</h4>
+               {clientServices.length === 0 ? (
+                 <div className="text-center py-6 text-gray-400 border-2 border-dashed border-gray-200 rounded-xl">
+                   No active services.
+                 </div>
+               ) : (
+                 <div className="flex flex-col gap-3">
+                   {clientServices.map(s => (
+                     <div key={s.id} className="bg-gray-50 p-4 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition">
+                       <p className="text-md font-bold text-navy-700">{s.name}</p>
+                       <p className="text-sm text-brand-500 font-medium mt-1">{s.status || "Pending"}</p>
+                     </div>
+                   ))}
+                 </div>
+               )}
+             </div>
+           </div>
+
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="mt-3 flex h-full w-full flex-col gap-5">
       <div className="flex justify-between items-center mb-4 mt-2">
@@ -239,71 +336,7 @@ export default function ClientLogins() {
         </div>
       )}
 
-      {/* CLIENT PROFILE MODAL */}
-      {selectedClient && (
-        <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm" onClick={() => setSelectedClient(null)}>
-          <div className="w-full max-w-3xl rounded-[20px] bg-white shadow-2xl flex flex-col max-h-[90vh]" onClick={e => e.stopPropagation()}>
-            <div className="p-6 border-b border-gray-100 flex justify-between items-start">
-              <div className="flex items-center gap-4">
-                <div className="h-16 w-16 rounded-full overflow-hidden bg-gray-100 border-2 border-brand-500">
-                  {selectedClient.profile_picture ? (
-                     <R2Image fileKey={selectedClient.profile_picture} alt="Profile" className="w-full h-full object-cover" />
-                  ) : (
-                     <div className="w-full h-full flex items-center justify-center text-gray-400 text-2xl font-bold bg-gray-100">
-                        {selectedClient.name?.charAt(0) || "U"}
-                     </div>
-                  )}
-                </div>
-                <div>
-                  <h3 className="text-2xl font-bold text-navy-700">{selectedClient.name}</h3>
-                  <p className="text-gray-500">{selectedClient.email} • {selectedClient.phone}</p>
-                </div>
-              </div>
-              <button onClick={() => setSelectedClient(null)} className="p-2 text-gray-400 hover:bg-gray-100 rounded-full transition">
-                <MdClose size={24} />
-              </button>
-            </div>
-            <div className="p-6 bg-gray-50 flex-1 overflow-hidden grid grid-cols-1 lg:grid-cols-3 gap-6">
-               <div className="lg:col-span-2 flex flex-col h-full">
-                 <h4 className="font-bold text-navy-700 mb-3 text-lg">Direct Messaging & Files</h4>
-                 <ClientChat clientId={selectedClient.id} userType="admin" />
-               </div>
-               <div className="flex flex-col gap-6 overflow-y-auto">
-                 <div>
-                   <h4 className="font-bold text-navy-700 mb-3 text-md">Execution Projects</h4>
-                   {clientProjects.length === 0 ? (
-                     <p className="text-sm text-gray-400">No active projects.</p>
-                   ) : (
-                     <div className="flex flex-col gap-2">
-                       {clientProjects.map(p => (
-                         <div key={p.id} className="bg-white p-3 rounded-xl border border-gray-100 shadow-sm">
-                           <p className="text-sm font-bold text-navy-700">{p.name}</p>
-                           <p className="text-xs text-brand-500">{p.status || "Pending"}</p>
-                         </div>
-                       ))}
-                     </div>
-                   )}
-                 </div>
-                 <div>
-                   <h4 className="font-bold text-navy-700 mb-3 text-md">Design/Legal Services</h4>
-                   {clientServices.length === 0 ? (
-                     <p className="text-sm text-gray-400">No active services.</p>
-                   ) : (
-                     <div className="flex flex-col gap-2">
-                       {clientServices.map(s => (
-                         <div key={s.id} className="bg-white p-3 rounded-xl border border-gray-100 shadow-sm">
-                           <p className="text-sm font-bold text-navy-700">{s.name}</p>
-                           <p className="text-xs text-brand-500">{s.status || "Pending"}</p>
-                         </div>
-                       ))}
-                     </div>
-                   )}
-                 </div>
-               </div>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
+
