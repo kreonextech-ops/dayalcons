@@ -1,3 +1,4 @@
+import { uploadFileToR2, getR2FileUrl, deleteR2File } from "utils/r2Storage";
 import React, { useState, useEffect } from "react";
 import Card from "components/card";
 import { createClient } from "@supabase/supabase-js";
@@ -118,26 +119,34 @@ const TabSteps = ({ projData, onUpdate }) => {
       setNewComment("");
   };
 
-  const handleFileUpload = (stepId, e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      
-      // Simulating a file upload for now
-      const fileObj = {
-          id: Date.now(),
-          name: file.name,
-          url: URL.createObjectURL(file), // mock URL
-          author: loggedInUser.name,
-          timestamp: new Date().toISOString()
-      };
+    const handleFileUpload = async (stepId, e) => {
+        const file = e.target.files[0];
+        if (!file) return;
 
-      setSteps(prev => prev.map(step => {
-          if (step.id === stepId) {
-              return { ...step, files: [...(step.files || []), fileObj] };
-          }
-          return step;
-      }));
-  };
+        try {
+            const fileKey = await uploadFileToR2(file, "steps");
+            const fileObj = {
+                id: Date.now(),
+                name: file.name,
+                fileKey: fileKey,
+                url: "#",
+                author: (typeof loggedInUser !== "undefined" && loggedInUser?.name) ? loggedInUser.name : "User",
+                timestamp: new Date().toISOString()
+            };
+
+            setSteps(prev => prev.map(step => {
+                if (step.id === stepId) {
+                    return { ...step, files: [...(step.files || []), fileObj] };
+                }
+                return step;
+            }));
+        } catch (err) {
+            console.error("Upload failed", err);
+            alert("File upload failed.");
+        }
+        e.target.value = null;
+    };
+
 
   const sortedSteps = [...steps].sort((a, b) => a.order - b.order);
   const completedCount = steps.filter(s => s.completed).length;
@@ -305,3 +314,4 @@ const TabSteps = ({ projData, onUpdate }) => {
 };
 
 export default TabSteps;
+

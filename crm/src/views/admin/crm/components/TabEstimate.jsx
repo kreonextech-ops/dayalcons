@@ -5,6 +5,7 @@ import {
   MdClose, MdAttachMoney, MdPictureAsPdf, MdOutlineDescription
 } from "react-icons/md";
 import { createClient } from "@supabase/supabase-js";
+import { uploadFileToR2, getR2FileUrl, deleteR2File } from "utils/r2Storage";
 
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL || "https://gdzligxryodasaxnhdco.supabase.co";
 const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdkemxpZ3hyeW9kYXNheG5oZGNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcxNTg1MDUsImV4cCI6MjEwMjczNDUwNX0.AYTyAMf22g8au51ATReRQdQc2IzDLYQ2vtQH_Uyfrpg";
@@ -79,17 +80,7 @@ const TabEstimate = ({ leadData, isClient = false }) => {
        return;
     }
     
-    // In a real app, upload newProposal.file to Supabase Storage here and get URL.
-    // For now, we mock the file attachment.
-    const proposalObj = {
-      id: Date.now(),
-      title: newProposal.title,
-      amount: newProposal.amount,
-      isFinal: newProposal.isFinal,
-      date: newProposal.date,
-      fileUrl: newProposal.file ? URL.createObjectURL(newProposal.file) : null,
-      fileName: newProposal.file ? newProposal.file.name : null
-    };
+    let fileKey = null; let fileName = null; if (newProposal.file) { try { fileKey = await uploadFileToR2(newProposal.file, "estimates"); fileName = newProposal.file.name; } catch(err) { console.error(err); alert("Failed"); return; } } const proposalObj = { id: Date.now(), title: newProposal.title, amount: newProposal.amount, isFinal: newProposal.isFinal, date: newProposal.date, fileKey: fileKey, fileName: fileName, fileUrl: "#" };
 
     const updatedProposals = [proposalObj, ...proposals];
     setProposals(updatedProposals);
@@ -205,7 +196,7 @@ const TabEstimate = ({ leadData, isClient = false }) => {
                                       <MdPictureAsPdf className="text-red-500" size={18} />
                                       {prop.fileName}
                                       {prop.fileUrl && (
-                                         <a href={prop.fileUrl} target="_blank" rel="noreferrer" className="ml-2 text-[#2563EB] hover:underline flex items-center"><MdFileDownload/></a>
+                                         <button onClick={async () => { if(prop.fileKey) { try { const u = await getR2FileUrl(prop.fileKey); window.open(u, "_blank"); } catch(e){} } else if (prop.fileUrl && prop.fileUrl !== "#") { window.open(prop.fileUrl, "_blank"); } }} className="ml-2 text-[#2563EB] hover:underline flex items-center"><MdFileDownload/></button>
                                       )}
                                    </div>
                                 ) : (
@@ -312,3 +303,5 @@ const TabEstimate = ({ leadData, isClient = false }) => {
 };
 
 export default TabEstimate;
+
+

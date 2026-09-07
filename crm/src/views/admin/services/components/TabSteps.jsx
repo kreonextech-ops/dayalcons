@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Card from "components/card";
 import { createClient } from "@supabase/supabase-js";
+import { uploadFileToR2, getR2FileUrl, deleteR2File } from "utils/r2Storage";
 import { MdCheckCircle, MdSave, MdRadioButtonUnchecked, MdAdd, MdDelete, MdExpandMore, MdExpandLess, MdAttachFile, MdSend } from "react-icons/md";
 
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL || "https://gdzligxryodasaxnhdco.supabase.co";
@@ -118,26 +119,40 @@ const TabSteps = ({ serviceCase, onUpdate }) => {
       setNewComment("");
   };
 
-  const handleFileUpload = (stepId, e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      
-      // Simulating a file upload for now
-      const fileObj = {
-          id: Date.now(),
-          name: file.name,
-          url: URL.createObjectURL(file), // mock URL
-          author: loggedInUser.name,
-          timestamp: new Date().toISOString()
-      };
+  const handleFileUpload = async (stepId, e) => {
+        const file = e.target.files[0];
+        if (!file) return;
 
-      setSteps(prev => prev.map(step => {
-          if (step.id === stepId) {
-              return { ...step, files: [...(step.files || []), fileObj] };
-          }
-          return step;
-      }));
-  };
+        try {
+            const fileKey = await uploadFileToR2(file, "steps");
+            const fileObj = {
+                id: Date.now(),
+                name: file.name,
+                fileKey: fileKey,
+                url: "#",
+                author: (typeof loggedInUser !== "undefined" && loggedInUser?.name) ? loggedInUser.name : "User",
+                timestamp: new Date().toISOString()
+            };
+
+            setSteps(prev => {
+                const newSteps = prev.map(step => {
+                    if (step.id === stepId) {
+                        return { ...step, files: [...(step.files || []), fileObj] };
+                    }
+                    return step;
+                });
+                if (typeof updateStepsInDB === "function") {
+                    updateStepsInDB(newSteps);
+                }
+                return newSteps;
+            });
+        } catch (err) {
+            console.error("Upload failed", err);
+            alert("File upload failed.");
+        }
+        e.target.value = null;
+    };
+
 
   const sortedSteps = [...steps].sort((a, b) => a.order - b.order);
   const completedCount = steps.filter(s => s.completed).length;
@@ -209,7 +224,7 @@ const TabSteps = ({ serviceCase, onUpdate }) => {
                               <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
                                  {step.files.map(file => (
                                     <div key={file.id} className="bg-white p-2 rounded border border-gray-200 text-xs flex flex-col justify-between shadow-sm">
-                                       <span className="truncate font-medium">{file.name}</span>
+                                       <button onClick={async () => { if(file.fileKey) { try { const u = await getR2FileUrl(file.fileKey); window.open(u, "_blank"); } catch(e){} } }} className="truncate font-medium text-blue-500 hover:underline text-left">{file.name}</button>
                                        <span className="text-gray-400 text-[10px] mt-1">{file.author}</span>
                                     </div>
                                  ))}
@@ -305,4 +320,7 @@ const TabSteps = ({ serviceCase, onUpdate }) => {
 };
 
 export default TabSteps;
+
+
+
 

@@ -38,14 +38,14 @@ const TabFiles = ({ task }) => {
     const userStr = localStorage.getItem("dayal_user");
     const user = userStr ? JSON.parse(userStr) : { name: "Admin" };
 
-    let fileKey = "#";
+    let fileKey;
     try {
-        // Attempt to upload to Cloudflare R2
         fileKey = await uploadFileToR2(file, 'tasks');
     } catch (err) {
-        console.warn("R2 Upload failed, keys might not be set. Using mock mode.", err);
-        // Mock fallback if keys aren't set
-        fileKey = "mock/" + file.name;
+        console.error("R2 Upload failed:", err);
+        alert("Upload failed: Could not connect to R2 Storage.");
+        setUploading(false);
+        return;
     }
 
     const fileSizeMb = (file.size / (1024 * 1024)).toFixed(2) + " MB";
@@ -81,7 +81,7 @@ const TabFiles = ({ task }) => {
     if (!window.confirm("Delete this file?")) return;
     
     try {
-       if (fileKey && !fileKey.startsWith("mock/") && fileKey !== "#") {
+       if (fileKey && fileKey !== "#") {
            await deleteR2File(fileKey);
        }
     } catch (e) {
