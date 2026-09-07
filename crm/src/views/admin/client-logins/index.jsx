@@ -3,6 +3,7 @@ import { MdAdd, MdDelete, MdVpnKey, MdPerson, MdClose } from "react-icons/md";
 import Card from "components/card";
 import { createClient } from "@supabase/supabase-js";
 import ClientChat from "components/chat/ClientChat";
+import R2Image from "components/R2Image";
 
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL || "https://gdzligxryodasaxnhdco.supabase.co";
 const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdkemxpZ3hyeW9kYXNheG5oZGNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcxNTg1MDUsImV4cCI6MjEwMjczNDUwNX0.AYTyAMf22g8au51ATReRQdQc2IzDLYQ2vtQH_Uyfrpg";
@@ -126,7 +127,7 @@ export default function ClientLogins() {
                         <div className="flex items-center gap-2">
                           <div className="h-8 w-8 rounded-full overflow-hidden bg-blue-100 flex items-center justify-center text-brand-500 border border-brand-200">
                             {linkedClient?.profile_picture ? (
-                               <img src={linkedClient.profile_picture} alt="Profile" className="w-full h-full object-cover" />
+                               <R2Image fileKey={linkedClient.profile_picture} alt="Profile" className="w-full h-full object-cover" />
                             ) : (
                                <MdPerson size={18} />
                             )}
@@ -246,7 +247,7 @@ export default function ClientLogins() {
               <div className="flex items-center gap-4">
                 <div className="h-16 w-16 rounded-full overflow-hidden bg-gray-100 border-2 border-brand-500">
                   {selectedClient.profile_picture ? (
-                     <img src={selectedClient.profile_picture} alt="Profile" className="w-full h-full object-cover" />
+                     <R2Image fileKey={selectedClient.profile_picture} alt="Profile" className="w-full h-full object-cover" />
                   ) : (
                      <div className="w-full h-full flex items-center justify-center text-gray-400 text-2xl font-bold bg-gray-100">
                         {selectedClient.name?.charAt(0) || "U"}

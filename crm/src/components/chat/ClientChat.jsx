@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import { createClient } from "@supabase/supabase-js";
 import { MdSend, MdAttachFile, MdInsertDriveFile, MdImage } from "react-icons/md";
+import { uploadFileToR2, getR2FileUrl } from "utils/r2Storage";
+import R2Image from "components/R2Image";
 
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL || "https://gdzligxryodasaxnhdco.supabase.co";
 const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdkemxpZ3hyeW9kYXNheG5oZGNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcxNTg1MDUsImV4cCI6MjEwMjczNDUwNX0.AYTyAMf22g8au51ATReRQdQc2IzDLYQ2vtQH_Uyfrpg";
@@ -83,37 +85,41 @@ export default function ClientChat({ clientId, userType }) {
     if (!file) return;
 
     setUploading(true);
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${Math.random()}.${fileExt}`;
-    const filePath = `${clientId}/${fileName}`;
+    
+    try {
+      const fileKey = await uploadFileToR2(file, `chat/${clientId}`);
+      const msg = {
+        client_id: clientId,
+        sender_type: userType,
+        message: file.name, // Use file name as message text
+        file_url: fileKey,
+        file_name: file.name
+      };
 
-    // Upload to 'client_files' bucket
-    let { error: uploadError } = await supabase.storage
-      .from('client_files')
-      .upload(filePath, file);
-
-    if (uploadError) {
-      console.error("Upload error:", uploadError);
-      alert("Failed to upload file. Make sure the 'client_files' storage bucket exists and is public.");
-      setUploading(false);
-      return;
+      await supabase.from("client_messages").insert([msg]);
+    } catch (err) {
+      console.error("Upload error:", err);
+      alert("Failed to upload file to R2.");
     }
 
-    const { data: { publicUrl } } = supabase.storage
-      .from('client_files')
-      .getPublicUrl(filePath);
-
-    const msg = {
-      client_id: clientId,
-      sender_type: userType,
-      message: file.name, // Use file name as message text
-      file_url: publicUrl,
-      file_name: file.name
-    };
-
-    await supabase.from("client_messages").insert([msg]);
     setUploading(false);
     fetchMessages();
+  };
+
+  const handleFileClick = async (e, fileKey) => {
+    e.preventDefault();
+    if (!fileKey) return;
+    if (fileKey.startsWith('http')) {
+      window.open(fileKey, '_blank');
+      return;
+    }
+    try {
+      const url = await getR2FileUrl(fileKey);
+      window.open(url, '_blank');
+    } catch (err) {
+      console.error(err);
+      alert("Failed to open file.");
+    }
   };
 
   return (
@@ -133,11 +139,11 @@ export default function ClientChat({ clientId, userType }) {
                   {msg.file_url ? (
                     <div className="flex flex-col gap-2">
                       {msg.file_url.match(/\.(jpeg|jpg|gif|png)$/i) ? (
-                        <a href={msg.file_url} target="_blank" rel="noreferrer">
-                          <img src={msg.file_url} alt="attachment" className="max-w-full rounded-lg max-h-48 object-cover" />
+                        <a href="#" onClick={(e) => handleFileClick(e, msg.file_url)}>
+                          <R2Image fileKey={msg.file_url} alt="attachment" className="max-w-full rounded-lg max-h-48 object-cover" />
                         </a>
                       ) : (
-                        <a href={msg.file_url} target="_blank" rel="noreferrer" className="flex items-center gap-2 underline text-sm break-all">
+                        <a href="#" onClick={(e) => handleFileClick(e, msg.file_url)} className="flex items-center gap-2 underline text-sm break-all">
                           <MdInsertDriveFile size={20} />
                           {msg.file_name || "Download File"}
                         </a>

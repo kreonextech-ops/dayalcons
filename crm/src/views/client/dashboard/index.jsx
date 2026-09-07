@@ -63,20 +63,13 @@ export default function ClientDashboard() {
     if (!file || !clientProfile) return;
     setUploadingPhoto(true);
 
-    const fileExt = file.name.split('.').pop();
-    const fileName = `profile_${clientProfile.id}_${Math.random()}.${fileExt}`;
-    const filePath = `profiles/${fileName}`;
-
-    // Note: Assuming 'client_files' bucket exists for profile pics too
-    let { error: uploadError } = await supabase.storage.from('client_files').upload(filePath, file);
-
-    if (uploadError) {
-      console.error(uploadError);
-      alert("Failed to upload photo. Ensure bucket exists.");
-    } else {
-      const { data: { publicUrl } } = supabase.storage.from('client_files').getPublicUrl(filePath);
-      await supabase.from('clients').update({ profile_picture: publicUrl }).eq('id', clientProfile.id);
-      setClientProfile({ ...clientProfile, profile_picture: publicUrl });
+    try {
+      const fileKey = await uploadFileToR2(file, 'client_profiles');
+      await supabase.from('clients').update({ profile_picture: fileKey }).eq('id', clientProfile.id);
+      setClientProfile({ ...clientProfile, profile_picture: fileKey });
+    } catch (err) {
+      console.error(err);
+      alert("Failed to upload photo to R2.");
     }
     setUploadingPhoto(false);
   };
@@ -86,9 +79,7 @@ export default function ClientDashboard() {
   }
 
   return (
-    <div className="flex flex-col gap-6 mt-5 pb-10">
-      
-      {/* Profile & Chat Section */}
+    <div className="flex flex-col gap-5 mt-5">
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         {/* Profile Card */}
@@ -96,7 +87,7 @@ export default function ClientDashboard() {
           <div className="relative group mb-4">
             <div className="w-24 h-24 rounded-full bg-gray-200 overflow-hidden shadow-md border-4 border-white">
               {clientProfile?.profile_picture ? (
-                <img src={clientProfile.profile_picture} alt="Profile" className="w-full h-full object-cover" />
+                <R2Image fileKey={clientProfile.profile_picture} alt="Profile" className="w-full h-full object-cover" />
               ) : (
                 <div className="w-full h-full flex items-center justify-center text-gray-400 text-3xl font-bold bg-gray-100">
                   {clientProfile?.name?.charAt(0) || "U"}
