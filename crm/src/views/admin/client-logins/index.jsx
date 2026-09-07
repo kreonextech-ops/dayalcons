@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { MdAdd, MdDelete, MdVpnKey, MdPerson } from "react-icons/md";
+import { MdAdd, MdDelete, MdVpnKey, MdPerson, MdClose } from "react-icons/md";
 import Card from "components/card";
 import { createClient } from "@supabase/supabase-js";
+import ClientChat from "components/chat/ClientChat";
 
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL || "https://gdzligxryodasaxnhdco.supabase.co";
 const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdkemxpZ3hyeW9kYXNheG5oZGNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcxNTg1MDUsImV4cCI6MjEwMjczNDUwNX0.AYTyAMf22g8au51ATReRQdQc2IzDLYQ2vtQH_Uyfrpg";
@@ -13,30 +14,21 @@ export default function ClientLogins() {
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [selectedClient, setSelectedClient] = useState(null); // Added for Profile/Chat
 
-  const [newLogin, setNewLogin] = useState({
+  const [formData, setFormData] = useState({
     clientId: "",
-    userId: "",
+    email: "",
     password: ""
   });
 
   const fetchData = async () => {
     setLoading(true);
-    // Fetch logins (stored in employees table with role Client)
-    const { data: loginsData } = await supabase
-      .from("employees")
-      .select("*")
-      .eq("role", "Client")
-      .order("created_at", { ascending: false });
-
-    // Fetch clients for the dropdown
-    const { data: clientsData } = await supabase
-      .from("clients")
-      .select("id, name, phone")
-      .order("created_at", { ascending: false });
-
-    if (loginsData) setLogins(loginsData);
+    const { data: clientsData } = await supabase.from("clients").select("*").order("name", { ascending: true });
     if (clientsData) setClients(clientsData);
+
+    const { data: loginsData } = await supabase.from("employees").select("*").eq("role", "Client").order("created_at", { ascending: false });
+    if (loginsData) setLogins(loginsData);
     setLoading(false);
   };
 
@@ -44,53 +36,29 @@ export default function ClientLogins() {
     fetchData();
   }, []);
 
-  const handleCreateLogin = async (e) => {
+  const handleCreate = async (e) => {
     e.preventDefault();
-    if (!newLogin.clientId || !newLogin.userId || !newLogin.password) {
-      alert("Please fill all fields.");
-      return;
-    }
-
     setIsSaving(true);
+    const selectedC = clients.find(c => String(c.id) === String(formData.clientId));
     
-    // Check if userid already exists
-    const { data: existing } = await supabase
-      .from("employees")
-      .select("id")
-      .eq("email", newLogin.userId);
-      
-    if (existing && existing.length > 0) {
-      alert("This User ID is already taken. Please choose another.");
-      setIsSaving(false);
-      return;
-    }
-
-    const selectedClient = clients.find(c => c.id === newLogin.clientId);
-
-    const payload = {
-      name: selectedClient?.name || "Client User",
-      email: newLogin.userId, // Storing User ID in the email column
-      password: newLogin.password,
+    const newLogin = {
+      name: selectedC?.name || "Client Portal",
+      email: formData.email,
+      password: formData.password,
       role: "Client",
-      department: newLogin.clientId, // Storing strict client connection here
-      status: "Active",
-      join_date: new Date().toISOString()
+      department: formData.clientId // We store clientId in department field to link them
     };
 
-    const { error } = await supabase.from("employees").insert([payload]);
-
-    if (error) {
-      alert("Failed to create login: " + error.message);
-    } else {
-      setShowModal(false);
-      setNewLogin({ clientId: "", userId: "", password: "" });
-      fetchData();
-    }
+    await supabase.from("employees").insert([newLogin]);
+    setFormData({ clientId: "", email: "", password: "" });
+    setShowModal(false);
     setIsSaving(false);
+    fetchData();
   };
 
-  const handleDelete = async (id) => {
-    if (window.confirm("Are you sure you want to revoke and delete this client login?")) {
+  const handleDelete = async (id, e) => {
+    e.stopPropagation(); // Stop row click
+    if (window.confirm("Are you sure you want to revoke this client's portal access?")) {
       await supabase.from("employees").delete().eq("id", id);
       fetchData();
     }
@@ -101,7 +69,7 @@ export default function ClientLogins() {
       <div className="flex justify-between items-center mb-4 mt-2">
         <div>
           <h2 className="text-2xl font-bold text-navy-700 dark:text-white">Client Logins</h2>
-          <p className="text-sm text-gray-500">Manage portal access credentials for your clients.</p>
+          <p className="text-sm text-gray-500">Manage portal access and communicate directly with clients.</p>
         </div>
         <button
           onClick={() => setShowModal(true)}
@@ -129,22 +97,30 @@ export default function ClientLogins() {
               ) : logins.length === 0 ? (
                 <tr>
                   <td colSpan="5" className="py-8 text-center text-gray-500">
-                    No client logins created yet. Click above to create one.
+                    No client logins created yet.
                   </td>
                 </tr>
               ) : (
                 logins.map((login) => {
-                  const linkedClient = clients.find(c => c.id === login.department);
+                  const linkedClient = clients.find(c => String(c.id) === String(login.department));
                   return (
-                    <tr key={login.id} className="border-b border-gray-50 hover:bg-gray-50 transition">
+                    <tr 
+                      key={login.id} 
+                      className="border-b border-gray-50 hover:bg-gray-50 transition cursor-pointer"
+                      onClick={() => setSelectedClient(linkedClient)}
+                    >
                       <td className="py-4 px-4">
                         <div className="flex items-center gap-2">
-                          <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center text-brand-500">
-                            <MdPerson size={18} />
+                          <div className="h-8 w-8 rounded-full overflow-hidden bg-blue-100 flex items-center justify-center text-brand-500 border border-brand-200">
+                            {linkedClient?.profile_picture ? (
+                               <img src={linkedClient.profile_picture} alt="Profile" className="w-full h-full object-cover" />
+                            ) : (
+                               <MdPerson size={18} />
+                            )}
                           </div>
                           <div>
                             <p className="text-sm font-bold text-navy-700">{linkedClient?.name || login.name}</p>
-                            <p className="text-xs text-gray-500">ID: CLIENT-{login.department?.substring(0,4)?.toUpperCase()}</p>
+                            <p className="text-xs text-gray-500">ID: CLIENT-{login.department?.toString().substring(0,4)?.toUpperCase() || "NEW"}</p>
                           </div>
                         </div>
                       </td>
@@ -165,7 +141,7 @@ export default function ClientLogins() {
                       </td>
                       <td className="py-4 px-4 text-right">
                         <button 
-                          onClick={() => handleDelete(login.id)}
+                          onClick={(e) => handleDelete(login.id, e)}
                           className="p-2 text-red-500 hover:bg-red-50 rounded-lg transition"
                           title="Revoke Access"
                         >
@@ -181,51 +157,50 @@ export default function ClientLogins() {
         </div>
       </Card>
 
-      {/* Modal */}
+      {/* CREATE MODAL */}
       {showModal && (
-        <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black bg-opacity-50 backdrop-blur-sm">
-          <div className="w-[500px] rounded-[20px] bg-white p-6 shadow-2xl">
-            <h3 className="mb-4 text-xl font-bold text-navy-700">Create Client Login</h3>
-            <form onSubmit={handleCreateLogin} className="flex flex-col gap-4">
-              
-              <div>
-                <label className="mb-1 block text-sm font-bold text-gray-600">Select Client *</label>
-                <select 
+        <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/50 p-4">
+          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
+            <h3 className="text-xl font-bold text-navy-700 mb-4 flex items-center gap-2">
+              <MdVpnKey className="text-brand-500" /> Create Access Credentials
+            </h3>
+            <form onSubmit={handleCreate}>
+              <div className="mb-4">
+                <label className="mb-1 block text-sm font-bold text-gray-600">Link to Client Record</label>
+                <select
                   required
-                  value={newLogin.clientId}
-                  onChange={(e) => setNewLogin({...newLogin, clientId: e.target.value})}
-                  className="w-full rounded-lg border border-gray-200 p-3 text-sm outline-none focus:border-brand-500"
+                  className="w-full rounded-lg border border-gray-200 p-3 text-sm outline-none focus:border-brand-500 text-navy-700 font-semibold"
+                  value={formData.clientId}
+                  onChange={(e) => setFormData({...formData, clientId: e.target.value})}
                 >
-                  <option value="">-- Select Client from Database --</option>
+                  <option value="">-- Select Client --</option>
                   {clients.map(c => (
-                    <option key={c.id} value={c.id}>{c.name} {c.phone ? `(${c.phone})` : ''}</option>
+                    <option key={c.id} value={c.id}>{c.name} ({c.phone || c.email})</option>
                   ))}
                 </select>
-                <p className="mt-1 text-[11px] text-gray-500">This strictly links the login to their CRM profile.</p>
               </div>
 
-              <div>
-                <label className="mb-1 block text-sm font-bold text-gray-600">User ID *</label>
-                <input 
-                  required
+              <div className="mb-4">
+                <label className="mb-1 block text-sm font-bold text-gray-600">Login ID (Username)</label>
+                <input
                   type="text"
-                  placeholder="e.g. rahul_villa123"
-                  value={newLogin.userId}
-                  onChange={(e) => setNewLogin({...newLogin, userId: e.target.value.toLowerCase().trim()})}
+                  required
+                  placeholder="e.g. client123"
                   className="w-full rounded-lg border border-gray-200 p-3 text-sm outline-none focus:border-brand-500"
+                  value={formData.email}
+                  onChange={(e) => setFormData({...formData, email: e.target.value})}
                 />
-                <p className="mt-1 text-[11px] text-gray-500">Can be a username or phone number (no spaces).</p>
               </div>
 
-              <div>
-                <label className="mb-1 block text-sm font-bold text-gray-600">Password *</label>
-                <input 
-                  required
+              <div className="mb-6">
+                <label className="mb-1 block text-sm font-bold text-gray-600">Password</label>
+                <input
                   type="text"
-                  placeholder="Create a strong password"
-                  value={newLogin.password}
-                  onChange={(e) => setNewLogin({...newLogin, password: e.target.value})}
+                  required
+                  placeholder="Generated/Set Password"
                   className="w-full rounded-lg border border-gray-200 p-3 text-sm outline-none focus:border-brand-500"
+                  value={formData.password}
+                  onChange={(e) => setFormData({...formData, password: e.target.value})}
                 />
               </div>
 
@@ -242,10 +217,42 @@ export default function ClientLogins() {
                   disabled={isSaving}
                   className="flex-1 rounded-lg bg-brand-500 py-3 text-sm font-bold text-white hover:bg-brand-600 transition disabled:opacity-50"
                 >
-                  {isSaving ? "Creating..." : "Create Login"}
+                  {isSaving ? "Saving..." : "Create Login"}
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* CLIENT PROFILE MODAL */}
+      {selectedClient && (
+        <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm" onClick={() => setSelectedClient(null)}>
+          <div className="w-full max-w-3xl rounded-[20px] bg-white shadow-2xl flex flex-col max-h-[90vh]" onClick={e => e.stopPropagation()}>
+            <div className="p-6 border-b border-gray-100 flex justify-between items-start">
+              <div className="flex items-center gap-4">
+                <div className="h-16 w-16 rounded-full overflow-hidden bg-gray-100 border-2 border-brand-500">
+                  {selectedClient.profile_picture ? (
+                     <img src={selectedClient.profile_picture} alt="Profile" className="w-full h-full object-cover" />
+                  ) : (
+                     <div className="w-full h-full flex items-center justify-center text-gray-400 text-2xl font-bold bg-gray-100">
+                        {selectedClient.name?.charAt(0) || "U"}
+                     </div>
+                  )}
+                </div>
+                <div>
+                  <h3 className="text-2xl font-bold text-navy-700">{selectedClient.name}</h3>
+                  <p className="text-gray-500">{selectedClient.email} • {selectedClient.phone}</p>
+                </div>
+              </div>
+              <button onClick={() => setSelectedClient(null)} className="p-2 text-gray-400 hover:bg-gray-100 rounded-full transition">
+                <MdClose size={24} />
+              </button>
+            </div>
+            <div className="p-6 bg-gray-50 flex-1 overflow-hidden">
+               <h4 className="font-bold text-navy-700 mb-3 text-lg">Direct Messaging & Files</h4>
+               <ClientChat clientId={selectedClient.id} userType="admin" />
+            </div>
           </div>
         </div>
       )}
