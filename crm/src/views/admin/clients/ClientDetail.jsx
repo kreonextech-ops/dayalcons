@@ -186,6 +186,7 @@ const ClientDetail = ({ client, onBack }) => {
   };
 
   const handleToggleAssignEmployee = async (employeeId) => {
+    if (!isAdmin) return;
     let currentAssigned = (clientData.assigned_to || '').split(',').filter(Boolean);
     if (currentAssigned.includes(employeeId)) {
       currentAssigned = currentAssigned.filter(id => id !== employeeId);
@@ -615,7 +616,7 @@ const ClientDetail = ({ client, onBack }) => {
                     {employees.map(emp => {
                       const isAssigned = (clientData.assigned_to || '').split(',').includes(emp.id);
                       return (
-                        <div key={emp.id} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer transition" onClick={() => handleToggleAssignEmployee(emp.id)}>
+                        <div key={emp.id} className={`flex items-center gap-3 p-2 rounded-lg transition ${isAdmin ? "hover:bg-gray-50 cursor-pointer" : "opacity-70 cursor-not-allowed"}`} onClick={() => handleToggleAssignEmployee(emp.id)}>
                            <input type="checkbox" checked={isAssigned} readOnly className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500" />
                            <div className="h-8 w-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-xs">
                              {emp.name?.charAt(0) || 'U'}

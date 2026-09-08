@@ -22,6 +22,9 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 
 const TaskDetail = ({ task, onBack, onStatusChange, onDeleteTask }) => {
   const [activeTab, setActiveTab] = useState("Overview");
+  const userStr = localStorage.getItem('dayal_user');
+  const loggedInUser = userStr ? JSON.parse(userStr) : null;
+  const isAdmin = loggedInUser?.role === 'Admin';
     const [isEditingTitle, setIsEditingTitle] = useState(false);
     const [editTitle, setEditTitle] = useState("");
     const handlePriorityChange = async (e) => {
@@ -149,8 +152,9 @@ const TaskDetail = ({ task, onBack, onStatusChange, onDeleteTask }) => {
                    <select 
                       value={task.assignee_id || ""}
                       onChange={handleAssigneeChange}
-                      className="bg-transparent text-[13px] font-bold text-[#2563EB] outline-none cursor-pointer w-full border-b border-dashed border-blue-300 pb-0.5"
-                   >
+                        disabled={!isAdmin}
+                        className={`bg-transparent text-[13px] font-bold outline-none w-full border-b border-dashed pb-0.5 ${isAdmin ? 'text-[#2563EB] cursor-pointer border-blue-300' : 'text-gray-500 cursor-not-allowed border-gray-300'}`}
+                     >
                       <option value="">Select Employee...</option>
                       {employees.map(emp => (
                          <option key={emp.id} value={emp.id}>{emp.name}</option>

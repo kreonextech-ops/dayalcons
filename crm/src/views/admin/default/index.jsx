@@ -39,14 +39,28 @@ const Dashboard = () => {
             setMyFollowUps(tasksData.filter(t => t.custom_category === "Follow Up" && t.status !== "Completed"));
          }
 
+         const { data: clientsAllData } = await supabase.from('clients').select('id, name');
+         
          const { data: clientsData } = await supabase.from('clients').select('*').like('assigned_to', `%${user.id}%`);
          if (clientsData) setMyClients(clientsData);
 
          const { data: servicesData } = await supabase.from('services').select('*').like('assigned_to', `%${user.id}%`);
-         if (servicesData) setMyServices(servicesData);
+         if (servicesData) {
+            const mergedServices = servicesData.map(srv => {
+               const clientMatch = clientsAllData?.find(c => c.id === srv.client_id);
+               return { ...srv, clientName: clientMatch ? clientMatch.name : 'Unknown Client' };
+            });
+            setMyServices(mergedServices);
+         }
 
          const { data: projectsData } = await supabase.from('projects').select('*').like('assigned_to', `%${user.id}%`);
-         if (projectsData) setMyProjects(projectsData);
+         if (projectsData) {
+            const mergedProjects = projectsData.map(proj => {
+               const clientMatch = clientsAllData?.find(c => c.id === proj.client_id);
+               return { ...proj, clientName: clientMatch ? clientMatch.name : 'Unknown Client' };
+            });
+            setMyProjects(mergedProjects);
+         }
 
       } else {
          // Fetch MD/Admin Data
@@ -217,7 +231,7 @@ const Dashboard = () => {
                    <table className="w-full">
                      <thead>
                        <tr className="border-b border-gray-200">
-                         <th className="py-3 text-left text-sm font-bold text-gray-600">PROJECT NAME</th>
+                         <th className="py-3 text-left text-sm font-bold text-gray-600">CLIENT & PROJECT</th>
                          <th className="py-3 text-left text-sm font-bold text-gray-600">STATUS</th>
                        </tr>
                      </thead>
@@ -229,7 +243,10 @@ const Dashboard = () => {
                        ) : (
                          myProjects.slice(0, 5).map(project => (
                            <tr key={project.id} className="border-b border-gray-50">
-                              <td className="py-3 text-sm font-bold text-navy-700 line-clamp-1">{project.name}</td>
+                              <td className="py-3 text-sm font-bold text-navy-700">
+                                 <div className="text-[#0F172A]">{project.clientName}</div>
+                                 <div className="text-[#64748B] font-medium text-xs">{project.name || project.title || 'Untitled Project'}</div>
+                              </td>
                               <td className="py-3 text-sm font-medium">
                                  <span className="bg-orange-100 text-orange-700 px-2 py-1 rounded-md text-[12px] font-bold capitalize">{project.status}</span>
                               </td>
@@ -252,7 +269,7 @@ const Dashboard = () => {
                    <table className="w-full">
                      <thead>
                        <tr className="border-b border-gray-200">
-                         <th className="py-3 text-left text-sm font-bold text-gray-600">SERVICE NAME</th>
+                         <th className="py-3 text-left text-sm font-bold text-gray-600">CLIENT & SERVICE</th>
                          <th className="py-3 text-left text-sm font-bold text-gray-600">STATUS</th>
                        </tr>
                      </thead>
@@ -264,7 +281,10 @@ const Dashboard = () => {
                        ) : (
                          myServices.slice(0, 5).map(service => (
                            <tr key={service.id} className="border-b border-gray-50">
-                              <td className="py-3 text-sm font-bold text-navy-700 line-clamp-1">{service.name}</td>
+                              <td className="py-3 text-sm font-bold text-navy-700">
+                                 <div className="text-[#0F172A]">{service.clientName}</div>
+                                 <div className="text-[#64748B] font-medium text-xs">{service.title || service.name || 'Untitled Service'}</div>
+                              </td>
                               <td className="py-3 text-sm font-medium">
                                  <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded-md text-[12px] font-bold capitalize">{service.status}</span>
                               </td>
