@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import Card from "components/card";
 import { createClient } from "@supabase/supabase-js";
+import { logAction } from "utils/auditLogger";
+
 import { 
   MdSearch, MdAdd, MdClose, MdViewKanban, MdViewList, MdCalendarToday, 
   MdTimeline, MdChevronRight, MdChevronLeft, MdCheckCircle, MdAssignment

@@ -6,6 +6,8 @@ import {
 } from "react-icons/md";
 import EmployeeDetail from "./EmployeeDetail";
 import { createClient } from "@supabase/supabase-js";
+import { logAction } from "utils/auditLogger";
+
 import { uploadFileToR2 } from "utils/r2Storage";
 
 // Sub-components

@@ -1,3 +1,4 @@
+import { logAction } from "utils/auditLogger";
 import React from "react";
 import Dropdown from "components/dropdown";
 import { FiAlignJustify } from "react-icons/fi";
@@ -163,8 +164,9 @@ const Navbar = (props) => {
                     Profile Settings
                   </Link>
                 <button
-                  onClick={() => {
-                    localStorage.removeItem("dayal_user");
+                  onClick={async () => {
+                    await logAction("LOGOUT", "System", "User logged out");
+                      localStorage.removeItem("dayal_user");
                     window.location.href = "/crm/auth/sign-in";
                   }}
                   className="mt-3 text-sm font-medium text-red-500 hover:text-red-500 transition duration-150 ease-out hover:ease-in text-left"

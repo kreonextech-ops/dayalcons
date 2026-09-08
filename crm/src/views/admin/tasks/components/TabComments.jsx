@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { createClient } from "@supabase/supabase-js";
+import { logAction } from "utils/auditLogger";
+
 import { MdAttachFile, MdDelete } from "react-icons/md";
 import { uploadFileToR2, deleteR2File } from "utils/r2Storage";
 import CommentRenderer from "components/chat/CommentRenderer";

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import Card from "components/card";
 import { createClient } from "@supabase/supabase-js";
+import { logAction } from "utils/auditLogger";
+
 import { 
   MdAdd, MdClose, MdCheckCircle, MdAccessTime, MdNotificationsActive,
   MdWhatshot, MdWbSunny, MdAcUnit, MdPerson, MdBusinessCenter

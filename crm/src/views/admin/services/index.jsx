@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import Card from "components/card";
 import { createClient } from "@supabase/supabase-js";
+import { logAction } from "utils/auditLogger";
+
 import { 
   MdSearch, MdDesignServices, MdGavel, MdOutlineArchitecture, 
   MdBusinessCenter, MdAttachMoney, MdAdd, MdCloudDownload, MdCloudUpload,

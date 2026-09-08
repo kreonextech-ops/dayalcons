@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import Card from "components/card";
 import { createClient } from "@supabase/supabase-js";
+import { logAction } from "utils/auditLogger";
+
 import * as XLSX from "xlsx";
 import { useRef } from "react";
 import LeadDetail from "./LeadDetail";

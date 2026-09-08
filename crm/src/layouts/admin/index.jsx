@@ -6,30 +6,6 @@ import Footer from "components/footer/Footer";
 import routes from "routes.js";
 
 
-const WatermarkOverlay = () => {
-    const userStr = localStorage.getItem("dayal_user");
-    const user = userStr ? JSON.parse(userStr) : null;
-    if (!user) return null;
-    const wmText = `${user.name} - ${user.email}`;
-
-    const items = Array(200).fill(wmText);
-
-    return (
-        <div style={{
-            position: 'fixed', top: '-50%', left: '-50%', width: '200vw', height: '200vh',
-            pointerEvents: 'none', zIndex: 9999, overflow: 'hidden',
-            display: 'flex', flexWrap: 'wrap', opacity: 0.03, userSelect: 'none', 
-            transform: 'rotate(-25deg)', transformOrigin: 'center'
-        }}>
-            {items.map((t, i) => (
-               <div key={i} style={{ padding: '30px 50px', whiteSpace: 'nowrap', fontSize: '20px', fontWeight: 'bold', color: 'black' }}>
-                   {t}
-               </div>
-            ))}
-        </div>
-    );
-};
-
 export default function Admin(props) {
 
   const { ...rest } = props;
@@ -111,7 +87,7 @@ export default function Admin(props) {
   document.documentElement.dir = "ltr";
   return (
     <div className="flex h-full w-full">
-      <WatermarkOverlay />
+      
       <Sidebar open={open} onClose={() => setOpen(false)} />
         {/* Mobile Backdrop */}
         {open && window.innerWidth < 1200 ? (
