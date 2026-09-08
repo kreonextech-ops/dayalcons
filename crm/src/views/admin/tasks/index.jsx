@@ -472,21 +472,44 @@ const Tasks = () => {
                                  <p className="text-[14px] text-gray-500">No employees found in directory.</p>
                               </div>
                            ) : (
-                              availableEmployees.map(emp => (
-                                 <div 
-                                    key={emp.id} 
-                                    onClick={() => { setNewTask({...newTask, assigneeId: emp.id, assigneeName: emp.name, department: emp.department}); setModalStep(4); }}
-                                    className={`p-4 border-b border-[#E2E8F0] hover:bg-blue-50 cursor-pointer transition flex items-center justify-between ${newTask.assigneeId === emp.id ? 'bg-blue-50' : ''}`}
-                                 >
-                                    <div>
-                                       <p className="text-[14px] font-bold text-[#0F172A]">{emp.name}</p>
-                                       <p className="text-[12px] text-gray-500">{emp.designation} • {emp.department}</p>
-                                    </div>
-                                    <div className="text-right">
-                                       <p className="text-[12px] font-bold text-green-600">Available</p>
-                                    </div>
-                                 </div>
-                              ))
+                              {(() => {
+                                   let validEmps = availableEmployees;
+                                   const userStr = localStorage.getItem('dayal_user');
+                                   const currentUser = userStr ? JSON.parse(userStr) : null;
+                                   const isStandard = currentUser && currentUser.role !== 'Admin' && currentUser.role !== 'MD';
+                                   
+                                   if (isStandard) {
+                                      if (newTask.module === 'Lead') {
+                                         // Anyone
+                                      } else if (newTask.module === 'Office Work' || newTask.module === 'Other') {
+                                         validEmps = availableEmployees.filter(e => e.id === currentUser.id);
+                                      } else {
+                                         const parentRecord = availableRecords.find(r => r.id === newTask.linkedRecordId);
+                                         const pAssigned = parentRecord ? (parentRecord.assigned_to || '') : '';
+                                         validEmps = availableEmployees.filter(e => pAssigned.includes(e.id) || e.role === 'Admin' || e.role === 'MD' || e.id === currentUser.id);
+                                      }
+                                   }
+                                   
+                                   if (validEmps.length === 0) {
+                                      return <div className="p-4 text-center text-[#64748B]">No available employees found for this task context.</div>;
+                                   }
+
+                                   return validEmps.map(emp => (
+                                      <div 
+                                         key={emp.id} 
+                                         onClick={() => { setNewTask({...newTask, assigneeId: emp.id, assigneeName: emp.name, department: emp.department}); setModalStep(4); }}
+                                         className={`p-4 border-b border-[#E2E8F0] hover:bg-blue-50 cursor-pointer transition flex items-center justify-between ${newTask.assigneeId === emp.id ? 'bg-blue-50' : ''}`}
+                                      >
+                                         <div>
+                                            <p className="text-[14px] font-bold text-[#0F172A]">{emp.name}</p>
+                                            <p className="text-[12px] text-gray-500">{emp.designation} • {emp.department}</p>
+                                         </div>
+                                         <div className="text-right">
+                                            <p className="text-[12px] font-bold text-green-600">Available</p>
+                                         </div>
+                                      </div>
+                                   ));
+                                })()}
                            )}
                         </div>
                      </div>

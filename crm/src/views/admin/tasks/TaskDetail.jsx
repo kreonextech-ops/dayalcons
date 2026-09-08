@@ -95,6 +95,19 @@ const TaskDetail = ({ task, onBack, onStatusChange, onDeleteTask }) => {
     "Overview", "Checklist", "Comments", "Files", "Activity & Time Log"
   ];
 
+
+  // Determine if the user can assign/re-assign
+  const parentRecord = contextData.project || contextData.service || contextData.client;
+  const parentAssigned = parentRecord ? (parentRecord.assigned_to || '') : '';
+  const canAssign = isAdmin || task.category === 'Lead' || parentAssigned.includes(loggedInUser?.id || '');
+
+  const validEmployees = employees.filter(emp => {
+      if (isAdmin) return true;
+      if (task.category === 'Lead') return true;
+      if (parentAssigned.includes(emp.id)) return true;
+      return false;
+  });
+
   return (
     <div className="relative min-h-screen bg-[#F8FAFC] p-4 sm:p-8 font-sans pb-24">
       {/* Back Navigation */}
