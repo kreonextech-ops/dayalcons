@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import InputField from "components/fields/InputField";
 import { FcGoogle } from "react-icons/fc";
@@ -16,6 +16,76 @@ export default function SignIn() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  const logLogin = async (employeeName, userId) => {
+    let ip = "Unknown";
+    let location = "Unknown";
+    try {
+        const res = await fetch("https://ipapi.co/json/");
+        const data = await res.json();
+        ip = data.ip || "Unknown";
+        location = data.city ? `${data.city}, ${data.country_name}` : "Unknown";
+    } catch(e) {}
+    
+    await supabase.from('audit_logs').insert([{
+        user_id: userId,
+        employee_name: employeeName,
+        action_type: "LOGIN",
+        module: "System",
+        description: `Logged in from ${location}`,
+        ip_address: ip,
+        device_info: navigator.userAgent
+    }]);
+  };
+
+  useEffect(() => {
+    // Check if coming back from Google Auth
+    const checkGoogleSession = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (session?.user?.email) {
+         setLoading(true);
+         const { data, error } = await supabase
+          .from('employees')
+          .select('*')
+          .eq('email', session.user.email)
+          .single();
+          
+         if (data) {
+            await logLogin(data.name, data.id);
+            localStorage.setItem("dayal_user", JSON.stringify(data));
+            if (data.role === "Client") navigate("/client/default");
+            else navigate("/admin/default");
+         } else {
+            setError(`No employee account found for ${session.user.email}.`);
+            await supabase.auth.signOut();
+            setLoading(false);
+         }
+      }
+    };
+    checkGoogleSession();
+
+    const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
+       if (event === 'SIGNED_IN' && session?.user?.email) {
+           checkGoogleSession();
+       }
+    });
+    return () => { authListener?.subscription?.unsubscribe(); };
+  }, [navigate]);
+
+  const handleGoogleSignIn = async () => {
+    setLoading(true);
+    setError("");
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: window.location.origin + '/auth/sign-in'
+      }
+    });
+    if (error) {
+       setError(error.message);
+       setLoading(false);
+    }
+  };
+
   const handleSignIn = async (e) => {
     e.preventDefault();
     setError("");
@@ -28,7 +98,6 @@ export default function SignIn() {
     }
 
     try {
-      // Query the employees table for the user
       const { data, error } = await supabase
         .from('employees')
         .select('*')
@@ -39,7 +108,7 @@ export default function SignIn() {
       if (error || !data) {
         setError("Invalid email or password.");
       } else {
-        // Success! Save user to local storage and redirect
+        await logLogin(data.name, data.id);
         localStorage.setItem("dayal_user", JSON.stringify(data));
         if (data.role === "Client") {
           navigate("/client/default");
@@ -56,7 +125,6 @@ export default function SignIn() {
 
   return (
     <div className="mt-16 mb-16 flex h-full w-full items-center justify-center px-2 md:mx-0 md:px-0 lg:mb-10 lg:items-center lg:justify-start">
-      {/* Sign in section */}
       <div className="mt-[10vh] w-full max-w-full flex-col items-center md:pl-4 lg:pl-0 xl:max-w-[420px]">
         <h4 className="mb-2.5 text-4xl font-bold text-navy-700 dark:text-white">
           Sign In
@@ -71,8 +139,28 @@ export default function SignIn() {
           </div>
         )}
 
+        {/* Google Sign In Button */}
+        <button
+          type="button"
+          disabled={loading}
+          onClick={handleGoogleSignIn}
+          className="mb-6 flex h-[50px] w-full items-center justify-center gap-2 rounded-xl bg-lightPrimary hover:cursor-pointer dark:bg-navy-800"
+        >
+          <div className="rounded-full text-xl">
+            <FcGoogle />
+          </div>
+          <h5 className="text-sm font-medium text-navy-700 dark:text-white">
+            Sign In with Google
+          </h5>
+        </button>
+
+        <div className="mb-6 flex items-center gap-3">
+          <div className="h-px w-full bg-gray-200 dark:bg-navy-700" />
+          <p className="text-base text-gray-600 dark:text-white"> or </p>
+          <div className="h-px w-full bg-gray-200 dark:bg-navy-700" />
+        </div>
+
         <form onSubmit={handleSignIn}>
-          {/* Email */}
           <InputField
             variant="auth"
             extra="mb-3"
@@ -84,7 +172,6 @@ export default function SignIn() {
             onChange={(e) => setEmail(e.target.value)}
           />
 
-          {/* Password */}
           <InputField
             variant="auth"
             extra="mb-3"
@@ -96,7 +183,6 @@ export default function SignIn() {
             onChange={(e) => setPassword(e.target.value)}
           />
           
-          {/* Checkbox */}
           <div className="mb-4 flex items-center justify-between px-2">
             <div className="flex items-center">
               <Checkbox />
