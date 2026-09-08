@@ -3,7 +3,7 @@ import { useState } from "react";
 
 export default function HomeGalleryImage({ img, idx }: { img: string; idx: number }) {
   const [isOpen, setIsOpen] = useState(false);
-  const src = `/images/project/${img}`;
+  const src = `https://pub-00d1d73a43a643edb96c64ca062ab6df.r2.dev/website/images/project/${img}`;
 
   return (
     <>
