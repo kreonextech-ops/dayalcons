@@ -40,15 +40,21 @@ export default function SignIn() {
   useEffect(() => {
     // Check if coming back from Google Auth
     const checkGoogleSession = async () => {
+      console.log('checkGoogleSession start', new Date().toISOString());
+      console.time('getSession');
       const { data: { session } } = await supabase.auth.getSession();
+      console.timeEnd('getSession');
+      console.log('Session retrieved', !!session?.user?.email);
       if (session?.user?.email) {
          setLoading(true);
+         console.time('fetchEmployee');
          const { data, error } = await supabase
           .from('employees')
           .select('*')
           .eq('email', session.user.email)
           .single();
           
+         console.timeEnd('fetchEmployee');
          if (data) {
             if (data.is_active === false) {
                setError("Your account has been disabled. Please contact the administrator.");
@@ -106,7 +112,8 @@ export default function SignIn() {
     }
 
     try {
-      const { data, error } = await supabase
+      console.time('fetchEmployee');
+         const { data, error } = await supabase
         .from('employees')
         .select('*')
         .eq('email', email)
