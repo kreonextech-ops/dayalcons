@@ -14,6 +14,7 @@ import ClientLogins from "views/admin/client-logins";
 import Documents from "views/admin/documents";
 import Vendors from "views/admin/vendors";
 
+import AuditLogs from "views/admin/auditlogs";
 import ProfileSettings from "views/admin/profile";
 
 // Auth Imports
@@ -33,6 +34,7 @@ import {
   MdDesignServices,
   MdLocationCity,
   MdAdminPanelSettings,
+  MdMonitor,
 } from "react-icons/md";
 
 const routes = [
@@ -78,6 +80,13 @@ const routes = [
     icon: <MdLocationCity className="h-6 w-6" />,
     path: "projects",
     component: <Projects />,
+  },
+  {
+    name: "System Audit Logs",
+    layout: "/admin",
+    icon: <MdMonitor className="h-6 w-6" />,
+    path: "auditlogs",
+    component: <AuditLogs />,
   },
   {
     name: "Employees",
