@@ -46,7 +46,7 @@ export default function HeroSection() {
           playsInline
           className="w-full h-full object-cover object-[center_bottom]"
         >
-          <source src="/heroupdate.mp4" type="video/mp4" />
+          <source src="https://pub-00d1d73a43a643edb96c64ca062ab6df.r2.dev/website/heroupdate.mp4" type="video/mp4" />
         </video>
         <div className="absolute inset-0 blueprint-grid opacity-5"></div>
       </div>
