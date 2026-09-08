@@ -175,7 +175,7 @@ const Navbar = (props) => {
                     localStorage.removeItem("dayal_user");
                     try { await supabase.auth.signOut(); } catch(e) {}
                     Object.keys(localStorage).forEach(key => { if (key.startsWith("sb-")) localStorage.removeItem(key); });
-                    window.location.href = "/auth/sign-in";
+                    window.location.href = "/crm/auth/sign-in";
                   }}
                   className="mt-3 text-sm font-medium text-red-500 hover:text-red-500 transition duration-150 ease-out hover:ease-in text-left"
                 >
