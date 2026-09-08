@@ -53,6 +53,7 @@ export default function SignIn() {
             if (data.is_active === false) {
                setError("Your account has been disabled. Please contact the administrator.");
                await supabase.auth.signOut();
+              Object.keys(localStorage).forEach(key => { if (key.startsWith("sb-")) localStorage.removeItem(key); });
                setLoading(false);
                return;
             }
@@ -63,6 +64,7 @@ export default function SignIn() {
          } else {
             setError(`No employee account found for ${session.user.email}.`);
             await supabase.auth.signOut();
+              Object.keys(localStorage).forEach(key => { if (key.startsWith("sb-")) localStorage.removeItem(key); });
             setLoading(false);
          }
       }
@@ -83,7 +85,7 @@ export default function SignIn() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: window.location.href
+        redirectTo: window.location.href, queryParams: { prompt: 'select_account' }
       }
     });
     if (error) {

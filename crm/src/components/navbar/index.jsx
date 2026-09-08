@@ -172,7 +172,8 @@ const Navbar = (props) => {
                   onClick={async () => {
                     await logAction("LOGOUT", "System", "User logged out");
                     localStorage.removeItem("dayal_user");
-                    await supabase.auth.signOut();
+                    try { await supabase.auth.signOut(); } catch(e) {}
+                    Object.keys(localStorage).forEach(key => { if (key.startsWith("sb-")) localStorage.removeItem(key); });
                     window.location.href = "/auth/sign-in";
                   }}
                   className="mt-3 text-sm font-medium text-red-500 hover:text-red-500 transition duration-150 ease-out hover:ease-in text-left"
