@@ -62,7 +62,8 @@ export default function Admin(props) {
             "Clients", 
             "Design & Legal Services", 
             "Execution Projects", 
-            "Tasks"
+            "Tasks",
+              "Profile Settings"
           ];
           if (allowedForEmployees.includes(prop.name)) {
             hasPermission = true;

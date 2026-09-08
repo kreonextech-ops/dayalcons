@@ -36,7 +36,8 @@ export function SidebarLinks(props) {
            "Design & Legal Services", 
            "Execution Projects", 
            "Tasks",
-           "Follow Ups"
+           "Follow Ups",
+           "Profile Settings"
         ];
         if (allowedForEmployees.includes(route.name)) {
            hasPermission = true;
