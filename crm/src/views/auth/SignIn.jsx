@@ -57,7 +57,7 @@ export default function SignIn() {
                setLoading(false);
                return;
             }
-            await logLogin(data.name, data.id);
+            logLogin(data.name, data.id);
             localStorage.setItem("dayal_user", JSON.stringify(data));
             if (data.role === "Client") navigate("/client/default");
             else navigate("/admin/default");
@@ -118,7 +118,7 @@ export default function SignIn() {
       } else if (data.is_active === false) {
         setError("Your account has been disabled. Please contact the administrator.");
       } else {
-        await logLogin(data.name, data.id);
+        logLogin(data.name, data.id);
         localStorage.setItem("dayal_user", JSON.stringify(data));
         if (data.role === "Client") {
           navigate("/client/default");
