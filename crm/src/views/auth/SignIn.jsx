@@ -85,7 +85,7 @@ export default function SignIn() {
     const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: window.location.href, queryParams: { prompt: 'select_account' }
+        redirectTo: window.location.origin + '/crm/auth/sign-in', queryParams: { prompt: 'select_account' }
       }
     });
     if (error) {
