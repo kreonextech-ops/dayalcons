@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import Widget from "components/widget/Widget";
-import { MdBusinessCenter, MdAssignment, MdPeople, MdAttachMoney } from "react-icons/md";
+import { MdBusinessCenter, MdAssignment, MdPeople, MdAttachMoney, MdArrowForward, MdAccessTime } from "react-icons/md";
 import Card from "components/card";
 import { createClient } from "@supabase/supabase-js";
+import { Link } from "react-router-dom";
 
 // Initialize Supabase Client
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL || "https://gdzligxryodasaxnhdco.supabase.co";
@@ -17,7 +18,11 @@ const Dashboard = () => {
   
   // For Employee Dashboard
   const [myTasks, setMyTasks] = useState([]);
-  const [myLeads, setMyLeads] = useState([]);
+  const [myClients, setMyClients] = useState([]);
+  const [myServices, setMyServices] = useState([]);
+  const [myProjects, setMyProjects] = useState([]);
+  const [myFollowUps, setMyFollowUps] = useState([]);
+
   const userStr = localStorage.getItem("dayal_user");
   const user = userStr ? JSON.parse(userStr) : null;
   const isEmployee = user && user.role !== "Admin" && user.role !== "MD";
@@ -27,12 +32,22 @@ const Dashboard = () => {
       setLoading(true);
 
       if (isEmployee) {
-         // Fetch Employee Data (Tasks)
-         const { data: myTasksData } = await supabase.from('tasks').select('*').eq('assignee_id', user.id).order('created_at', { ascending: false });
-         if (myTasksData) setMyTasks(myTasksData);
+         // Fetch Employee Data
+         const { data: tasksData } = await supabase.from('tasks').select('*').eq('assignee_id', user.id).order('created_at', { ascending: false });
+         if (tasksData) {
+            setMyTasks(tasksData);
+            setMyFollowUps(tasksData.filter(t => t.custom_category === "Follow Up" && t.status !== "Completed"));
+         }
 
-         const { data: myLeadsData } = await supabase.from('leads').select('*').eq('assigned_to', user.id).order('created_at', { ascending: false });
-         if (myLeadsData) setMyLeads(myLeadsData);
+         const { data: clientsData } = await supabase.from('clients').select('*').like('assigned_to', `%${user.id}%`);
+         if (clientsData) setMyClients(clientsData);
+
+         const { data: servicesData } = await supabase.from('services').select('*').like('assigned_to', `%${user.id}%`);
+         if (servicesData) setMyServices(servicesData);
+
+         const { data: projectsData } = await supabase.from('projects').select('*').like('assigned_to', `%${user.id}%`);
+         if (projectsData) setMyProjects(projectsData);
+
       } else {
          // Fetch MD/Admin Data
          const [projectsRes, tasksRes, leadsRes, quotesRes] = await Promise.all([
@@ -70,92 +85,95 @@ const Dashboard = () => {
   if (isEmployee) {
      return (
         <div>
-          <div className="mt-3 mb-4">
-            <h2 className="text-2xl font-bold text-navy-700 dark:text-white">Welcome, {user.name}</h2>
-            <p className="text-gray-500">Here is a quick overview of your assigned tasks and responsibilities.</p>
+          <div className="mt-3 mb-4 flex justify-between items-end">
+            <div>
+               <h2 className="text-2xl font-bold text-navy-700 dark:text-white">Welcome, {user.name}</h2>
+               <p className="text-gray-500">Here is a quick overview of your assigned tasks and responsibilities.</p>
+            </div>
           </div>
           
-          <div className="mt-3 grid grid-cols-1 gap-5 md:grid-cols-3">
-             <Widget icon={<MdAssignment className="h-7 w-7" />} title="To Do" subtitle={myTasks.filter(t => t.status === 'To Do').length.toString()} />
-             <Widget icon={<MdAssignment className="h-7 w-7 text-blue-500" />} title="In Progress" subtitle={myTasks.filter(t => t.status === 'In Progress').length.toString()} />
-             <Widget icon={<MdAssignment className="h-7 w-7 text-amber-500" />} title="Needs Approval" subtitle={myTasks.filter(t => t.status === 'Needs Approval').length.toString()} />
+          <div className="mt-3 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-4">
+             <Link to="/admin/clients">
+               <Widget icon={<MdPeople className="h-7 w-7" />} title="My Assigned Clients" subtitle={myClients.length.toString()} />
+             </Link>
+             <Link to="/admin/services">
+               <Widget icon={<MdBusinessCenter className="h-7 w-7 text-blue-500" />} title="My Assigned Services" subtitle={myServices.length.toString()} />
+             </Link>
+             <Link to="/admin/projects">
+               <Widget icon={<MdBusinessCenter className="h-7 w-7 text-amber-500" />} title="My Assigned Projects" subtitle={myProjects.length.toString()} />
+             </Link>
+             <Link to="/admin/followups">
+               <Widget icon={<MdAccessTime className="h-7 w-7 text-red-500" />} title="Pending Follow Ups" subtitle={myFollowUps.length.toString()} />
+             </Link>
           </div>
 
-          <Card extra={"w-full h-full p-4 sm:p-6 mt-6"}>
-             <header className="relative flex items-center justify-between pt-4 pb-2">
-               <div className="text-xl font-bold text-navy-700 dark:text-white">My Task List</div>
-             </header>
-             <div className="mt-4 overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b border-gray-200">
-                      <th className="py-3 text-left text-sm font-bold text-gray-600">TASK NAME</th>
-                      <th className="py-3 text-left text-sm font-bold text-gray-600">PRIORITY</th>
-                      <th className="py-3 text-left text-sm font-bold text-gray-600">STATUS</th>
-                      <th className="py-3 text-left text-sm font-bold text-gray-600">MODULE</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {loading ? (
-                      <tr><td colSpan="4" className="py-4 text-center">Loading...</td></tr>
-                    ) : myTasks.length === 0 ? (
-                      <tr><td colSpan="4" className="py-4 text-center text-gray-500">No tasks assigned to you right now.</td></tr>
-                    ) : (
-                      myTasks.map(task => (
-                        <tr key={task.id} className="border-b border-gray-50">
-                           <td className="py-3 text-sm font-bold text-navy-700">
-                             <a href={`/crm/admin/tasks?taskId=${task.id}`} className="text-brand-500 hover:underline">{task.title || task.name}</a>
-                           </td>
-                           <td className="py-3 text-sm font-bold text-gray-500">{task.priority || 'Normal'}</td>
-                           <td className="py-3 text-sm font-medium">
-                              <span className={`px-2 py-1 rounded-md text-[12px] font-bold ${task.status === 'Completed' ? 'bg-green-100 text-green-700' : task.status === 'Needs Approval' ? 'bg-amber-100 text-amber-700' : task.status === 'In Progress' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-700'}`}>
-                                 {task.status}
-                              </span>
-                           </td>
-                           <td className="py-3 text-sm font-bold text-gray-500">{task.category}</td>
-                        </tr>
-                      ))
-                    )}
-                  </tbody>
-                </table>
-             </div>
-          </Card>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-6">
+             <Card extra={"w-full h-full p-4 sm:p-6"}>
+                <header className="relative flex items-center justify-between pt-4 pb-2">
+                  <div className="text-xl font-bold text-navy-700 dark:text-white">My Pending Tasks</div>
+                  <Link to="/admin/tasks" className="text-sm font-medium text-brand-500 hover:underline flex items-center gap-1">View All <MdArrowForward /></Link>
+                </header>
+                <div className="mt-4 overflow-x-auto">
+                   <table className="w-full">
+                     <thead>
+                       <tr className="border-b border-gray-200">
+                         <th className="py-3 text-left text-sm font-bold text-gray-600">TASK NAME</th>
+                         <th className="py-3 text-left text-sm font-bold text-gray-600">STATUS</th>
+                       </tr>
+                     </thead>
+                     <tbody>
+                       {loading ? (
+                         <tr><td colSpan="2" className="py-4 text-center">Loading...</td></tr>
+                       ) : myTasks.filter(t => t.status !== 'Completed' && t.custom_category !== 'Follow Up').length === 0 ? (
+                         <tr><td colSpan="2" className="py-4 text-center text-gray-500">No pending tasks.</td></tr>
+                       ) : (
+                         myTasks.filter(t => t.status !== 'Completed' && t.custom_category !== 'Follow Up').slice(0, 5).map(task => (
+                           <tr key={task.id} className="border-b border-gray-50">
+                              <td className="py-3 text-sm font-bold text-navy-700 line-clamp-1">{task.title || task.name}</td>
+                              <td className="py-3 text-sm font-medium">
+                                 <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded-md text-[12px] font-bold">{task.status}</span>
+                              </td>
+                           </tr>
+                         ))
+                       )}
+                     </tbody>
+                   </table>
+                </div>
+             </Card>
 
-          <Card extra={"w-full h-full p-4 sm:p-6 mt-6"}>
-             <header className="relative flex items-center justify-between pt-4 pb-2">
-               <div className="text-xl font-bold text-navy-700 dark:text-white">My Assigned Leads</div>
-             </header>
-             <div className="mt-4 overflow-x-auto">
-                <table className="w-full">
-                  <thead>
-                    <tr className="border-b border-gray-200">
-                      <th className="py-3 text-left text-sm font-bold text-gray-600">LEAD NAME</th>
-                      <th className="py-3 text-left text-sm font-bold text-gray-600">STATUS</th>
-                      <th className="py-3 text-left text-sm font-bold text-gray-600">PHONE</th>
-                      <th className="py-3 text-left text-sm font-bold text-gray-600">EST. BUDGET</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {loading ? (
-                      <tr><td colSpan="4" className="py-4 text-center">Loading...</td></tr>
-                    ) : myLeads.length === 0 ? (
-                      <tr><td colSpan="4" className="py-4 text-center text-gray-500">No leads assigned to you right now.</td></tr>
-                    ) : (
-                      myLeads.map(lead => (
-                        <tr key={lead.id} className="border-b border-gray-50">
-                           <td className="py-3 text-sm font-bold text-navy-700">{lead.name}</td>
-                           <td className="py-3 text-sm font-medium">
-                              <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded-md text-[12px] font-bold">{lead.status}</span>
-                           </td>
-                           <td className="py-3 text-sm font-bold text-gray-500">{lead.phone || '-'}</td>
-                           <td className="py-3 text-sm font-bold text-gray-500">{lead.budget || '-'}</td>
-                        </tr>
-                      ))
-                    )}
-                  </tbody>
-                </table>
-             </div>
-          </Card>
+             <Card extra={"w-full h-full p-4 sm:p-6"}>
+                <header className="relative flex items-center justify-between pt-4 pb-2">
+                  <div className="text-xl font-bold text-navy-700 dark:text-white">Upcoming Follow Ups</div>
+                  <Link to="/admin/followups" className="text-sm font-medium text-brand-500 hover:underline flex items-center gap-1">View All <MdArrowForward /></Link>
+                </header>
+                <div className="mt-4 overflow-x-auto">
+                   <table className="w-full">
+                     <thead>
+                       <tr className="border-b border-gray-200">
+                         <th className="py-3 text-left text-sm font-bold text-gray-600">TITLE</th>
+                         <th className="py-3 text-left text-sm font-bold text-gray-600">DUE DATE</th>
+                       </tr>
+                     </thead>
+                     <tbody>
+                       {loading ? (
+                         <tr><td colSpan="2" className="py-4 text-center">Loading...</td></tr>
+                       ) : myFollowUps.length === 0 ? (
+                         <tr><td colSpan="2" className="py-4 text-center text-gray-500">No upcoming follow ups.</td></tr>
+                       ) : (
+                         myFollowUps.slice(0, 5).map(task => (
+                           <tr key={task.id} className="border-b border-gray-50">
+                              <td className="py-3 text-sm font-bold text-navy-700 line-clamp-1">{task.title || task.name}</td>
+                              <td className="py-3 text-sm font-medium text-gray-500">
+                                 {task.due_date ? new Date(task.due_date).toLocaleDateString() : 'No date'}
+                              </td>
+                           </tr>
+                         ))
+                       )}
+                     </tbody>
+                   </table>
+                </div>
+             </Card>
+          </div>
         </div>
      );
   }
@@ -275,5 +293,3 @@ const Dashboard = () => {
 };
 
 export default Dashboard;
-
-
