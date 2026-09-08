@@ -172,6 +172,108 @@ const Dashboard = () => {
                      </tbody>
                    </table>
                 </div>
+             </Card>          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-6">
+             <Card extra={"w-full h-full p-4 sm:p-6"}>
+                <header className="relative flex items-center justify-between pt-4 pb-2">
+                  <div className="text-xl font-bold text-navy-700 dark:text-white">Recent Clients</div>
+                  <Link to="/admin/clients" className="text-sm font-medium text-brand-500 hover:underline flex items-center gap-1">View All <MdArrowForward /></Link>
+                </header>
+                <div className="mt-4 overflow-x-auto">
+                   <table className="w-full">
+                     <thead>
+                       <tr className="border-b border-gray-200">
+                         <th className="py-3 text-left text-sm font-bold text-gray-600">CLIENT NAME</th>
+                         <th className="py-3 text-left text-sm font-bold text-gray-600">STATUS</th>
+                       </tr>
+                     </thead>
+                     <tbody>
+                       {loading ? (
+                         <tr><td colSpan="2" className="py-4 text-center">Loading...</td></tr>
+                       ) : myClients.length === 0 ? (
+                         <tr><td colSpan="2" className="py-4 text-center text-gray-500">No clients assigned.</td></tr>
+                       ) : (
+                         myClients.slice(0, 5).map(client => (
+                           <tr key={client.id} className="border-b border-gray-50">
+                              <td className="py-3 text-sm font-bold text-navy-700 line-clamp-1">{client.name}</td>
+                              <td className="py-3 text-sm font-medium">
+                                 <span className="bg-green-100 text-green-700 px-2 py-1 rounded-md text-[12px] font-bold">{client.status || 'Active'}</span>
+                              </td>
+                           </tr>
+                         ))
+                       )}
+                     </tbody>
+                   </table>
+                </div>
+             </Card>
+
+             <Card extra={"w-full h-full p-4 sm:p-6"}>
+                <header className="relative flex items-center justify-between pt-4 pb-2">
+                  <div className="text-xl font-bold text-navy-700 dark:text-white">Active Projects</div>
+                  <Link to="/admin/projects" className="text-sm font-medium text-brand-500 hover:underline flex items-center gap-1">View All <MdArrowForward /></Link>
+                </header>
+                <div className="mt-4 overflow-x-auto">
+                   <table className="w-full">
+                     <thead>
+                       <tr className="border-b border-gray-200">
+                         <th className="py-3 text-left text-sm font-bold text-gray-600">PROJECT NAME</th>
+                         <th className="py-3 text-left text-sm font-bold text-gray-600">STATUS</th>
+                       </tr>
+                     </thead>
+                     <tbody>
+                       {loading ? (
+                         <tr><td colSpan="2" className="py-4 text-center">Loading...</td></tr>
+                       ) : myProjects.length === 0 ? (
+                         <tr><td colSpan="2" className="py-4 text-center text-gray-500">No active projects.</td></tr>
+                       ) : (
+                         myProjects.slice(0, 5).map(project => (
+                           <tr key={project.id} className="border-b border-gray-50">
+                              <td className="py-3 text-sm font-bold text-navy-700 line-clamp-1">{project.name}</td>
+                              <td className="py-3 text-sm font-medium">
+                                 <span className="bg-orange-100 text-orange-700 px-2 py-1 rounded-md text-[12px] font-bold capitalize">{project.status}</span>
+                              </td>
+                           </tr>
+                         ))
+                       )}
+                     </tbody>
+                   </table>
+                </div>
+             </Card>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-6">
+             <Card extra={"w-full h-full p-4 sm:p-6"}>
+                <header className="relative flex items-center justify-between pt-4 pb-2">
+                  <div className="text-xl font-bold text-navy-700 dark:text-white">Active Services</div>
+                  <Link to="/admin/services" className="text-sm font-medium text-brand-500 hover:underline flex items-center gap-1">View All <MdArrowForward /></Link>
+                </header>
+                <div className="mt-4 overflow-x-auto">
+                   <table className="w-full">
+                     <thead>
+                       <tr className="border-b border-gray-200">
+                         <th className="py-3 text-left text-sm font-bold text-gray-600">SERVICE NAME</th>
+                         <th className="py-3 text-left text-sm font-bold text-gray-600">STATUS</th>
+                       </tr>
+                     </thead>
+                     <tbody>
+                       {loading ? (
+                         <tr><td colSpan="2" className="py-4 text-center">Loading...</td></tr>
+                       ) : myServices.length === 0 ? (
+                         <tr><td colSpan="2" className="py-4 text-center text-gray-500">No active services.</td></tr>
+                       ) : (
+                         myServices.slice(0, 5).map(service => (
+                           <tr key={service.id} className="border-b border-gray-50">
+                              <td className="py-3 text-sm font-bold text-navy-700 line-clamp-1">{service.name}</td>
+                              <td className="py-3 text-sm font-medium">
+                                 <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded-md text-[12px] font-bold capitalize">{service.status}</span>
+                              </td>
+                           </tr>
+                         ))
+                       )}
+                     </tbody>
+                   </table>
+                </div>
              </Card>
           </div>
         </div>
