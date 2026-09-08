@@ -154,6 +154,7 @@ const Tasks = () => {
      else if (newTask.module === "Service") payload.service_id = newTask.linkedRecordId;
 
      const { data, error } = await supabase.from('tasks').insert([payload]).select();
+       if (!error && data) { await logAction('CREATE', 'Tasks', `Created tasks`); }
      if (error) {
         alert("Failed to create task: " + error.message);
         return;
@@ -472,7 +473,7 @@ const Tasks = () => {
                                  <p className="text-[14px] text-gray-500">No employees found in directory.</p>
                               </div>
                            ) : (
-                              {(() => {
+                              (() => {
                                    let validEmps = availableEmployees;
                                    const userStr = localStorage.getItem('dayal_user');
                                    const currentUser = userStr ? JSON.parse(userStr) : null;
@@ -509,7 +510,7 @@ const Tasks = () => {
                                          </div>
                                       </div>
                                    ));
-                                })()}
+                                })()
                            )}
                         </div>
                      </div>
