@@ -1,4 +1,9 @@
 import React, { useState } from "react";
+import Switch from "components/switch";
+import { createClient } from "@supabase/supabase-js";
+import { logAction } from "utils/auditLogger";
+
+
 import { 
   MdArrowBack, MdWork, MdAssignment, MdEvent,
   MdTimeline, MdSecurity, MdFolder, MdCheckCircle, MdEdit, MdWarning
@@ -11,6 +16,10 @@ import TabAssignedWork from "./components/TabAssignedWork";
 import TabMyTasks from "./components/TabMyTasks";
 import TabActivity from "./components/TabActivity";
 import TabDocuments from "./components/TabDocuments";
+
+const supabaseUrl = process.env.REACT_APP_SUPABASE_URL || "https://gdzligxryodasaxnhdco.supabase.co";
+const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdkemxpZ3hyeW9kYXNheG5oZGNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcxNTg1MDUsImV4cCI6MjEwMjczNDUwNX0.AYTyAMf22g8au51ATReRQdQc2IzDLYQ2vtQH_Uyfrpg";
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 const EmployeeDetail = ({ employee, onBack, onEditProfile }) => {
   const [activeTab, setActiveTab] = useState("Overview");
