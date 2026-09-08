@@ -3,11 +3,10 @@ import { Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Navbar from "components/navbar";
 import Sidebar from "components/sidebar";
 import Footer from "components/footer/Footer";
+
 import routes from "routes.js";
 
-
 export default function Admin(props) {
-
   const { ...rest } = props;
   const location = useLocation();
   const [open, setOpen] = React.useState(true);
@@ -35,6 +34,7 @@ export default function Admin(props) {
     }
     return activeRoute;
   };
+
   const getActiveNavbar = (routes) => {
     let activeNavbar = false;
     for (let i = 0; i < routes.length; i++) {
@@ -46,13 +46,16 @@ export default function Admin(props) {
     }
     return activeNavbar;
   };
+
   const getRoutes = (routes) => {
-    const userStr = localStorage.getItem("dayal_user");
-    const user = userStr ? JSON.parse(userStr) : null;
-    const isAdmin = user?.role === "Admin";
-  
-      return routes.map((prop, key) => {
+    return routes.map((prop, key) => {
+      if (prop.layout === "/admin" || prop.layout === "/auth") {
+        
         let hasPermission = false;
+        const userStr = localStorage.getItem("dayal_user");
+        const loggedInUser = userStr ? JSON.parse(userStr) : null;
+        const isAdmin = loggedInUser?.role === 'Admin';
+  
         if (isAdmin) {
           hasPermission = true;
         } else if (prop.layout === "/admin") {
@@ -63,7 +66,8 @@ export default function Admin(props) {
             "Design & Legal Services", 
             "Execution Projects", 
             "Tasks",
-              "Profile Settings"
+            "Follow Ups",
+            "Profile Settings"
           ];
           if (allowedForEmployees.includes(prop.name)) {
             hasPermission = true;
@@ -75,69 +79,55 @@ export default function Admin(props) {
           <Route path={`/${prop.path}`} element={prop.component} key={key} />
         );
       } else if (prop.layout === "/admin") {
-         // Render a unauthorized redirect for routes they don't have access to
-         // But only if it's not the default path they are trying to reach, to avoid redirect loops
-         // A safer way is just not registering the route at all, or rendering a generic "No Access" message
          return <Route path={`/${prop.path}`} element={<div className="p-10 text-center font-bold text-red-500">You do not have permission to access this module.</div>} key={key} />;
       } else {
         return null;
       }
+      }
+      return null;
     });
   };
 
   document.documentElement.dir = "ltr";
   return (
     <div className="flex h-full w-full">
-      
       <Sidebar open={open} onClose={() => setOpen(false)} />
-        {/* Mobile Backdrop */}
-        {open && window.innerWidth < 1200 ? (
-          <div 
-            className="fixed inset-0 z-[45] bg-black/40 xl:hidden transition-opacity" 
-            onClick={() => setOpen(false)} 
-          />
-        ) : null}
-        {/* Navbar & Main Content */}
-      <div className="h-full w-full bg-lightPrimary dark:!bg-navy-900 min-w-0">
-        {/* Main Content */}
+      {/* Mobile Backdrop */}
+      {open && window.innerWidth < 1200 ? (
+        <div 
+          className="fixed inset-0 z-[50] bg-black/40 backdrop-blur-sm transition-opacity duration-300"
+          onClick={() => setOpen(false)}
+        />
+      ) : null}
+
+      <div className="h-full w-full bg-lightPrimary dark:!bg-navy-900">
         <main
           className={`mx-[12px] h-full flex-none transition-all md:pr-2 xl:ml-[313px]`}
         >
-          {/* Routes */}
           <div className="h-full">
             <Navbar
               onOpenSidenav={() => setOpen(true)}
-              logoText={"Dayal Constructions & Co. CRM"}
+              logoText={"Horizon UI Tailwind React"}
               brandText={currentRoute}
               secondary={getActiveNavbar(routes)}
               {...rest}
             />
-            <div className="pt-5s mx-auto mb-auto h-full min-h-[84vh] p-2 md:pr-2">
+            <div className="pt-5 mx-auto mb-auto h-full min-h-[84vh] p-2 md:pr-2">
               <Routes>
                 {getRoutes(routes)}
-
                 <Route
                   path="/"
                   element={<Navigate to={
                      // Find first permitted route
                      (() => {
                        const userStr = localStorage.getItem("dayal_user");
-                       const user = userStr ? JSON.parse(userStr) : null;
-                       const isAdmin = user?.role === "Admin";
-                       const perms = user?.permissions || {};
+                       const loggedInUser = userStr ? JSON.parse(userStr) : null;
+                       const isAdmin = loggedInUser?.role === 'Admin';
                        if (isAdmin) return "/admin/default";
                        
-                       for (const r of routes) {
-                          if (r.layout === "/admin") {
-                             let mName = r.name;
-                             if (mName === "Dashboard") return "/admin/" + r.path;
-                             if (mName === "Design & Legal Services") mName = "Design Services";
-                             if (perms[mName] && perms[mName].view) {
-                                return "/admin/" + r.path;
-                             }
-                          }
-                       }
-                       return "/admin/default"; // fallback
+                       const allowed = ["Dashboard", "Leads", "Clients", "Design & Legal Services", "Execution Projects", "Tasks", "Follow Ups", "Profile Settings"];
+                       const firstMatch = routes.find(r => r.layout === "/admin" && allowed.includes(r.name));
+                       return firstMatch ? `/admin/${firstMatch.path}` : "/admin/default";
                      })()
                   } replace />}
                 />
@@ -152,4 +142,3 @@ export default function Admin(props) {
     </div>
   );
 }
-

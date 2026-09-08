@@ -1,10 +1,7 @@
-import { logAction } from "utils/auditLogger";
-import { createClient } from "@supabase/supabase-js";
-
-import React from "react";
+import React, { useState, useEffect } from "react";
 import Dropdown from "components/dropdown";
 import { FiAlignJustify } from "react-icons/fi";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { BsArrowBarUp } from "react-icons/bs";
 import { FiSearch } from "react-icons/fi";
 import { RiMoonFill, RiSunFill } from "react-icons/ri";
@@ -13,7 +10,8 @@ import {
   IoMdInformationCircleOutline,
 } from "react-icons/io";
 import NavbarAvatar from "./NavbarAvatar";
-
+import { logAction } from "utils/auditLogger";
+import { createClient } from "@supabase/supabase-js";
 
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL || "https://gdzligxryodasaxnhdco.supabase.co";
 const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdkemxpZ3hyeW9kYXNheG5oZGNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcxNTg1MDUsImV4cCI6MjEwMjczNDUwNX0.AYTyAMf22g8au51ATReRQdQc2IzDLYQ2vtQH_Uyfrpg";
@@ -21,7 +19,33 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 
 const Navbar = (props) => {
   const { onOpenSidenav, brandText } = props;
-  const [darkmode, setDarkmode] = React.useState(false);
+  const [darkmode, setDarkmode] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      const userStr = localStorage.getItem("dayal_user");
+      if (!userStr) return;
+      const user = JSON.parse(userStr);
+      
+      const { data } = await supabase
+        .from("tasks")
+        .select("*")
+        .eq("assignee_id", user.id)
+        .neq("status", "Completed")
+        .order("created_at", { ascending: false })
+        .limit(5);
+        
+      if (data) {
+        setNotifications(data);
+      }
+    };
+
+    fetchNotifications();
+    const intervalId = setInterval(fetchNotifications, 30000); // Check every 30s
+    return () => clearInterval(intervalId);
+  }, []);
 
   return (
     <nav className="sticky top-4 z-40 flex flex-row flex-wrap items-center justify-between rounded-xl bg-white/10 p-2 backdrop-blur-xl dark:bg-[#0b14374d]">
@@ -64,53 +88,49 @@ const Navbar = (props) => {
       </div>
 
       <div className="relative mt-[3px] flex h-[61px] w-auto flex-grow items-center justify-end gap-4 rounded-full bg-white px-4 py-2 shadow-xl shadow-shadow-500 dark:!bg-navy-800 dark:shadow-none md:w-auto md:flex-grow-0 md:gap-4 xl:w-auto xl:gap-4">
-        {/* Dummy search removed */}
         {/* start Notification */}
         <Dropdown
           button={
-            <p className="cursor-pointer">
-              <IoMdNotificationsOutline className="h-4 w-4 text-gray-600 dark:text-white" />
-            </p>
+            <div className="cursor-pointer relative">
+              <IoMdNotificationsOutline className="h-5 w-5 text-gray-600 dark:text-white" />
+              {notifications.length > 0 && (
+                 <span className="absolute -top-1 -right-1 flex h-3 w-3 items-center justify-center rounded-full bg-red-500 text-[8px] font-bold text-white">
+                    {notifications.length}
+                 </span>
+              )}
+            </div>
           }
           animation="origin-[65%_0%] md:origin-top-right transition-all duration-300 ease-in-out"
           children={
             <div className="flex w-[360px] flex-col gap-3 rounded-[20px] bg-white p-4 shadow-xl shadow-shadow-500 dark:!bg-navy-700 dark:text-white dark:shadow-none sm:w-[460px]">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between mb-2">
                 <p className="text-base font-bold text-navy-700 dark:text-white">
-                  Notification
+                  My Tasks
                 </p>
-                <p className="text-sm font-bold text-navy-700 dark:text-white">
-                  Mark all read
+                <p className="text-sm font-bold text-brand-500 cursor-pointer" onClick={() => navigate('/admin/tasks')}>
+                  View all
                 </p>
               </div>
 
-              <button className="flex w-full items-center">
-                <div className="flex h-full w-[85px] items-center justify-center rounded-xl bg-gradient-to-b from-brandLinear to-brand-500 py-4 text-2xl text-white">
-                  <BsArrowBarUp />
-                </div>
-                <div className="ml-2 flex h-full w-full flex-col justify-center rounded-lg px-1 text-sm">
-                  <p className="mb-1 text-left text-base font-bold text-gray-900 dark:text-white">
-                    New Project Created
-                  </p>
-                  <p className="font-base text-left text-xs text-gray-900 dark:text-white">
-                    Sunrise Apartments has been added to the system.
-                  </p>
-                </div>
-              </button>
-
-              <button className="flex w-full items-center">
-                <div className="flex h-full w-[85px] items-center justify-center rounded-xl bg-gradient-to-b from-brandLinear to-brand-500 py-4 text-2xl text-white">
-                  <BsArrowBarUp />
-                </div>
-                <div className="ml-2 flex h-full w-full flex-col justify-center rounded-lg px-1 text-sm">
-                  <p className="mb-1 text-left text-base font-bold text-gray-900 dark:text-white">
-                    Task Updated
-                  </p>
-                  <p className="font-base text-left text-xs text-gray-900 dark:text-white">
-                    Foundation Approval marked as "Done".
-                  </p>
-                </div>
-              </button>
+              {notifications.length === 0 ? (
+                 <p className="text-sm text-gray-500 text-center py-4">No pending tasks.</p>
+              ) : (
+                 notifications.map(task => (
+                    <button key={task.id} onClick={() => navigate('/admin/tasks')} className="flex w-full items-center p-2 hover:bg-gray-50 rounded-lg transition-colors">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-500">
+                        <BsArrowBarUp className="h-5 w-5" />
+                      </div>
+                      <div className="ml-3 flex h-full w-full flex-col justify-center rounded-lg text-sm text-left">
+                        <p className="mb-1 text-sm font-bold text-gray-900 dark:text-white line-clamp-1">
+                          {task.title}
+                        </p>
+                        <p className="font-base text-xs text-gray-500 line-clamp-1">
+                          Due: {task.due_date ? new Date(task.due_date).toLocaleDateString() : 'No date'}
+                        </p>
+                      </div>
+                    </button>
+                 ))
+              )}
             </div>
           }
           classNames={"py-2 top-4 -left-[230px] md:-left-[440px] w-max"}
@@ -192,4 +212,3 @@ const Navbar = (props) => {
 };
 
 export default Navbar;
-
