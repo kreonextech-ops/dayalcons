@@ -14,6 +14,43 @@ import TabDocuments from "./components/TabDocuments";
 
 const EmployeeDetail = ({ employee, onBack, onEditProfile }) => {
   const [activeTab, setActiveTab] = useState("Overview");
+  const [isActive, setIsActive] = useState(employee?.is_active !== false);
+
+  const handleToggleActive = async (e) => {
+    const newStatus = e.target.checked;
+    setIsActive(newStatus);
+    
+    const { error } = await supabase
+      .from('employees')
+      .update({ is_active: newStatus })
+      .eq('id', employee.id);
+      
+    if (error) {
+      alert("Failed to update status.");
+      setIsActive(!newStatus);
+    } else {
+      await logAction("UPDATE", "Employees", `${newStatus ? 'Enabled' : 'Disabled'} account for ${employee.name}`);
+    }
+  };
+  const [isActive, setIsActive] = useState(employee?.is_active !== false);
+
+  const handleToggleActive = async (e) => {
+    const newStatus = e.target.checked;
+    setIsActive(newStatus);
+    
+    // Update Supabase
+    const { error } = await supabase
+      .from('employees')
+      .update({ is_active: newStatus })
+      .eq('id', employee.id);
+      
+    if (error) {
+      alert("Failed to update status.");
+      setIsActive(!newStatus);
+    } else {
+      await logAction("UPDATE", "Employees", `${newStatus ? 'Enabled' : 'Disabled'} account for ${employee.name}`);
+    }
+  };
 
   // Mock initial data based on selection or default
   const [empData] = useState({
@@ -114,6 +151,16 @@ const EmployeeDetail = ({ employee, onBack, onEditProfile }) => {
                      <p className="text-[11px] font-bold text-[#64748B] uppercase">Email</p>
                      <p className="text-[13px] font-medium text-[#0F172A]">{empData.email}</p>
                   </div>
+               </div>
+               
+               <div className="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between">
+                  <div>
+                     <p className="text-[12px] font-bold text-[#64748B] uppercase">Account Status</p>
+                     <p className={`text-[13px] font-medium ${isActive ? 'text-green-600' : 'text-red-500'}`}>
+                        {isActive ? 'Active' : 'Disabled'}
+                     </p>
+                  </div>
+                  <Switch color="blue" checked={isActive} onChange={handleToggleActive} />
                </div>
             </Card>
           </div>

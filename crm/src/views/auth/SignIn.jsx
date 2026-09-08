@@ -50,6 +50,12 @@ export default function SignIn() {
           .single();
           
          if (data) {
+            if (data.is_active === false) {
+               setError("Your account has been disabled. Please contact the administrator.");
+               await supabase.auth.signOut();
+               setLoading(false);
+               return;
+            }
             await logLogin(data.name, data.id);
             localStorage.setItem("dayal_user", JSON.stringify(data));
             if (data.role === "Client") navigate("/client/default");
@@ -107,6 +113,8 @@ export default function SignIn() {
 
       if (error || !data) {
         setError("Invalid email or password.");
+      } else if (data.is_active === false) {
+        setError("Your account has been disabled. Please contact the administrator.");
       } else {
         await logLogin(data.name, data.id);
         localStorage.setItem("dayal_user", JSON.stringify(data));
