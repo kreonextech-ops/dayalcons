@@ -32,25 +32,7 @@ const EmployeeDetail = ({ employee, onBack, onEditProfile }) => {
       await logAction("UPDATE", "Employees", `${newStatus ? 'Enabled' : 'Disabled'} account for ${employee.name}`);
     }
   };
-  const [isActive, setIsActive] = useState(employee?.is_active !== false);
 
-  const handleToggleActive = async (e) => {
-    const newStatus = e.target.checked;
-    setIsActive(newStatus);
-    
-    // Update Supabase
-    const { error } = await supabase
-      .from('employees')
-      .update({ is_active: newStatus })
-      .eq('id', employee.id);
-      
-    if (error) {
-      alert("Failed to update status.");
-      setIsActive(!newStatus);
-    } else {
-      await logAction("UPDATE", "Employees", `${newStatus ? 'Enabled' : 'Disabled'} account for ${employee.name}`);
-    }
-  };
 
   // Mock initial data based on selection or default
   const [empData] = useState({
