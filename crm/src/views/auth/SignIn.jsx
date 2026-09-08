@@ -160,7 +160,7 @@ export default function SignIn() {
             <FcGoogle />
           </div>
           <h5 className="text-sm font-medium text-navy-700 dark:text-white">
-            Sign In with Google
+            {loading ? 'Authenticating...' : 'Sign In with Google'}
           </h5>
         </button>
 
