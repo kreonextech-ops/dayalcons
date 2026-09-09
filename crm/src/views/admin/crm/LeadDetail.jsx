@@ -148,7 +148,7 @@ const LeadDetail = ({ lead, onBack }) => {
   };
 
   const confirmConvert = async () => {
-    const { data: newClientData, error: insertError } = await supabase.from('clients').insert([{ name: leadData.name, status: 'active', email: leadData.email, phone: leadData.phone, address: leadData.address, company: leadData.company || leadData.name, source: leadData.source }]).select();
+    const { data: newClientData, error: insertError } = await supabase.from('clients').insert([{ name: leadData.name, status: 'active', email: leadData.email, phone: leadData.phone, address: leadData.address, company: leadData.company || leadData.name, source: leadData.source , service_type: leadData.service_type, lead_score: leadData.lead_score, budget: leadData.budget, plot_size: leadData.plot_size, timeline: leadData.timeline, lead_temperature: leadData.lead_temperature, notes: leadData.notes }]).select();
 
     if (!insertError && newClientData && newClientData.length > 0) {
        const clientId = newClientData[0].id;
@@ -279,7 +279,7 @@ const LeadDetail = ({ lead, onBack }) => {
 
   const handleConvertToClient = async () => {
     // 1. Insert into clients table (only schema-supported columns)
-    const { data: newClientData, error: insertError } = await supabase.from('clients').insert([{ name: leadData.name, status: 'active', email: leadData.email, phone: leadData.phone, address: leadData.address, company: leadData.company || leadData.name, source: leadData.source }]).select();
+    const { data: newClientData, error: insertError } = await supabase.from('clients').insert([{ name: leadData.name, status: 'active', email: leadData.email, phone: leadData.phone, address: leadData.address, company: leadData.company || leadData.name, source: leadData.source , service_type: leadData.service_type, lead_score: leadData.lead_score, budget: leadData.budget, plot_size: leadData.plot_size, timeline: leadData.timeline, lead_temperature: leadData.lead_temperature, notes: leadData.notes }]).select();
 
     if (insertError) {
       console.error("Failed to convert client", insertError);
