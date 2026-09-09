@@ -105,7 +105,7 @@ const ServiceDetail = ({ serviceCase, onBack, onUpdate }) => {
   // Role Check
   const userStr = localStorage.getItem('dayal_user');
   const loggedInUser = userStr ? JSON.parse(userStr) : null;
-  const isAdmin = loggedInUser?.role === 'Admin';
+  const isAdmin = loggedInUser?.role === 'Admin' || loggedInUser?.role === 'CRO';
 
   const tabs = [
     "Overview", "Requirements", "Workspace", "Steps", "Payments", "Follow Ups", "Tasks", 

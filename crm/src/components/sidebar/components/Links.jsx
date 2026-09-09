@@ -20,6 +20,7 @@ export function SidebarLinks(props) {
     const userStr = localStorage.getItem("dayal_user");
     const user = userStr ? JSON.parse(userStr) : null;
     const isAdmin = user?.role === "Admin";
+    const isCRO = user?.role === "CRO";
     const permissions = user?.permissions || {};
 
     return routes.map((route, index) => {
@@ -28,6 +29,17 @@ export function SidebarLinks(props) {
       
       if (isAdmin) {
         hasPermission = true;
+      } else if (isCRO && route.layout === "/admin") {
+        const allowedForCRO = [
+          "Dashboard",
+          "Clients",
+          "Design & Legal Services",
+          "Execution Projects",
+          "Tasks",
+          "Follow Ups",
+          "Profile Settings"
+        ];
+        if (allowedForCRO.includes(route.name)) hasPermission = true;
       } else if (route.layout === "/admin") {
         const allowedForEmployees = [
            "Dashboard", 

@@ -55,9 +55,21 @@ export default function Admin(props) {
         const userStr = localStorage.getItem("dayal_user");
         const loggedInUser = userStr ? JSON.parse(userStr) : null;
         const isAdmin = loggedInUser?.role === 'Admin';
+        const isCRO = loggedInUser?.role === 'CRO';
   
         if (isAdmin) {
           hasPermission = true;
+        } else if (isCRO && prop.layout === "/admin") {
+          const allowedForCRO = [
+            "Dashboard",
+            "Clients",
+            "Design & Legal Services",
+            "Execution Projects",
+            "Tasks",
+            "Follow Ups",
+            "Profile Settings"
+          ];
+          if (allowedForCRO.includes(prop.name)) hasPermission = true;
         } else if (prop.layout === "/admin") {
           const allowedForEmployees = [
             "Dashboard", 
@@ -123,7 +135,9 @@ export default function Admin(props) {
                        const userStr = localStorage.getItem("dayal_user");
                        const loggedInUser = userStr ? JSON.parse(userStr) : null;
                        const isAdmin = loggedInUser?.role === 'Admin';
+                       const isCRO = loggedInUser?.role === 'CRO';
                        if (isAdmin) return "/admin/default";
+                       if (isCRO) return "/admin/clients";
                        
                        const allowed = ["Dashboard", "Leads", "Clients", "Design & Legal Services", "Execution Projects", "Tasks", "Follow Ups", "Profile Settings"];
                        const firstMatch = routes.find(r => r.layout === "/admin" && allowed.includes(r.name));

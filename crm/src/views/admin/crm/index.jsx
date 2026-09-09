@@ -542,9 +542,11 @@ const CRMLeads = () => {
                               {lead.assigned_to ? (lead.assigned_to.includes("-") ? `EMP-${lead.assigned_to.substring(0, 5).toUpperCase()}` : lead.assigned_to) : "Unassigned"}
                            </td>
                            <td className="py-4 px-6 text-right">
-                              <button onClick={(e) => { e.stopPropagation(); handleDeleteLead(lead.id); }} className="text-red-500 hover:bg-red-50 p-2 rounded-lg transition" title="Delete Lead">
-                                 <MdDeleteOutline size={20} />
-                              </button>
+                               {isAdmin && (
+                                 <button onClick={(e) => { e.stopPropagation(); handleDeleteLead(lead.id); }} className="text-red-500 hover:bg-red-50 p-2 rounded-lg transition" title="Delete Lead">
+                                    <MdDeleteOutline size={20} />
+                                 </button>
+                               )}
                            </td>
                         </tr>
                      ));

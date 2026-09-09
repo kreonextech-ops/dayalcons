@@ -19,9 +19,21 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 
 const Navbar = (props) => {
   const { onOpenSidenav, brandText } = props;
-  const [darkmode, setDarkmode] = useState(false);
+  const [darkmode, setDarkmode] = useState(() => {
+    const saved = localStorage.getItem('dayal_darkmode');
+    return saved === 'true';
+  });
   const [notifications, setNotifications] = useState([]);
   const navigate = useNavigate();
+
+  // Apply dark mode class on mount and whenever it changes
+  useEffect(() => {
+    if (darkmode) {
+      document.body.classList.add("dark");
+    } else {
+      document.body.classList.remove("dark");
+    }
+  }, [darkmode]);
 
   useEffect(() => {
     const fetchNotifications = async () => {
@@ -136,16 +148,12 @@ const Navbar = (props) => {
           classNames={"py-2 top-4 -left-[230px] md:-left-[440px] w-max"}
         />
         <div
-          className="cursor-pointer text-gray-600"
-          onClick={() => {
-            if (darkmode) {
-              document.body.classList.remove("dark");
-              setDarkmode(false);
-            } else {
-              document.body.classList.add("dark");
-              setDarkmode(true);
-            }
-          }}
+            className="cursor-pointer text-gray-600"
+            onClick={() => {
+              const next = !darkmode;
+              setDarkmode(next);
+              localStorage.setItem('dayal_darkmode', next ? 'true' : 'false');
+            }}
         >
           {darkmode ? (
             <RiSunFill className="h-4 w-4 text-gray-600 dark:text-white" />
