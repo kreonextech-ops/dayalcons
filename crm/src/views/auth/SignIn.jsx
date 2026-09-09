@@ -183,7 +183,7 @@ export default function SignIn() {
         </div>
 
         <form onSubmit={handleSignIn}>
-          <InputField variant="auth" extra="mb-3" label="Email*" placeholder="admin@dayal.com" id="email" type="text" value={email} onChange={(e) => setEmail(e.target.value)} />
+          <InputField variant="auth" extra="mb-3" label="Email*" placeholder="your@email.com" id="email" type="text" value={email} onChange={(e) => setEmail(e.target.value)} />
           <InputField variant="auth" extra="mb-3" label="Password*" placeholder="Min. 8 characters" id="password" type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
           <div className="mb-4 flex items-center justify-between px-2">
             <div className="flex items-center">
