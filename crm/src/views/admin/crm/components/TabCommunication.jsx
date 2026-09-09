@@ -140,8 +140,8 @@ const TabCommunication = ({ leadData, action, setAction, isClient = false, entit
 
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
                <div className="flex flex-col">
-                 <label className="text-xs font-medium text-gray-500 mb-1">Date & Time</label>
-                 <input type="datetime-local" value={formData.interaction_date} onChange={e => setFormData({...formData, interaction_date: e.target.value})} className="border border-[#E2E8F0] rounded p-2 text-sm outline-none focus:border-[#2563EB]" />
+                 <label className="text-xs font-medium text-gray-500 mb-1">Date (If Past)</label>
+                 <input type="date" value={formData.interaction_date} onChange={e => setFormData({...formData, interaction_date: e.target.value})} className="border border-[#E2E8F0] rounded p-2 text-sm outline-none focus:border-[#2563EB]" />
                </div>
                <div className="flex flex-col">
                  <label className="text-xs font-medium text-gray-500 mb-1">Communication Type</label>
@@ -223,7 +223,7 @@ const TabCommunication = ({ leadData, action, setAction, isClient = false, entit
              {communications.map(act => (
                 <div key={act.id} className="w-full text-left p-4 rounded-xl border border-[#E2E8F0] bg-white shadow-sm flex flex-col gap-2 relative">
                   <div className="bg-yellow-100 text-yellow-800 text-xs px-2 py-1 rounded-md font-bold self-start mb-1 border border-yellow-200">
-                    Happened: {act.metadata?.interaction_date ? new Date(act.metadata.interaction_date).toLocaleString() : new Date(act.created_at).toLocaleString()} | Logged: {new Date(act.created_at).toLocaleString()}
+                    Happened: {act.metadata?.interaction_date ? new Date(act.metadata.interaction_date).toLocaleDateString() : new Date(act.created_at).toLocaleString()} | Logged: {new Date(act.created_at).toLocaleString()}
                   </div>
                   <div className="flex justify-between items-center">
                      <h4 className="font-bold text-[#0F172A]">{act.activity_type} ({act.title})</h4>
