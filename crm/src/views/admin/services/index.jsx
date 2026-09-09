@@ -353,7 +353,7 @@ const Services = () => {
                                       setServices(prev => prev.map(p => p.id === srv.id ? { ...p, status: newStatus } : p));
                                       await supabase.from('services').update({ status: newStatus }).eq('id', srv.id);
                                    }}
-                                   className={`px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wide outline-none cursor-pointer appearance-none text-center border border-transparent hover:border-gray-300
+                                   className={`px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wide outline-none cursor-pointer  text-center border border-transparent hover:border-gray-300
                                       ${srv.status === 'Completed' ? 'bg-green-100 text-green-700' :
                                         srv.status === 'In Progress' ? 'bg-blue-100 text-blue-700' :
                                         srv.status === 'Pending' ? 'bg-yellow-100 text-yellow-700' :

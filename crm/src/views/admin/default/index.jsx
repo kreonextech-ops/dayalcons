@@ -56,16 +56,29 @@ const Dashboard = () => {
       setRecentProjects(projData || []);
 
       // 5. Recent Services (5)
-      const { data: srvData } = await supabase.from("services").select("*, client:clients(name)").order("created_at", { ascending: false }).limit(5);
+      const { data: srvDataRaw } = await supabase.from("services").select("*").order("created_at", { ascending: false }).limit(5);
+      let srvData = srvDataRaw || [];
       setRecentServices(srvData || []);
 
       // 6. Recent Tasks (5)
-      const { data: tasksData } = await supabase.from("tasks").select("*, assignee:employees!tasks_assignee_id_fkey(name)").neq("custom_category", "Follow Up").order("created_at", { ascending: false }).limit(5);
+      const { data: tasksDataRaw } = await supabase.from("tasks").select("*").neq("custom_category", "Follow Up").order("created_at", { ascending: false }).limit(5);
+      let tasksData = tasksDataRaw || [];
       setRecentTasks(tasksData || []);
 
       // 7. Recent Follow Ups (5)
-      const { data: fuData } = await supabase.from("tasks").select("*, assignee:employees!tasks_assignee_id_fkey(name)").eq("custom_category", "Follow Up").order("created_at", { ascending: false }).limit(5);
+      const { data: fuDataRaw } = await supabase.from("tasks").select("*").eq("custom_category", "Follow Up").order("created_at", { ascending: false }).limit(5);
+      let fuData = fuDataRaw || [];
       setRecentFollowUps(fuData || []);
+      const { data: allClients } = await supabase.from("clients").select("id, name");
+      const { data: allEmps } = await supabase.from("employees").select("id, name");
+      
+      const getClientName = (cid) => allClients?.find(c => c.id === cid)?.name || "Unknown";
+      const getEmpName = (eid) => allEmps?.find(e => e.id === eid)?.name || "Unassigned";
+
+      srvData = srvData.map(s => ({ ...s, client: { name: getClientName(s.client_id) } }));
+      tasksData = tasksData.map(t => ({ ...t, assignee: { name: getEmpName(t.assignee_id) } }));
+      fuData = fuData.map(f => ({ ...f, assignee: { name: getEmpName(f.assignee_id) } }));
+
     } catch (e) {
       console.error(e);
     }

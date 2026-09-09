@@ -154,9 +154,18 @@ const ServiceDetail = ({ serviceCase, onBack, onUpdate }) => {
           </div>
         </div>
         <div className="mt-6 flex flex-col items-end md:mt-0 gap-3">
-          <span className="rounded-full px-4 py-1 text-xs font-bold tracking-wide bg-[#F59E0B] text-white uppercase">
-            STATUS: {serviceCase.status}
-          </span>
+          <select
+              value={serviceCase.status || 'Pending'}
+              onChange={handleStatusChange}
+              className="rounded-full px-4 py-1 text-xs font-bold tracking-wide outline-none cursor-pointer text-white uppercase bg-[#F59E0B] hover:bg-orange-600 text-center"
+            >
+              <option value="Pending">STATUS: Pending</option>
+              <option value="In Progress">STATUS: In Progress</option>
+              <option value="On Hold">STATUS: On Hold</option>
+              <option value="In Review">STATUS: In Review</option>
+              <option value="Completed">STATUS: Completed</option>
+              <option value="Cancelled">STATUS: Cancelled</option>
+            </select>
           {isAdmin && (
             <div className="flex gap-4 text-right">
                <div>

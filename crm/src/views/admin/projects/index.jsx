@@ -344,7 +344,7 @@ const Projects = () => {
                                       setProjects(prev => prev.map(p => p.id === proj.id ? { ...p, status: newStatus } : p));
                                       await supabase.from('projects').update({ status: newStatus }).eq('id', proj.id);
                                    }}
-                                   className={`px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wide outline-none cursor-pointer appearance-none text-center border border-transparent hover:border-gray-300
+                                   className={`px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wide outline-none cursor-pointer  text-center border border-transparent hover:border-gray-300
                                       ${proj.status === 'Completed' ? 'bg-green-100 text-green-700' :
                                         proj.status === 'In Progress' ? 'bg-blue-100 text-blue-700' :
                                         proj.status === 'Pending' ? 'bg-yellow-100 text-yellow-700' :
