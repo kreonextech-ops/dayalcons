@@ -20,6 +20,11 @@ const Dashboard = () => {
   const [recentFollowUps, setRecentFollowUps] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Retrieve user info
+  const userStr = localStorage.getItem('dayal_user');
+  const loggedInUser = userStr ? JSON.parse(userStr) : null;
+  const isAdmin = loggedInUser?.role === 'Admin';
+
   // For Employee Dashboard
   const [myTasks, setMyTasks] = useState([]);
   const [myClients, setMyClients] = useState([]);
@@ -28,11 +33,6 @@ const Dashboard = () => {
   const [myFollowUps, setMyFollowUps] = useState([]);
 
   const isEmployee = !isAdmin;
-
-  // Retrieve user info
-  const userStr = localStorage.getItem('dayal_user');
-  const loggedInUser = userStr ? JSON.parse(userStr) : null;
-  const isAdmin = loggedInUser?.role === 'Admin';
 
   const fetchData = async () => {
     setLoading(true);
