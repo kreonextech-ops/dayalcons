@@ -29,18 +29,31 @@ const Dashboard = () => {
     setLoading(true);
     try {
       // 1. Stats
-      const [projRes, revRes, leadsRes, tasksRes] = await Promise.all([
-        supabase.from("projects").select("id", { count: "exact" }).eq("status", "In Progress"),
-        supabase.from("payments").select("amount").eq("status", "Paid"),
+      const [
+        leadsRes, clientsRes, 
+        projOngRes, projCompRes, 
+        srvOngRes, srvCompRes,
+        tasksRes, revRes
+      ] = await Promise.all([
         supabase.from("leads").select("id", { count: "exact" }),
-        supabase.from("tasks").select("id", { count: "exact" }).neq("status", "Completed")
+        supabase.from("clients").select("id", { count: "exact" }),
+        supabase.from("projects").select("id", { count: "exact" }).neq("status", "Completed"),
+        supabase.from("projects").select("id", { count: "exact" }).eq("status", "Completed"),
+        supabase.from("services").select("id", { count: "exact" }).neq("status", "Completed"),
+        supabase.from("services").select("id", { count: "exact" }).eq("status", "Completed"),
+        supabase.from("tasks").select("id", { count: "exact" }).neq("status", "Completed"),
+        supabase.from("payments").select("amount").eq("status", "Paid")
       ]);
       const totalRev = revRes.data ? revRes.data.reduce((sum, p) => sum + (Number(p.amount) || 0), 0) : 0;
       setStats({
-        projects: projRes.count || 0,
-        revenue: totalRev,
         leads: leadsRes.count || 0,
+        clients: clientsRes.count || 0,
+        projectsOngoing: projOngRes.count || 0,
+        projectsCompleted: projCompRes.count || 0,
+        servicesOngoing: srvOngRes.count || 0,
+        servicesCompleted: srvCompRes.count || 0,
         tasks: tasksRes.count || 0,
+        revenue: totalRev,
       });
 
       // 2. Recent Leads (5)
@@ -151,10 +164,14 @@ const Dashboard = () => {
       </div>
 
       <div className="mt-3 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-4">
-        <Widget icon={<MdBusinessCenter className="h-7 w-7" />} title={"Active Projects"} subtitle={stats.projects.toString()} />
-        <Widget icon={<MdAttachMoney className="h-7 w-7" />} title={"Approved Revenue"} subtitle={`₹${stats.revenue.toLocaleString()}`} />
-        <Widget icon={<MdPeople className="h-7 w-7" />} title={"Total Leads"} subtitle={stats.leads.toString()} />
-        <Widget icon={<MdAssignment className="h-6 w-6" />} title={"Pending Tasks"} subtitle={stats.tasks.toString()} />
+        <Widget icon={<MdPeople className="h-7 w-7" />} title={"Total Leads"} subtitle={stats.leads?.toString() || '0'} />
+        <Widget icon={<MdPeople className="h-7 w-7" />} title={"Total Clients"} subtitle={stats.clients?.toString() || '0'} />
+        <Widget icon={<MdBusinessCenter className="h-7 w-7" />} title={"Projects (Ongoing)"} subtitle={stats.projectsOngoing?.toString() || '0'} />
+        <Widget icon={<MdBusinessCenter className="h-7 w-7" />} title={"Projects (Completed)"} subtitle={stats.projectsCompleted?.toString() || '0'} />
+        <Widget icon={<MdBusinessCenter className="h-7 w-7" />} title={"Services (Ongoing)"} subtitle={stats.servicesOngoing?.toString() || '0'} />
+        <Widget icon={<MdBusinessCenter className="h-7 w-7" />} title={"Services (Completed)"} subtitle={stats.servicesCompleted?.toString() || '0'} />
+        <Widget icon={<MdAssignment className="h-6 w-6" />} title={"Pending Tasks"} subtitle={stats.tasks?.toString() || '0'} />
+        <Widget icon={<MdAttachMoney className="h-7 w-7" />} title={"Approved Revenue"} subtitle={`₹${(stats.revenue || 0).toLocaleString()}`} />
       </div>
 
       <div className="mt-5 grid grid-cols-1 gap-5 xl:grid-cols-2">

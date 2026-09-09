@@ -8,74 +8,130 @@ export const initGlobalAudit = () => {
 
     window.fetch = async (...args) => {
         const [resource, config] = args;
-        const response = await originalFetch(...args);
         
-        try {
-            const url = typeof resource === 'string' ? resource : (resource?.url || '');
-            
-            // Check if it's a Supabase REST call
-            if (url && url.includes(SUPABASE_URL) && url.includes('/rest/v1/')) {
-                const method = (config?.method || 'GET').toUpperCase();
-                
-                if (['POST', 'PATCH', 'DELETE'].includes(method)) {
-                    const urlObj = new URL(url);
-                    const pathParts = urlObj.pathname.split('?')[0].split('/');
-                    const table = pathParts[pathParts.length - 1];
-                    
-                    // Tables to ignore
-                    const ignoredTables = ['audit_logs', 'task_activity_logs', 'notifications', 'lead_activities'];
-                    
-                    if (table && !ignoredTables.includes(table)) {
-                        let actionType = 'UPDATE';
-                        if (method === 'POST') actionType = 'CREATE';
-                        if (method === 'DELETE') actionType = 'DELETE';
-                        
-                        let details = "";
-                        try {
-                            if (config && config.body && typeof config.body === 'string') {
-                                const bodyObj = JSON.parse(config.body);
-                                const item = Array.isArray(bodyObj) ? bodyObj[0] : bodyObj;
-                                if (item) {
-                                    if (item.name) details = ` "${item.name}"`;
-                                    else if (item.title) details = ` "${item.title}"`;
-                                    else if (item.comment) details = ` (Comment added)`;
-                                    else if (item.amount) details = ` (Amount: ${item.amount})`;
-                                }
-                            }
-                        } catch(e) {}
+        let oldRecord = null;
+        let method = (config?.method || 'GET').toUpperCase();
+        let urlObj = null;
+        let table = null;
+        let isTracked = false;
 
-                        const moduleName = table.charAt(0).toUpperCase() + table.slice(1);
-                        const description = `System recorded ${actionType} action in ${moduleName} module${details}`;
-                        
-                        const userStr = localStorage.getItem("dayal_user");
-                        const user = userStr ? JSON.parse(userStr) : null;
-                        
-                        if (user && response.ok) {
-                            // Fire and forget to audit_logs
-                            originalFetch(`${SUPABASE_URL}/rest/v1/audit_logs`, {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'apikey': SUPABASE_KEY,
-                                    'Authorization': `Bearer ${SUPABASE_KEY}`,
-                                    'Prefer': 'return=minimal'
-                                },
-                                body: JSON.stringify({
-                                    user_id: user.id,
-                                    employee_name: user.name,
-                                    action_type: actionType,
-                                    module: moduleName,
-                                    description: description,
-                                    ip_address: 'System Tracked',
-                                    device_info: navigator.userAgent
-                                })
-                            }).catch(() => {});
-                        }
+        const url = typeof resource === 'string' ? resource : (resource?.url || '');
+        
+        if (url && url.includes(SUPABASE_URL) && url.includes('/rest/v1/')) {
+            urlObj = new URL(url);
+            const pathParts = urlObj.pathname.split('?')[0].split('/');
+            table = pathParts[pathParts.length - 1];
+            
+            const ignoredTables = ['audit_logs', 'task_activity_logs', 'notifications', 'lead_activities', 'payments']; 
+            
+            if (['POST', 'PATCH', 'DELETE'].includes(method) && table && !ignoredTables.includes(table)) {
+                isTracked = true;
+                
+                if (['PATCH', 'DELETE'].includes(method)) {
+                    const idMatch = urlObj.search.match(/id=eq\.([^&]+)/);
+                    if (idMatch) {
+                        try {
+                            const res = await originalFetch(`${SUPABASE_URL}/rest/v1/${table}?id=eq.${idMatch[1]}&select=*`, {
+                                headers: { 'apikey': SUPABASE_KEY, 'Authorization': `Bearer ${SUPABASE_KEY}` }
+                            });
+                            const data = await res.json();
+                            if (data && data.length > 0) oldRecord = data[0];
+                        } catch(e) {}
                     }
                 }
             }
-        } catch (e) {
-            console.error("Global audit interceptor error:", e);
+        }
+
+        const response = await originalFetch(...args);
+        
+        try {
+            if (isTracked && response.ok) {
+                let actionType = 'UPDATE';
+                if (method === 'POST') actionType = 'CREATE';
+                if (method === 'DELETE') actionType = 'DELETE';
+                
+                let changes = [];
+                let itemName = "Record";
+
+                try {
+                    if (config && config.body && typeof config.body === 'string') {
+                        const bodyObj = JSON.parse(config.body);
+                        const item = Array.isArray(bodyObj) ? bodyObj[0] : bodyObj;
+                        if (item) {
+                            if (item.name) itemName = item.name;
+                            else if (item.title) itemName = item.title;
+                            else if (oldRecord && oldRecord.name) itemName = oldRecord.name;
+                            else if (oldRecord && oldRecord.title) itemName = oldRecord.title;
+
+                            if (actionType === 'UPDATE' && oldRecord) {
+                                for (const [k, v] of Object.entries(item)) {
+                                    if (['id', 'updated_at', 'created_at'].includes(k)) continue;
+                                    const oldVal = oldRecord[k];
+                                    if (oldVal !== v) {
+                                        let ov = String(oldVal === null || oldVal === undefined ? 'empty' : oldVal);
+                                        let nv = String(v === null || v === undefined ? 'empty' : v);
+                                        if (ov.length > 30) ov = ov.substring(0,30) + '...';
+                                        if (nv.length > 30) nv = nv.substring(0,30) + '...';
+                                        changes.push(`${k} from '${ov}' to '${nv}'`);
+                                    }
+                                }
+                            } else if (actionType === 'CREATE') {
+                                for (const [k, v] of Object.entries(item)) {
+                                    if (['id', 'updated_at', 'created_at'].includes(k)) continue;
+                                    let nv = String(v === null || v === undefined ? 'empty' : v);
+                                    if (nv.length > 30) nv = nv.substring(0,30) + '...';
+                                    changes.push(`${k}: '${nv}'`);
+                                }
+                            }
+                        }
+                    }
+                } catch(e) {}
+
+                const moduleName = table.charAt(0).toUpperCase() + table.slice(1);
+                let description = `System recorded ${actionType} in ${moduleName}`;
+                
+                if (actionType === 'DELETE') {
+                    description = `Deleted ${itemName} from ${moduleName}`;
+                } else if (actionType === 'UPDATE') {
+                    if (changes.length > 0) {
+                        description = `Updated ${moduleName} "${itemName}". Changes: ${changes.join(', ')}`;
+                    } else {
+                        description = `Updated ${moduleName} "${itemName}"`;
+                    }
+                } else if (actionType === 'CREATE') {
+                    if (changes.length > 0) {
+                        description = `Created ${moduleName} "${itemName}". Details: ${changes.join(', ')}`;
+                    } else {
+                        description = `Created ${moduleName} "${itemName}"`;
+                    }
+                }
+                
+                const userStr = localStorage.getItem("dayal_user");
+                const user = userStr ? JSON.parse(userStr) : null;
+                
+                if (user) {
+                    originalFetch(`${SUPABASE_URL}/rest/v1/audit_logs`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'apikey': SUPABASE_KEY,
+                            'Authorization': `Bearer ${SUPABASE_KEY}`,
+                            'Prefer': 'return=minimal'
+                        },
+                        body: JSON.stringify({
+                            user_id: user.id,
+                            employee_name: user.name,
+                            action_type: actionType,
+                            module: moduleName,
+                            description: description,
+                            ip_address: 'System Tracked',
+                            device_info: navigator.userAgent
+                        })
+                    }).catch(()=>{});
+                }
+            }
+        } catch(e) {
+            console.error("Audit log error:", e);
         }
         
         return response;
