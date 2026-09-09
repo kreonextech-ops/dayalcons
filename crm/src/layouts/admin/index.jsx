@@ -62,6 +62,7 @@ export default function Admin(props) {
         } else if (isCRO && prop.layout === "/admin") {
           const allowedForCRO = [
             "Dashboard",
+            "Leads",
             "Clients",
             "Design & Legal Services",
             "Execution Projects",

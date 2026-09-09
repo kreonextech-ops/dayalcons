@@ -32,6 +32,7 @@ export function SidebarLinks(props) {
       } else if (isCRO && route.layout === "/admin") {
         const allowedForCRO = [
           "Dashboard",
+          "Leads",
           "Clients",
           "Design & Legal Services",
           "Execution Projects",
