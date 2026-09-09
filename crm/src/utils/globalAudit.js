@@ -22,7 +22,7 @@ export const initGlobalAudit = () => {
             const pathParts = urlObj.pathname.split('?')[0].split('/');
             table = pathParts[pathParts.length - 1];
             
-            const ignoredTables = ['audit_logs', 'task_activity_logs', 'notifications', 'lead_activities', 'payments']; 
+            const ignoredTables = ['audit_logs', 'notifications']; 
             
             if (['POST', 'PATCH', 'DELETE'].includes(method) && table && !ignoredTables.includes(table)) {
                 isTracked = true;
@@ -87,7 +87,11 @@ export const initGlobalAudit = () => {
                     }
                 } catch(e) {}
 
-                const moduleName = table.charAt(0).toUpperCase() + table.slice(1);
+                
+                let moduleName = table.charAt(0).toUpperCase() + table.slice(1);
+                if (table === 'lead_activities') moduleName = 'Communications & Activity';
+                if (table === 'task_activity_logs') moduleName = 'Task Activity';
+
                 let description = `System recorded ${actionType} in ${moduleName}`;
                 
                 if (actionType === 'DELETE') {
