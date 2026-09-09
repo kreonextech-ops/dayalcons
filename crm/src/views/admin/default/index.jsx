@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Widget from "components/widget/Widget";
 import Card from "components/card";
-import { MdBusinessCenter, MdPeople, MdAssignment, MdAttachMoney, MdArrowForward, MdNotificationsActive } from "react-icons/md";
+import { MdBusinessCenter, MdPeople, MdAssignment, MdAttachMoney, MdArrowForward, MdNotificationsActive, MdAccessTime } from "react-icons/md";
 import { Link } from "react-router-dom";
 import { createClient } from "@supabase/supabase-js";
 import { logAction } from "utils/auditLogger";
@@ -39,68 +39,35 @@ const Dashboard = () => {
     try {
       if (isEmployee) {
          // Fetch Employee Data
-         const { data: tasksData } = await supabase.from('tasks').select('*').eq('assignee_id', loggedInUser.id).order('created_at', { ascending: false });
-         if (tasksData) {
-            setMyTasks(tasksData);
-            setMyFollowUps(tasksData.filter(t => t.custom_category === "Follow Up" && t.status !== "Completed"));
+         const { data: empTasksData } = await supabase.from('tasks').select('*').eq('assignee_id', loggedInUser.id).order('created_at', { ascending: false });
+         if (empTasksData) {
+            setMyTasks(empTasksData);
+            setMyFollowUps(empTasksData.filter(t => t.custom_category === "Follow Up" && t.status !== "Completed"));
          }
 
-         const { data: clientsAllData } = await supabase.from('clients').select('id, name');
+         const { data: clientsAllDataTmp } = await supabase.from('clients').select('id, name');
          
-         const { data: clientsData } = await supabase.from('clients').select('*').like('assigned_to', `%${loggedInUser.id}%`);
-         if (clientsData) setMyClients(clientsData);
+         const { data: empClientsData } = await supabase.from('clients').select('*').like('assigned_to', `%${loggedInUser.id}%`);
+         if (empClientsData) setMyClients(empClientsData);
 
-         const { data: servicesData } = await supabase.from('services').select('*').like('assigned_to', `%${loggedInUser.id}%`);
-         if (servicesData) {
-            const mergedServices = servicesData.map(srv => {
-               const clientMatch = clientsAllData?.find(c => c.id === srv.client_id);
-               return { ...srv, clientName: clientMatch ? clientMatch.name : 'Unknown Client' };
+         const { data: empServicesData } = await supabase.from('services').select('*').like('assigned_to', `%${loggedInUser.id}%`);
+         if (empServicesData) {
+            const mergedServices = empServicesData.map(srv => {
+               const clientMatch = clientsAllDataTmp?.find(c => c.id === srv.client_id);
+               return {...srv, clientName: clientMatch ? clientMatch.name : 'Unknown Client'};
             });
             setMyServices(mergedServices);
          }
 
-         const { data: projectsData } = await supabase.from('projects').select('*').like('assigned_to', `%${loggedInUser.id}%`);
-         if (projectsData) {
-            const mergedProjects = projectsData.map(proj => {
-               const clientMatch = clientsAllData?.find(c => c.id === proj.client_id);
-               return { ...proj, clientName: clientMatch ? clientMatch.name : 'Unknown Client' };
+         const { data: empProjectsData } = await supabase.from('projects').select('*').like('assigned_to', `%${loggedInUser.id}%`);
+         if (empProjectsData) {
+            const mergedProjects = empProjectsData.map(proj => {
+               const clientMatch = clientsAllDataTmp?.find(c => c.id === proj.client_id);
+               return {...proj, clientName: clientMatch ? clientMatch.name : 'Unknown Client'};
             });
             setMyProjects(mergedProjects);
          }
-
-      
-      if (isEmployee) {
-         // Fetch Employee Data
-         const { data: tasksData } = await supabase.from('tasks').select('*').eq('assignee_id', loggedInUser?.id).order('created_at', { ascending: false });
-         if (tasksData) {
-            setMyTasks(tasksData);
-            setMyFollowUps(tasksData.filter(t => t.custom_category === "Follow Up" && t.status !== "Completed"));
-         }
-
-         const { data: clientsAllData } = await supabase.from('clients').select('id, name');
-         
-         const { data: clientsData } = await supabase.from('clients').select('*').like('assigned_to', `%${loggedInUser?.id}%`);
-         if (clientsData) setMyClients(clientsData);
-
-         const { data: servicesData } = await supabase.from('services').select('*').like('assigned_to', `%${loggedInUser?.id}%`);
-         if (servicesData) {
-            const mergedServices = servicesData.map(srv => {
-               const clientMatch = clientsAllData?.find(c => c.id === srv.client_id);
-               return { ...srv, clientName: clientMatch ? clientMatch.name : 'Unknown Client' };
-            });
-            setMyServices(mergedServices);
-         }
-
-         const { data: projectsData } = await supabase.from('projects').select('*').like('assigned_to', `%${loggedInUser?.id}%`);
-         if (projectsData) {
-            const mergedProjects = projectsData.map(proj => {
-               const clientMatch = clientsAllData?.find(c => c.id === proj.client_id);
-               return { ...proj, clientName: clientMatch ? clientMatch.name : 'Unknown Client' };
-            });
-            setMyProjects(mergedProjects);
-         }
-
-      
+      }
       // 1. Stats
       const [
         leadsRes, clientsRes, 
