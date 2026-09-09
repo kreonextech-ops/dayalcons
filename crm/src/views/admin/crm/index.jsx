@@ -163,10 +163,7 @@ const CRMLeads = () => {
 
   const confirmConvert = async () => {
     if (!convertLeadData) return;
-    const { data: newClientData, error: insertError } = await supabase.from('clients').insert([{
-      name: convertLeadData.name,
-      status: 'active'
-    }]).select();
+    const { data: newClientData, error: insertError } = await supabase.from('clients').insert([{ name: convertLeadData.name, status: 'active', email: convertLeadData.email, phone: convertLeadData.phone, address: convertLeadData.address, company: convertLeadData.company || convertLeadData.name }]).select();
 
     if (!insertError && newClientData && newClientData.length > 0) {
        const clientId = newClientData[0].id;

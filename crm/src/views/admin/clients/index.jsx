@@ -34,7 +34,7 @@ const Clients = () => {
 
   // New Client Form State
   const [newClient, setNewClient] = useState({
-    name: "", phone: "", email: "", address: "", company: "", gst: ""
+    name: "", phone: "", email: "", address: "", company: "", gst: "", source: ""
   });
 
   const fileInputRef = useRef(null);
