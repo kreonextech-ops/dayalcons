@@ -20,10 +20,6 @@ const Dashboard = () => {
   const [recentFollowUps, setRecentFollowUps] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const userStr = localStorage.getItem("dayal_user");
-  const user = userStr ? JSON.parse(userStr) : null;
-  
-
   // For Employee Dashboard
   const [myTasks, setMyTasks] = useState([]);
   const [myClients, setMyClients] = useState([]);
@@ -31,8 +27,6 @@ const Dashboard = () => {
   const [myProjects, setMyProjects] = useState([]);
   const [myFollowUps, setMyFollowUps] = useState([]);
 
-  const userStr = localStorage.getItem("dayal_user");
-  const user = userStr ? JSON.parse(userStr) : null;
   const isEmployee = !isAdmin;
 
   // Retrieve user info
