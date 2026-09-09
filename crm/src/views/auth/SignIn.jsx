@@ -16,28 +16,28 @@ export default function SignIn() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  // Fire-and-forget audit log — never blocks login
-  const logLogin = (employeeName, userId) => {
-    fetch("https://ipapi.co/json/")
-      .then(r => r.json())
-      .catch(() => ({}))
-      .then(geo => {
-        const ip = geo?.ip || "Unknown";
-        const location = geo?.city ? `${geo.city}, ${geo.country_name}` : "Unknown";
-        supabase.from("audit_logs").insert([{
-          user_id: userId,
-          employee_name: employeeName,
-          action_type: "LOGIN",
-          module: "System",
-          description: `Logged in from ${location}`,
-          ip_address: ip,
-          device_info: navigator.userAgent,
-        }]);
-      });
+  // Audit log - now blocking to ensure it completes before navigate
+  const logLogin = async (employeeName, userId) => {
+    try {
+      const geo = await fetch("https://ipapi.co/json/").then(r => r.json()).catch(() => ({}));
+      const ip = geo?.ip || "Unknown";
+      const location = geo?.city ? `${geo.city}, ${geo.country_name}` : "Unknown";
+      await supabase.from("audit_logs").insert([{
+        user_id: userId,
+        employee_name: employeeName,
+        action_type: "LOGIN",
+        module: "System",
+        description: `Logged in from ${location}`,
+        ip_address: ip,
+        device_info: navigator.userAgent,
+      }]);
+    } catch(e) {
+      console.log("Login log error", e);
+    }
   };
 
-  const enterDashboard = (data) => {
-    logLogin(data.name, data.id);
+  const enterDashboard = async (data) => {
+    await logLogin(data.name, data.id);
     localStorage.setItem("dayal_user", JSON.stringify(data));
     if (data.role === "Client") navigate("/client/default");
     else navigate("/admin/default");
@@ -104,7 +104,7 @@ export default function SignIn() {
           return;
         }
 
-        enterDashboard(emp);
+        await enterDashboard(emp);
       }
     });
 
@@ -143,7 +143,7 @@ export default function SignIn() {
       } else if (data.is_active === false) {
         setError("Your account has been disabled. Please contact the administrator.");
       } else {
-        enterDashboard(data);
+        await enterDashboard(data);
       }
     } catch {
       setError("An error occurred during sign in.");
