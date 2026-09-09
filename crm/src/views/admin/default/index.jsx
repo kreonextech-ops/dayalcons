@@ -20,6 +20,21 @@ const Dashboard = () => {
   const [recentFollowUps, setRecentFollowUps] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  const userStr = localStorage.getItem("dayal_user");
+  const user = userStr ? JSON.parse(userStr) : null;
+  
+
+  // For Employee Dashboard
+  const [myTasks, setMyTasks] = useState([]);
+  const [myClients, setMyClients] = useState([]);
+  const [myServices, setMyServices] = useState([]);
+  const [myProjects, setMyProjects] = useState([]);
+  const [myFollowUps, setMyFollowUps] = useState([]);
+
+  const userStr = localStorage.getItem("dayal_user");
+  const user = userStr ? JSON.parse(userStr) : null;
+  const isEmployee = !isAdmin;
+
   // Retrieve user info
   const userStr = localStorage.getItem('dayal_user');
   const loggedInUser = userStr ? JSON.parse(userStr) : null;
@@ -28,6 +43,70 @@ const Dashboard = () => {
   const fetchData = async () => {
     setLoading(true);
     try {
+      if (isEmployee) {
+         // Fetch Employee Data
+         const { data: tasksData } = await supabase.from('tasks').select('*').eq('assignee_id', loggedInUser.id).order('created_at', { ascending: false });
+         if (tasksData) {
+            setMyTasks(tasksData);
+            setMyFollowUps(tasksData.filter(t => t.custom_category === "Follow Up" && t.status !== "Completed"));
+         }
+
+         const { data: clientsAllData } = await supabase.from('clients').select('id, name');
+         
+         const { data: clientsData } = await supabase.from('clients').select('*').like('assigned_to', `%${loggedInUser.id}%`);
+         if (clientsData) setMyClients(clientsData);
+
+         const { data: servicesData } = await supabase.from('services').select('*').like('assigned_to', `%${loggedInUser.id}%`);
+         if (servicesData) {
+            const mergedServices = servicesData.map(srv => {
+               const clientMatch = clientsAllData?.find(c => c.id === srv.client_id);
+               return { ...srv, clientName: clientMatch ? clientMatch.name : 'Unknown Client' };
+            });
+            setMyServices(mergedServices);
+         }
+
+         const { data: projectsData } = await supabase.from('projects').select('*').like('assigned_to', `%${loggedInUser.id}%`);
+         if (projectsData) {
+            const mergedProjects = projectsData.map(proj => {
+               const clientMatch = clientsAllData?.find(c => c.id === proj.client_id);
+               return { ...proj, clientName: clientMatch ? clientMatch.name : 'Unknown Client' };
+            });
+            setMyProjects(mergedProjects);
+         }
+
+      
+      if (isEmployee) {
+         // Fetch Employee Data
+         const { data: tasksData } = await supabase.from('tasks').select('*').eq('assignee_id', loggedInUser?.id).order('created_at', { ascending: false });
+         if (tasksData) {
+            setMyTasks(tasksData);
+            setMyFollowUps(tasksData.filter(t => t.custom_category === "Follow Up" && t.status !== "Completed"));
+         }
+
+         const { data: clientsAllData } = await supabase.from('clients').select('id, name');
+         
+         const { data: clientsData } = await supabase.from('clients').select('*').like('assigned_to', `%${loggedInUser?.id}%`);
+         if (clientsData) setMyClients(clientsData);
+
+         const { data: servicesData } = await supabase.from('services').select('*').like('assigned_to', `%${loggedInUser?.id}%`);
+         if (servicesData) {
+            const mergedServices = servicesData.map(srv => {
+               const clientMatch = clientsAllData?.find(c => c.id === srv.client_id);
+               return { ...srv, clientName: clientMatch ? clientMatch.name : 'Unknown Client' };
+            });
+            setMyServices(mergedServices);
+         }
+
+         const { data: projectsData } = await supabase.from('projects').select('*').like('assigned_to', `%${loggedInUser?.id}%`);
+         if (projectsData) {
+            const mergedProjects = projectsData.map(proj => {
+               const clientMatch = clientsAllData?.find(c => c.id === proj.client_id);
+               return { ...proj, clientName: clientMatch ? clientMatch.name : 'Unknown Client' };
+            });
+            setMyProjects(mergedProjects);
+         }
+
+      
       // 1. Stats
       const [
         leadsRes, clientsRes, 
@@ -148,13 +227,209 @@ const Dashboard = () => {
   };
 
   if (!isAdmin) {
-    return (
-      <div className="mt-5 text-center text-gray-500 py-10">
-        <h2 className="text-xl font-bold">Welcome back, {loggedInUser?.name}</h2>
-        <p className="mt-2">Use the sidebar to navigate to your assigned tasks and projects.</p>
-      </div>
-    );
+     return (
+        <div>
+          <div className="mt-3 mb-4 flex justify-between items-end">
+            <div>
+               <h2 className="text-2xl font-bold text-navy-700 dark:text-white">Welcome, {loggedInUser.name}</h2>
+               <p className="text-gray-500">Here is a quick overview of your assigned tasks and responsibilities.</p>
+            </div>
+          </div>
+          
+          <div className="mt-3 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-4">
+             <Link to="/admin/clients">
+               <Widget icon={<MdPeople className="h-7 w-7" />} title="My Assigned Clients" subtitle={myClients.length.toString()} />
+             </Link>
+             <Link to="/admin/services">
+               <Widget icon={<MdBusinessCenter className="h-7 w-7 text-blue-500" />} title="My Assigned Services" subtitle={myServices.length.toString()} />
+             </Link>
+             <Link to="/admin/projects">
+               <Widget icon={<MdBusinessCenter className="h-7 w-7 text-amber-500" />} title="My Assigned Projects" subtitle={myProjects.length.toString()} />
+             </Link>
+             <Link to="/admin/followups">
+               <Widget icon={<MdAccessTime className="h-7 w-7 text-red-500" />} title="Pending Follow Ups" subtitle={myFollowUps.length.toString()} />
+             </Link>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-6">
+             <Card extra={"w-full h-full p-4 sm:p-6"}>
+                <header className="relative flex items-center justify-between pt-4 pb-2">
+                  <div className="text-xl font-bold text-navy-700 dark:text-white">My Pending Tasks</div>
+                  <Link to="/admin/tasks" className="text-sm font-medium text-brand-500 hover:underline flex items-center gap-1">View All <MdArrowForward /></Link>
+                </header>
+                <div className="mt-4 overflow-x-auto">
+                   <table className="w-full">
+                     <thead>
+                       <tr className="border-b border-gray-200">
+                         <th className="py-3 text-left text-sm font-bold text-gray-600">TASK NAME</th>
+                         <th className="py-3 text-left text-sm font-bold text-gray-600">STATUS</th>
+                       </tr>
+                     </thead>
+                     <tbody>
+                       {loading ? (
+                         <tr><td colSpan="2" className="py-4 text-center">Loading...</td></tr>
+                       ) : myTasks.filter(t => t.status !== 'Completed' && t.custom_category !== 'Follow Up').length === 0 ? (
+                         <tr><td colSpan="2" className="py-4 text-center text-gray-500">No pending tasks.</td></tr>
+                       ) : (
+                         myTasks.filter(t => t.status !== 'Completed' && t.custom_category !== 'Follow Up').slice(0, 5).map(task => (
+                           <tr key={task.id} className="border-b border-gray-50">
+                              <td className="py-3 text-sm font-bold text-navy-700 line-clamp-1">{task.title || task.name}</td>
+                              <td className="py-3 text-sm font-medium">
+                                 <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded-md text-[12px] font-bold">{task.status}</span>
+                              </td>
+                           </tr>
+                         ))
+                       )}
+                     </tbody>
+                   </table>
+                </div>
+             </Card>
+
+             <Card extra={"w-full h-full p-4 sm:p-6"}>
+                <header className="relative flex items-center justify-between pt-4 pb-2">
+                  <div className="text-xl font-bold text-navy-700 dark:text-white">Upcoming Follow Ups</div>
+                  <Link to="/admin/followups" className="text-sm font-medium text-brand-500 hover:underline flex items-center gap-1">View All <MdArrowForward /></Link>
+                </header>
+                <div className="mt-4 overflow-x-auto">
+                   <table className="w-full">
+                     <thead>
+                       <tr className="border-b border-gray-200">
+                         <th className="py-3 text-left text-sm font-bold text-gray-600">TITLE</th>
+                         <th className="py-3 text-left text-sm font-bold text-gray-600">DUE DATE</th>
+                       </tr>
+                     </thead>
+                     <tbody>
+                       {loading ? (
+                         <tr><td colSpan="2" className="py-4 text-center">Loading...</td></tr>
+                       ) : myFollowUps.length === 0 ? (
+                         <tr><td colSpan="2" className="py-4 text-center text-gray-500">No upcoming follow ups.</td></tr>
+                       ) : (
+                         myFollowUps.slice(0, 5).map(task => (
+                           <tr key={task.id} className="border-b border-gray-50">
+                              <td className="py-3 text-sm font-bold text-navy-700 line-clamp-1">{task.title || task.name}</td>
+                              <td className="py-3 text-sm font-medium text-gray-500">
+                                 {task.due_date ? new Date(task.due_date).toLocaleDateString() : 'No date'}
+                              </td>
+                           </tr>
+                         ))
+                       )}
+                     </tbody>
+                   </table>
+                </div>
+             </Card>          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-6">
+             <Card extra={"w-full h-full p-4 sm:p-6"}>
+                <header className="relative flex items-center justify-between pt-4 pb-2">
+                  <div className="text-xl font-bold text-navy-700 dark:text-white">Recent Clients</div>
+                  <Link to="/admin/clients" className="text-sm font-medium text-brand-500 hover:underline flex items-center gap-1">View All <MdArrowForward /></Link>
+                </header>
+                <div className="mt-4 overflow-x-auto">
+                   <table className="w-full">
+                     <thead>
+                       <tr className="border-b border-gray-200">
+                         <th className="py-3 text-left text-sm font-bold text-gray-600">CLIENT NAME</th>
+                         <th className="py-3 text-left text-sm font-bold text-gray-600">STATUS</th>
+                       </tr>
+                     </thead>
+                     <tbody>
+                       {loading ? (
+                         <tr><td colSpan="2" className="py-4 text-center">Loading...</td></tr>
+                       ) : myClients.length === 0 ? (
+                         <tr><td colSpan="2" className="py-4 text-center text-gray-500">No clients assigned.</td></tr>
+                       ) : (
+                         myClients.slice(0, 5).map(client => (
+                           <tr key={client.id} className="border-b border-gray-50">
+                              <td className="py-3 text-sm font-bold text-navy-700 line-clamp-1">{client.name}</td>
+                              <td className="py-3 text-sm font-medium">
+                                 <span className="bg-green-100 text-green-700 px-2 py-1 rounded-md text-[12px] font-bold">{client.status || 'Active'}</span>
+                              </td>
+                           </tr>
+                         ))
+                       )}
+                     </tbody>
+                   </table>
+                </div>
+             </Card>
+
+             <Card extra={"w-full h-full p-4 sm:p-6"}>
+                <header className="relative flex items-center justify-between pt-4 pb-2">
+                  <div className="text-xl font-bold text-navy-700 dark:text-white">Active Projects</div>
+                  <Link to="/admin/projects" className="text-sm font-medium text-brand-500 hover:underline flex items-center gap-1">View All <MdArrowForward /></Link>
+                </header>
+                <div className="mt-4 overflow-x-auto">
+                   <table className="w-full">
+                     <thead>
+                       <tr className="border-b border-gray-200">
+                         <th className="py-3 text-left text-sm font-bold text-gray-600">CLIENT & PROJECT</th>
+                         <th className="py-3 text-left text-sm font-bold text-gray-600">STATUS</th>
+                       </tr>
+                     </thead>
+                     <tbody>
+                       {loading ? (
+                         <tr><td colSpan="2" className="py-4 text-center">Loading...</td></tr>
+                       ) : myProjects.length === 0 ? (
+                         <tr><td colSpan="2" className="py-4 text-center text-gray-500">No active projects.</td></tr>
+                       ) : (
+                         myProjects.slice(0, 5).map(project => (
+                           <tr key={project.id} className="border-b border-gray-50">
+                              <td className="py-3 text-sm font-bold text-navy-700">
+                                 <div className="text-[#0F172A]">{project.clientName}</div>
+                                 <div className="text-[#64748B] font-medium text-xs">{project.name || project.title || 'Untitled Project'}</div>
+                              </td>
+                              <td className="py-3 text-sm font-medium">
+                                 <span className="bg-orange-100 text-orange-700 px-2 py-1 rounded-md text-[12px] font-bold capitalize">{project.status}</span>
+                              </td>
+                           </tr>
+                         ))
+                       )}
+                     </tbody>
+                   </table>
+                </div>
+             </Card>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mt-6">
+             <Card extra={"w-full h-full p-4 sm:p-6"}>
+                <header className="relative flex items-center justify-between pt-4 pb-2">
+                  <div className="text-xl font-bold text-navy-700 dark:text-white">Active Services</div>
+                  <Link to="/admin/services" className="text-sm font-medium text-brand-500 hover:underline flex items-center gap-1">View All <MdArrowForward /></Link>
+                </header>
+                <div className="mt-4 overflow-x-auto">
+                   <table className="w-full">
+                     <thead>
+                       <tr className="border-b border-gray-200">
+                         <th className="py-3 text-left text-sm font-bold text-gray-600">CLIENT & SERVICE</th>
+                         <th className="py-3 text-left text-sm font-bold text-gray-600">STATUS</th>
+                       </tr>
+                     </thead>
+                     <tbody>
+                       {loading ? (
+                         <tr><td colSpan="2" className="py-4 text-center">Loading...</td></tr>
+                       ) : myServices.length === 0 ? (
+                         <tr><td colSpan="2" className="py-4 text-center text-gray-500">No active services.</td></tr>
+                       ) : (
+                         myServices.slice(0, 5).map(service => (
+                           <tr key={service.id} className="border-b border-gray-50">
+                              <td className="py-3 text-sm font-bold text-navy-700">
+                                 <div className="text-[#0F172A]">{service.clientName}</div>
+                                 <div className="text-[#64748B] font-medium text-xs">{service.title || service.name || 'Untitled Service'}</div>
+                              </td>
+                              <td className="py-3 text-sm font-medium">
+                                 <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded-md text-[12px] font-bold capitalize">{service.status}</span>
+                              </td>
+                           </tr>
+                         ))
+                       )}
+                     </tbody>
+                   </table>
+                </div>
+             </Card>
+          </div>
+        </div>
+     );
   }
+
 
   return (
     <div>
