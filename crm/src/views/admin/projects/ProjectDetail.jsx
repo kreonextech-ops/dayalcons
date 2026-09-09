@@ -124,7 +124,7 @@ const ProjectDetail = ({ projData, onBack, onUpdate }) => {
   const isAdmin = loggedInUser?.role === 'Admin';
 
   const tabs = [
-    "Overview", "Scope", "Workspace", "Steps", ...(isAdmin ? ["Payments"] : []), "Follow Ups", "Tasks", 
+    "Overview", "Scope", "Workspace", "Steps", "Payments", "Follow Ups", "Tasks", 
     "Timeline", "Communication"
   ];
 
@@ -281,7 +281,7 @@ const ProjectDetail = ({ projData, onBack, onUpdate }) => {
             {activeTab === "Scope" && <TabScope projData={projData} onUpdate={onUpdate} />}
             {activeTab === "Workspace" && <TabWorkspace projData={projData} />}
             {activeTab === "Steps" && <TabSteps projData={projData} onUpdate={onUpdate} />}
-            {activeTab === "Payments" && isAdmin && <TabPayments projData={projData} onUpdate={onUpdate} />}
+            {activeTab === "Payments" && <TabPayments projData={projData} onUpdate={onUpdate} isAdmin={isAdmin} />}
             
             {/* Convert projData to client format for CRM components */}
             {activeTab === "Tasks" && <TabTasks leadData={{ id: projData.client_id, name: clientName }} isClient={true} entityType="project" entityId={projData.id} />} 

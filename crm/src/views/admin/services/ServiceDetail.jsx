@@ -108,7 +108,7 @@ const ServiceDetail = ({ serviceCase, onBack, onUpdate }) => {
   const isAdmin = loggedInUser?.role === 'Admin';
 
   const tabs = [
-    "Overview", "Requirements", "Workspace", "Steps", ...(isAdmin ? ["Payments"] : []), "Follow Ups", "Tasks", 
+    "Overview", "Requirements", "Workspace", "Steps", "Payments", "Follow Ups", "Tasks", 
     "Timeline", "Communication"
   ];
 
@@ -264,7 +264,7 @@ const ServiceDetail = ({ serviceCase, onBack, onUpdate }) => {
             {activeTab === "Requirements" && <TabRequirements serviceCase={serviceCase} onUpdate={onUpdate} />}
             {activeTab === "Workspace" && <TabWorkspace serviceCase={serviceCase} />}
             {activeTab === "Steps" && <TabSteps serviceCase={serviceCase} onUpdate={onUpdate} />}
-            {activeTab === "Payments" && isAdmin && <TabPayments serviceCase={serviceCase} onUpdate={onUpdate} />}
+            {activeTab === "Payments" && <TabPayments serviceCase={serviceCase} onUpdate={onUpdate} isAdmin={isAdmin} />}
             
             {/* Convert serviceCase to client format for CRM components */}
             {activeTab === "Tasks" && <TabTasks leadData={{ id: serviceCase.client_id, name: clientName }} isClient={true} entityType="service" entityId={serviceCase.id} />}
