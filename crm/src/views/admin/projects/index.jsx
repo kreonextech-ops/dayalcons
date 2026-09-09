@@ -335,17 +335,32 @@ const Projects = () => {
                            <td className="py-4 px-4 font-bold text-[#0F172A]">{proj.client?.name || "Unknown"}</td>
                            <td className="py-4 px-4 text-[#0F172A] font-medium">{(proj?.name || proj?.title)}</td>
                            <td className="py-4 px-4">
-                              <span className={`px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wide
-                                 ${proj.status === 'Completed' ? 'bg-green-100 text-green-700' :
-                                   proj.status === 'In Progress' ? 'bg-blue-100 text-blue-700' :
-                                   proj.status === 'Pending' ? 'bg-yellow-100 text-yellow-700' :
-                                   proj.status === 'On Hold' ? 'bg-orange-100 text-orange-700' :
-                                   proj.status === 'In Review' ? 'bg-purple-100 text-purple-700' :
-                                   proj.status === 'Cancelled' ? 'bg-red-100 text-red-700' :
-                                   'bg-gray-100 text-gray-700'}`}>
-                                 {proj.status || 'Pending'}
-                              </span>
-                           </td>
+                                <select
+                                   value={proj.status || 'Pending'}
+                                   onClick={(e) => e.stopPropagation()}
+                                   onChange={async (e) => {
+                                      e.stopPropagation();
+                                      const newStatus = e.target.value;
+                                      setProjects(prev => prev.map(p => p.id === proj.id ? { ...p, status: newStatus } : p));
+                                      await supabase.from('projects').update({ status: newStatus }).eq('id', proj.id);
+                                   }}
+                                   className={`px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wide outline-none cursor-pointer appearance-none text-center border border-transparent hover:border-gray-300
+                                      ${proj.status === 'Completed' ? 'bg-green-100 text-green-700' :
+                                        proj.status === 'In Progress' ? 'bg-blue-100 text-blue-700' :
+                                        proj.status === 'Pending' ? 'bg-yellow-100 text-yellow-700' :
+                                        proj.status === 'On Hold' ? 'bg-orange-100 text-orange-700' :
+                                        proj.status === 'In Review' ? 'bg-purple-100 text-purple-700' :
+                                        proj.status === 'Cancelled' ? 'bg-red-100 text-red-700' :
+                                        'bg-gray-100 text-gray-700'}`}
+                                >
+                                   <option value="Pending">Pending</option>
+                                   <option value="In Progress">In Progress</option>
+                                   <option value="On Hold">On Hold</option>
+                                   <option value="In Review">In Review</option>
+                                   <option value="Completed">Completed</option>
+                                   <option value="Cancelled">Cancelled</option>
+                                </select>
+                             </td>
                            
                            <td className="py-4 px-4">
                               <div className="w-24 h-2 bg-gray-200 rounded-full overflow-hidden">
