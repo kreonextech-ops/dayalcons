@@ -173,6 +173,7 @@ const Services = () => {
         title: title,
         client_id: finalClientId,
         description: JSON.stringify(metadata),
+          status: 'Pending',
         status: "Active"
      }]);
 
@@ -204,7 +205,7 @@ const Services = () => {
 
   const kpis = [
      { title: "Total Services", value: services.length || "0" },
-     { title: "Active Cases", value: services.filter(s => s.status === 'Active').length || "0" },
+     { title: "In Progress", value: services.filter(s => s.status === 'In Progress').length || "0" },
      { title: "Completed", value: services.filter(s => s.status === 'Completed').length || "0" },
      ...(isAdmin ? [{ title: "Total Revenue", value: "₹ 0" }] : []),
      ...(isAdmin ? [{ title: "Received", value: "₹ 0" }] : []),
@@ -327,8 +328,8 @@ const Services = () => {
                         mapped.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
                      }
 
-                     if (loading) return <tr><td colSpan="5" className="py-12 text-center text-[#64748B]">Loading...</td></tr>;
-                     if (mapped.length === 0) return <tr><td colSpan="5" className="py-24 text-center">No service cases found.</td></tr>;
+                     if (loading) return <tr><td colSpan="6" className="py-12 text-center text-[#64748B]">Loading...</td></tr>;
+                     if (mapped.length === 0) return <tr><td colSpan="6" className="py-24 text-center">No service cases found.</td></tr>;
                      
                      return mapped.map(srv => (
                         <tr 
@@ -341,6 +342,19 @@ const Services = () => {
                            </td>
                            <td className="py-4 px-4 font-bold text-[#0F172A]">{srv.client?.name || "Unknown"}</td>
                            <td className="py-4 px-4 text-[#0F172A] font-medium">{srv.title}</td>
+                           
+                           <td className="py-4 px-4">
+                              <span className={`px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wide
+                                 ${srv.status === 'Completed' ? 'bg-green-100 text-green-700' :
+                                   srv.status === 'In Progress' ? 'bg-blue-100 text-blue-700' :
+                                   srv.status === 'Pending' ? 'bg-yellow-100 text-yellow-700' :
+                                   srv.status === 'On Hold' ? 'bg-orange-100 text-orange-700' :
+                                   srv.status === 'In Review' ? 'bg-purple-100 text-purple-700' :
+                                   srv.status === 'Cancelled' ? 'bg-red-100 text-red-700' :
+                                   'bg-gray-100 text-gray-700'}`}>
+                                 {srv.status || 'Pending'}
+                              </span>
+                           </td>
                            <td className="py-4 px-4">
                               <div className="w-24 h-2 bg-gray-200 rounded-full overflow-hidden">
                                  <div className="h-full bg-[#2563EB]" style={{width: `${srv.calcProgress || 0}%`}}></div>

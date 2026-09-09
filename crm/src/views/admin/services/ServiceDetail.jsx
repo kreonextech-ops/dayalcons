@@ -112,6 +112,17 @@ const ServiceDetail = ({ serviceCase, onBack, onUpdate }) => {
     "Timeline", "Communication"
   ];
 
+  
+  const handleStatusChange = async (e) => {
+    const newStatus = e.target.value;
+    const { error } = await supabase.from('services').update({ status: newStatus }).eq('id', serviceCase.id);
+    if (error) {
+       alert("Failed to update status: " + error.message);
+    } else {
+       if (onUpdate) onUpdate();
+    }
+  };
+
   return (
     <div className="relative min-h-screen bg-[#F8FAFC] p-4 sm:p-8 font-sans pb-24">
       {/* 1. Back Navigation */}
@@ -202,7 +213,21 @@ const ServiceDetail = ({ serviceCase, onBack, onUpdate }) => {
                  <Card extra="p-6 border border-[#E2E8F0] shadow-sm">
                    <h3 className="text-[16px] font-semibold text-[#0F172A] mb-4">Project Details</h3>
                    <div className="space-y-4">
-                     <div className="flex flex-col"><span className="text-[12px] font-medium text-[#64748B]">Current Status</span><span className="text-[14px] font-bold text-[#2563EB]">{serviceCase.status}</span></div>
+                     <div className="flex flex-col">
+                        <span className="text-[12px] font-medium text-[#64748B]">Current Status</span>
+                        <select 
+                            value={serviceCase?.status || 'Pending'}
+                            onChange={handleStatusChange}
+                            className="text-[14px] font-bold text-[#2563EB] bg-transparent outline-none cursor-pointer hover:bg-gray-50 rounded-md p-1 -ml-1 w-max"
+                        >
+                            <option value="Pending">Pending</option>
+                            <option value="In Progress">In Progress</option>
+                            <option value="On Hold">On Hold</option>
+                            <option value="In Review">In Review</option>
+                            <option value="Completed">Completed</option>
+                            <option value="Cancelled">Cancelled</option>
+                        </select>
+                      </div>
                      <div className="flex flex-col"><span className="text-[12px] font-medium text-[#64748B]">Primary Requirement</span><span className="text-[14px] font-semibold text-[#0F172A]">{serviceCase.title}</span></div>
                      <div className="flex flex-col"><span className="text-[12px] font-medium text-[#64748B]">Selected Requirements Count</span><span className="text-[14px] font-semibold text-[#0F172A]">{parsedMeta?.requirements?.length || 0} Modules</span></div>
                      <div className="flex flex-col"><span className="text-[12px] font-medium text-[#64748B]">Project Progress</span><span className="text-[14px] font-semibold text-[#0F172A]">{parsedMeta?.steps ? Math.round((parsedMeta.steps.filter(s=>s.completed).length / parsedMeta.steps.length)*100) : 0}% Completed</span></div>
