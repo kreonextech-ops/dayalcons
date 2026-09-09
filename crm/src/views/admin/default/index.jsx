@@ -164,14 +164,14 @@ const Dashboard = () => {
       </div>
 
       <div className="mt-3 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-4">
-        <Widget icon={<MdPeople className="h-7 w-7" />} title={"Total Leads"} subtitle={stats.leads?.toString() || '0'} />
-        <Widget icon={<MdPeople className="h-7 w-7" />} title={"Total Clients"} subtitle={stats.clients?.toString() || '0'} />
-        <Widget icon={<MdBusinessCenter className="h-7 w-7" />} title={"Projects (Ongoing)"} subtitle={stats.projectsOngoing?.toString() || '0'} />
-        <Widget icon={<MdBusinessCenter className="h-7 w-7" />} title={"Projects (Completed)"} subtitle={stats.projectsCompleted?.toString() || '0'} />
-        <Widget icon={<MdBusinessCenter className="h-7 w-7" />} title={"Services (Ongoing)"} subtitle={stats.servicesOngoing?.toString() || '0'} />
-        <Widget icon={<MdBusinessCenter className="h-7 w-7" />} title={"Services (Completed)"} subtitle={stats.servicesCompleted?.toString() || '0'} />
-        <Widget icon={<MdAssignment className="h-6 w-6" />} title={"Pending Tasks"} subtitle={stats.tasks?.toString() || '0'} />
-        <Widget icon={<MdAttachMoney className="h-7 w-7" />} title={"Approved Revenue"} subtitle={`₹${(stats.revenue || 0).toLocaleString()}`} />
+        <Link to="/admin/crm" className="block hover:scale-[1.02] transition-transform duration-200"><Widget icon={<MdPeople className="h-7 w-7" />} title={"Total Leads"} subtitle={stats.leads?.toString() || '0'} /></Link>
+        <Link to="/admin/clients" className="block hover:scale-[1.02] transition-transform duration-200"><Widget icon={<MdPeople className="h-7 w-7" />} title={"Total Clients"} subtitle={stats.clients?.toString() || '0'} /></Link>
+        <Link to="/admin/projects" className="block hover:scale-[1.02] transition-transform duration-200"><Widget icon={<MdBusinessCenter className="h-7 w-7" />} title={"Projects (Ongoing)"} subtitle={stats.projectsOngoing?.toString() || '0'} /></Link>
+        <Link to="/admin/projects" className="block hover:scale-[1.02] transition-transform duration-200"><Widget icon={<MdBusinessCenter className="h-7 w-7" />} title={"Projects (Completed)"} subtitle={stats.projectsCompleted?.toString() || '0'} /></Link>
+        <Link to="/admin/services" className="block hover:scale-[1.02] transition-transform duration-200"><Widget icon={<MdBusinessCenter className="h-7 w-7" />} title={"Services (Ongoing)"} subtitle={stats.servicesOngoing?.toString() || '0'} /></Link>
+        <Link to="/admin/services" className="block hover:scale-[1.02] transition-transform duration-200"><Widget icon={<MdBusinessCenter className="h-7 w-7" />} title={"Services (Completed)"} subtitle={stats.servicesCompleted?.toString() || '0'} /></Link>
+        <Link to="/admin/tasks" className="block hover:scale-[1.02] transition-transform duration-200"><Widget icon={<MdAssignment className="h-6 w-6" />} title={"Pending Tasks"} subtitle={stats.tasks?.toString() || '0'} /></Link>
+        <Link to="/admin/finance" className="block hover:scale-[1.02] transition-transform duration-200"><Widget icon={<MdAttachMoney className="h-7 w-7" />} title={"Approved Revenue"} subtitle={`₹${(stats.revenue || 0).toLocaleString()}`} /></Link>
       </div>
 
       <div className="mt-5 grid grid-cols-1 gap-5 xl:grid-cols-2">

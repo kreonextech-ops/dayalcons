@@ -13,6 +13,7 @@ export default function AuditLogs() {
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
   const [expandedEmps, setExpandedEmps] = useState([]);
+  const [selectedLog, setSelectedLog] = useState(null);
 
   const fetchData = async () => {
     setLoading(true);
@@ -164,7 +165,7 @@ export default function AuditLogs() {
                               </thead>
                               <tbody className="bg-white dark:bg-navy-900">
                                  {displayLogs.map(log => (
-                                    <tr key={log.id} className="border-b border-gray-50 hover:bg-gray-50/50 transition last:border-0 dark:border-white/5 dark:hover:bg-navy-800">
+                                    <tr key={log.id} onClick={() => setSelectedLog(log)} className="cursor-pointer border-b border-gray-50 hover:bg-blue-50/50 transition last:border-0 dark:border-white/5 dark:hover:bg-navy-800">
                                        <td className="py-3 px-6 text-[13px] text-gray-600 font-medium dark:text-gray-300">
                                           {new Date(log.created_at).toLocaleString('en-GB', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
                                        </td>
