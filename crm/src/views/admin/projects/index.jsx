@@ -90,7 +90,7 @@ const Projects = () => {
   const [refreshTrigger, setRefreshTrigger] = useState(0);
   const userStr = sessionStorage.getItem('dayal_user');
   const loggedInUser = userStr ? JSON.parse(userStr) : null;
-  const isAdmin = loggedInUser?.role === 'Admin';
+  const isAdmin = loggedInUser?.role === 'Admin' || loggedInUser?.role === 'CRO';
   
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);

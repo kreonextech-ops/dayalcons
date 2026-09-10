@@ -177,7 +177,7 @@ const Tasks = () => {
 
   const userStr = sessionStorage.getItem("dayal_user");
   const loggedInUser = userStr ? JSON.parse(userStr) : null;
-  const isAdminOrMD = loggedInUser && (loggedInUser.role === "Admin" || loggedInUser.role === "MD");
+  const isAdminOrMD = loggedInUser && (loggedInUser.role === "Admin" || loggedInUser.role === "MD" || loggedInUser.role === "CRO");
 
   const [taskScope, setTaskScope] = useState(isAdminOrMD ? "All Tasks" : "My Tasks");
 
