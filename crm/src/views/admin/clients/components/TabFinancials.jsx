@@ -84,7 +84,7 @@ const TabFinancials = ({ clientData }) => {
        }).eq("id", itemToUpdate.id);
        
        // Log to timeline
-       const userStr = localStorage.getItem('dayal_user');
+       const userStr = sessionStorage.getItem('dayal_user');
        const loggedInUser = userStr ? JSON.parse(userStr) : null;
        await supabase.from('lead_activities').insert([{
           client_id: clientData.id,

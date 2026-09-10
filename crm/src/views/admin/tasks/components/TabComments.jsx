@@ -28,7 +28,7 @@ const TabComments = ({ task }) => {
 
   const postCommentText = async (textToPost) => {
     if (!task) return;
-    const userStr = localStorage.getItem("dayal_user");
+    const userStr = sessionStorage.getItem("dayal_user");
     const user = userStr ? JSON.parse(userStr) : { name: "Admin" };
 
     const { data, error } = await supabase.from('task_comments').insert([{

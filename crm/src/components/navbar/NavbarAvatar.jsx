@@ -2,14 +2,14 @@ import React, { useState, useEffect } from "react";
 import { getR2FileUrl } from "utils/r2Storage";
 
 const NavbarAvatar = () => {
-    const userStr = localStorage.getItem("dayal_user");
+    const userStr = sessionStorage.getItem("dayal_user");
     const user = userStr ? JSON.parse(userStr) : { name: "U", permissions: {} };
     
     const [avatar, setAvatar] = useState(null);
     
     useEffect(() => {
        const loadUserAvatar = async () => {
-           const uStr = localStorage.getItem("dayal_user");
+           const uStr = sessionStorage.getItem("dayal_user");
            if (uStr) {
                const u = JSON.parse(uStr);
                if (u.permissions?.avatar && u.permissions.avatar !== "test") {

@@ -28,7 +28,7 @@ const TabSteps = ({ projData, onUpdate }) => {
   const [expandedStep, setExpandedStep] = useState(null);
   const [newComment, setNewComment] = useState("");
 
-  const userStr = localStorage.getItem("dayal_user");
+  const userStr = sessionStorage.getItem("dayal_user");
   const loggedInUser = userStr ? JSON.parse(userStr) : { name: "Admin" };
 
   useEffect(() => {

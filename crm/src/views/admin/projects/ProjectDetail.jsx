@@ -119,7 +119,7 @@ const ProjectDetail = ({ projData, onBack, onUpdate }) => {
   const clientName = projData?.client?.name || projData?.clientName || "Unknown Client";
 
   // Role Check
-  const userStr = localStorage.getItem('dayal_user');
+  const userStr = sessionStorage.getItem('dayal_user');
   const loggedInUser = userStr ? JSON.parse(userStr) : null;
   const isAdmin = loggedInUser?.role === 'Admin' || loggedInUser?.role === 'CRO';
 

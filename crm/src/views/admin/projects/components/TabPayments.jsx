@@ -14,7 +14,7 @@ const TabPayments = ({ projData, onUpdate, isAdmin }) => {
   const [newPayment, setNewPayment] = useState({ amount: "", date: "", mode: "Bank Transfer", note: "" });
   const [showAdd, setShowAdd] = useState(false);
 
-  const userStr = localStorage.getItem("dayal_user");
+  const userStr = sessionStorage.getItem("dayal_user");
   const loggedInUser = userStr ? JSON.parse(userStr) : null;
 
   useEffect(() => {

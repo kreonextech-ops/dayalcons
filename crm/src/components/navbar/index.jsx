@@ -37,7 +37,7 @@ const Navbar = (props) => {
 
   useEffect(() => {
     const fetchNotifications = async () => {
-      const userStr = localStorage.getItem("dayal_user");
+      const userStr = sessionStorage.getItem("dayal_user");
       if (!userStr) return;
       const user = JSON.parse(userStr);
       
@@ -174,14 +174,14 @@ const Navbar = (props) => {
                 <div className="flex flex-col gap-1">
                   <p className="text-sm font-bold text-navy-700 dark:text-white truncate">
                     👋 Hey, {(() => {
-                      const userStr = localStorage.getItem("dayal_user");
+                      const userStr = sessionStorage.getItem("dayal_user");
                       const user = userStr ? JSON.parse(userStr) : { name: "User" };
                       return user.name.split(" ")[0];
                     })()}
                   </p>
                   <p className="text-xs text-gray-500 dark:text-gray-300 truncate">
                     {(() => {
-                      const userStr = localStorage.getItem("dayal_user");
+                      const userStr = sessionStorage.getItem("dayal_user");
                       const user = userStr ? JSON.parse(userStr) : null;
                       return user ? user.role : "";
                     })()}
@@ -200,7 +200,7 @@ const Navbar = (props) => {
                 <button
                   onClick={async () => {
                     await logAction("LOGOUT", "System", "User logged out");
-                    localStorage.removeItem("dayal_user");
+                    sessionStorage.removeItem("dayal_user");
                     try { await supabase.auth.signOut(); } catch(e) {}
                     Object.keys(localStorage).forEach(key => { if (key.startsWith("sb-")) localStorage.removeItem(key); });
                     window.location.href = "/crm/auth/sign-in";

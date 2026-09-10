@@ -24,7 +24,7 @@ const ProfileSettings = () => {
   const fileInputRef = useRef(null);
 
   useEffect(() => {
-    const userStr = localStorage.getItem("dayal_user");
+    const userStr = sessionStorage.getItem("dayal_user");
     if (userStr) {
       const parsed = JSON.parse(userStr);
       setUser(parsed);
@@ -65,7 +65,7 @@ const ProfileSettings = () => {
         if (error) throw error;
         
         const updatedUser = { ...user, permissions: updatedPermissions };
-        localStorage.setItem("dayal_user", JSON.stringify(updatedUser));
+        sessionStorage.setItem("dayal_user", JSON.stringify(updatedUser));
         setUser(updatedUser);
         loadAvatar(fileKey);
         
@@ -128,7 +128,7 @@ const ProfileSettings = () => {
          
          if (data && data[0]) {
              const updatedUser = data[0];
-             localStorage.setItem("dayal_user", JSON.stringify(updatedUser));
+             sessionStorage.setItem("dayal_user", JSON.stringify(updatedUser));
              setUser(updatedUser);
              setFormData({ ...formData, currentPassword: "", newPassword: "", confirmPassword: "" });
              alert("Profile settings updated successfully!");

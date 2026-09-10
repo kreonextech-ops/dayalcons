@@ -20,7 +20,7 @@ export default function ClientDashboard() {
   useEffect(() => {
      const fetchData = async () => {
         setLoading(true);
-        const userStr = localStorage.getItem("dayal_user");
+        const userStr = sessionStorage.getItem("dayal_user");
         const loggedInUser = userStr ? JSON.parse(userStr) : null;
         
         if (loggedInUser && loggedInUser.department) {

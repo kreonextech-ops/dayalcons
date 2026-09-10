@@ -38,7 +38,7 @@ export default function SignIn() {
 
   const enterDashboard = async (data) => {
     await logLogin(data.name, data.id);
-    localStorage.setItem("dayal_user", JSON.stringify(data));
+    sessionStorage.setItem("dayal_user", JSON.stringify(data));
     if (data.role === "Client") navigate("/client/default");
     else navigate("/admin/default");
   };

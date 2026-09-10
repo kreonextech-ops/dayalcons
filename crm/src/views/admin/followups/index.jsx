@@ -36,7 +36,7 @@ const FollowUps = () => {
   const [showDropdown, setShowDropdown] = useState(false);
 
   // Get logged-in user
-  const userStr = localStorage.getItem('dayal_user');
+  const userStr = sessionStorage.getItem('dayal_user');
   const loggedInUser = userStr ? JSON.parse(userStr) : null;
   const isAdmin = loggedInUser?.role === 'Admin';
 

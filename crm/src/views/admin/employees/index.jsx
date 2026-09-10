@@ -174,9 +174,6 @@ const Employees = () => {
             <p className="text-[14px] text-[#64748B] mt-1">Manage workforce, departments, permissions, attendance, workload, and assignments across the company.</p>
           </div>
           <div className="flex gap-3 z-10 relative">
-            <button className="h-10 px-4 rounded-[12px] border border-[#E2E8F0] bg-white text-[14px] font-bold text-[#0F172A] hover:bg-gray-50 flex items-center gap-2 transition">
-              <MdCloudUpload /> Import / Export
-            </button>
             <button onClick={() => setShowNewModal(true)} className="h-10 px-5 rounded-[12px] bg-[#2563EB] text-[14px] font-bold text-white hover:bg-[#1D4ED8] flex items-center gap-2 transition shadow-sm">
               <MdAdd /> Add Employee
             </button>

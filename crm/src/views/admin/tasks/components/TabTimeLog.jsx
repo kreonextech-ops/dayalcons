@@ -24,7 +24,7 @@ const TabTimeLog = ({ task }) => {
 
   const handleLogTime = async () => {
     if (!newLog.hours || !task) return;
-    const userStr = localStorage.getItem("dayal_user");
+    const userStr = sessionStorage.getItem("dayal_user");
     const user = userStr ? JSON.parse(userStr) : { name: "Admin" };
 
     const { data, error } = await supabase.from('task_activity_logs').insert([{

@@ -7,7 +7,7 @@ import AuthLayout from "layouts/auth";
 import ClientLayout from "layouts/client";
 
 const ProtectedRoute = ({ children }) => {
-  const userStr = localStorage.getItem("dayal_user");
+  const userStr = sessionStorage.getItem("dayal_user");
   const location = useLocation();
 
   if (!userStr) {

@@ -52,7 +52,7 @@ export default function Admin(props) {
       if (prop.layout === "/admin" || prop.layout === "/auth") {
         
         let hasPermission = false;
-        const userStr = localStorage.getItem("dayal_user");
+        const userStr = sessionStorage.getItem("dayal_user");
         const loggedInUser = userStr ? JSON.parse(userStr) : null;
         const isAdmin = loggedInUser?.role === 'Admin';
         const isCRO = loggedInUser?.role === 'CRO';
@@ -133,7 +133,7 @@ export default function Admin(props) {
                   element={<Navigate to={
                      // Find first permitted route
                      (() => {
-                       const userStr = localStorage.getItem("dayal_user");
+                       const userStr = sessionStorage.getItem("dayal_user");
                        const loggedInUser = userStr ? JSON.parse(userStr) : null;
                        const isAdmin = loggedInUser?.role === 'Admin';
                        const isCRO = loggedInUser?.role === 'CRO';

@@ -103,7 +103,7 @@ const ServiceDetail = ({ serviceCase, onBack, onUpdate }) => {
   const clientName = serviceCase?.client?.name || serviceCase?.clientName || "Unknown Client";
 
   // Role Check
-  const userStr = localStorage.getItem('dayal_user');
+  const userStr = sessionStorage.getItem('dayal_user');
   const loggedInUser = userStr ? JSON.parse(userStr) : null;
   const isAdmin = loggedInUser?.role === 'Admin' || loggedInUser?.role === 'CRO';
 

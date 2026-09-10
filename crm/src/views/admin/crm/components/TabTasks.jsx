@@ -44,7 +44,7 @@ const TabTasks = ({ leadData, isClient = false, entityType, entityId }) => {
     const status = formData.get('status');
     const assignee_id = formData.get('assignee_id');
     
-    const userStr = localStorage.getItem('dayal_user');
+    const userStr = sessionStorage.getItem('dayal_user');
     const loggedInUser = userStr ? JSON.parse(userStr) : null;
     
     const { error } = await supabase.from('tasks').insert([{

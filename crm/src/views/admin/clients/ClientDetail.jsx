@@ -128,7 +128,7 @@ const ClientDetail = ({ client, onBack }) => {
 
   const handleAddCommentText = async (textToPost) => {
     if (!textToPost.trim()) return;
-    const userStr = localStorage.getItem('dayal_user');
+    const userStr = sessionStorage.getItem('dayal_user');
     const loggedInUser = userStr ? JSON.parse(userStr) : null;
     await supabase.from('lead_activities').insert([{
       client_id: clientData.id,
@@ -238,7 +238,7 @@ const ClientDetail = ({ client, onBack }) => {
     }
   };
 
-  const userStr = localStorage.getItem('dayal_user');
+  const userStr = sessionStorage.getItem('dayal_user');
   const loggedInUser = userStr ? JSON.parse(userStr) : null;
   const isAdmin = loggedInUser?.role === 'Admin';
 
@@ -332,7 +332,7 @@ const ClientDetail = ({ client, onBack }) => {
               e.preventDefault();
               const formData = new FormData(e.target);
               
-              const userStr = localStorage.getItem('dayal_user');
+              const userStr = sessionStorage.getItem('dayal_user');
               const loggedInUser = userStr ? JSON.parse(userStr) : null;
               
               const { error } = await supabase.from('tasks').insert([{

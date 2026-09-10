@@ -29,7 +29,7 @@ const TabChecklist = ({ task }) => {
        return;
     }
     if (data) {
-       const userStr = localStorage.getItem("dayal_user");
+       const userStr = sessionStorage.getItem("dayal_user");
        const user = userStr ? JSON.parse(userStr) : { name: "Admin" };
        await supabase.from('task_activity_logs').insert([{
           task_id: task.id,
@@ -48,7 +48,7 @@ const TabChecklist = ({ task }) => {
     setItems(items.map(i => i.id === id ? { ...i, is_completed: !currentVal } : i));
     await supabase.from('task_checklists').update({ is_completed: !currentVal }).eq('id', id);
 
-    const userStr = localStorage.getItem("dayal_user");
+    const userStr = sessionStorage.getItem("dayal_user");
     const user = userStr ? JSON.parse(userStr) : { name: "Admin" };
     await supabase.from('task_activity_logs').insert([{
        task_id: task.id,

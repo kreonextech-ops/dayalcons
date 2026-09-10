@@ -71,7 +71,7 @@ const LeadDetail = ({ lead, onBack }) => {
 
   const handleAddCommentText = async (textToPost) => {
     if (!textToPost.trim()) return;
-    const userStr = localStorage.getItem('dayal_user');
+    const userStr = sessionStorage.getItem('dayal_user');
     const loggedInUser = userStr ? JSON.parse(userStr) : null;
     await supabase.from('lead_activities').insert([{
       lead_id: leadData.id,
@@ -229,7 +229,7 @@ const LeadDetail = ({ lead, onBack }) => {
     serviceNotes: ""
   });
 
-  const userStr = localStorage.getItem('dayal_user');
+  const userStr = sessionStorage.getItem('dayal_user');
   const loggedInUser = userStr ? JSON.parse(userStr) : null;
   const isAdmin = loggedInUser?.role === 'Admin';
 
@@ -459,7 +459,7 @@ const LeadDetail = ({ lead, onBack }) => {
               const due_date = formData.get('due_date');
               if(!name || !due_date) return alert('Fill required fields');
               
-              const userStr = localStorage.getItem('dayal_user');
+              const userStr = sessionStorage.getItem('dayal_user');
               const loggedInUser = userStr ? JSON.parse(userStr) : null;
               
               const { error } = await supabase.from('tasks').insert([{

@@ -42,7 +42,7 @@ const ClientSidebar = ({ open, onClose }) => {
       </ul>
       
       <div className="flex justify-center mt-auto pb-4">
-         <button onClick={() => { localStorage.removeItem("dayal_user"); window.location.href="/"; }} className="px-4 py-2 bg-red-50 text-red-500 rounded-lg text-sm font-bold hover:bg-red-100 transition">
+         <button onClick={() => { sessionStorage.removeItem("dayal_user"); window.location.href="/"; }} className="px-4 py-2 bg-red-50 text-red-500 rounded-lg text-sm font-bold hover:bg-red-100 transition">
             Sign Out
          </button>
       </div>

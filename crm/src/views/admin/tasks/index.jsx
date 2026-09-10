@@ -77,7 +77,7 @@ const Tasks = () => {
         if (empsData) setAvailableEmployees(empsData);
 
         if (tasksData) {
-           const userStr = localStorage.getItem("dayal_user");
+           const userStr = sessionStorage.getItem("dayal_user");
            const loggedInUser = userStr ? JSON.parse(userStr) : null;
 
            setAllTasks(tasksData.map(t => {
@@ -132,7 +132,7 @@ const Tasks = () => {
   const handleCreateTask = async () => {
      if (!newTask.title) return;
      
-     const userStr = localStorage.getItem("dayal_user");
+     const userStr = sessionStorage.getItem("dayal_user");
      const loggedInUser = userStr ? JSON.parse(userStr) : null;
 
      const payload = {
@@ -175,7 +175,7 @@ const Tasks = () => {
      setRefreshTrigger(prev => prev + 1);
   };
 
-  const userStr = localStorage.getItem("dayal_user");
+  const userStr = sessionStorage.getItem("dayal_user");
   const loggedInUser = userStr ? JSON.parse(userStr) : null;
   const isAdminOrMD = loggedInUser && (loggedInUser.role === "Admin" || loggedInUser.role === "MD");
 
@@ -223,7 +223,7 @@ const Tasks = () => {
         setAllTasks(prev => prev.map(t => t.id === taskId ? { ...t, status: newStatus } : t));
         setSelectedTask(prev => prev && prev.id === taskId ? { ...prev, status: newStatus } : prev);
 
-        const userStr = localStorage.getItem("dayal_user");
+        const userStr = sessionStorage.getItem("dayal_user");
         const user = userStr ? JSON.parse(userStr) : { name: "Admin" };
         await supabase.from('task_activity_logs').insert([{
            task_id: taskId,
@@ -475,7 +475,7 @@ const Tasks = () => {
                            ) : (
                               (() => {
                                    let validEmps = availableEmployees;
-                                   const userStr = localStorage.getItem('dayal_user');
+                                   const userStr = sessionStorage.getItem('dayal_user');
                                    const currentUser = userStr ? JSON.parse(userStr) : null;
                                    const isStandard = currentUser && currentUser.role !== 'Admin' && currentUser.role !== 'MD';
                                    

@@ -39,7 +39,7 @@ const TabTimeline = ({ leadData, isClient = false, entityType, entityId }) => {
 
   const handleSaveActivity = async () => {
     if (!formData.title || !formData.details) { alert('Please enter title and details'); return; }
-    const userStr = localStorage.getItem('dayal_user');
+    const userStr = sessionStorage.getItem('dayal_user');
     const loggedInUser = userStr ? JSON.parse(userStr) : null;
     
     const { error } = await supabase.from('lead_activities').insert([{

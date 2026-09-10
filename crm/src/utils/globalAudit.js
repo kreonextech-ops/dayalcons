@@ -110,7 +110,7 @@ export const initGlobalAudit = () => {
                     }
                 }
                 
-                const userStr = localStorage.getItem("dayal_user");
+                const userStr = sessionStorage.getItem("dayal_user");
                 const user = userStr ? JSON.parse(userStr) : null;
                 
                 if (user) {

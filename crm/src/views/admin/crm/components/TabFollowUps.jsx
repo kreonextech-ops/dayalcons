@@ -24,7 +24,7 @@ const TabFollowUps = ({ moduleType, recordId }) => {
      dueDate: new Date().toISOString().split("T")[0],
   });
 
-  const userStr = localStorage.getItem('dayal_user');
+  const userStr = sessionStorage.getItem('dayal_user');
   const loggedInUser = userStr ? JSON.parse(userStr) : null;
 
   const fetchFollowUps = async () => {

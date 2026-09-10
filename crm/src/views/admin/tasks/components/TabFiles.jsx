@@ -35,7 +35,7 @@ const TabFiles = ({ task }) => {
     if (!file || !task) return;
     
     setIsUploading(true);
-    const userStr = localStorage.getItem("dayal_user");
+    const userStr = sessionStorage.getItem("dayal_user");
     const user = userStr ? JSON.parse(userStr) : { name: "Admin" };
 
     let fileKey;
@@ -90,7 +90,7 @@ const TabFiles = ({ task }) => {
 
     await supabase.from('task_files').delete().eq('id', id);
     
-    const userStr = localStorage.getItem("dayal_user");
+    const userStr = sessionStorage.getItem("dayal_user");
     const user = userStr ? JSON.parse(userStr) : { name: "Admin" };
     
     await supabase.from('task_activity_logs').insert([{
