@@ -108,7 +108,7 @@ export default function Admin(props) {
       {/* Mobile Backdrop */}
       {open && window.innerWidth < 1200 ? (
         <div 
-          className="fixed inset-0 z-[50] bg-black/40 backdrop-blur-sm transition-opacity duration-300"
+          className="fixed inset-0 z-40 bg-black/40 backdrop-blur-sm transition-opacity duration-300"
           onClick={() => setOpen(false)}
         />
       ) : null}
