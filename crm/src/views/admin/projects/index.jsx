@@ -267,7 +267,7 @@ const Projects = () => {
 
         {/* Table */}
         <Card extra="border border-[#E2E8F0] overflow-hidden shadow-sm">
-           <div className="overflow-x-auto">
+           <div className="overflow-auto w-full max-h-[calc(100vh-320px)]">
              <table className="w-full text-left border-collapse min-w-[900px]">
                <thead className="sticky top-0 z-20 bg-[#F8FAFC] shadow-sm">
                  <tr className="bg-[#F8FAFC] border-b border-[#E2E8F0]">

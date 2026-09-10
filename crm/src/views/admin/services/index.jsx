@@ -276,11 +276,12 @@ const Services = () => {
 
         {/* Table */}
         <Card extra="border border-[#E2E8F0] overflow-hidden shadow-sm">
-           <div className="overflow-x-auto">
+           <div className="overflow-auto w-full max-h-[calc(100vh-320px)]">
              <table className="w-full text-left border-collapse min-w-[900px]">
                <thead className="sticky top-0 z-20 bg-[#F8FAFC] shadow-sm">
                  <tr className="bg-[#F8FAFC] border-b border-[#E2E8F0]">
-                   <th className="py-4 px-6 text-[12px] font-medium text-[#64748B] uppercase tracking-wider">Case ID</th>
+                   <th className="py-4 px-4 w-12 text-[12px] font-medium text-[#64748B] uppercase tracking-wider">Sl. No.</th>
+                     <th className="py-4 px-6 text-[12px] font-medium text-[#64748B] uppercase tracking-wider">Case ID</th>
                    <th className="py-4 px-4 text-[12px] font-medium text-[#64748B] uppercase tracking-wider">Client</th>
                    <th className="py-4 px-4 text-[12px] font-medium text-[#64748B] uppercase tracking-wider">Service</th>
                    <th className="py-4 px-4 text-[12px] font-medium text-[#64748B] uppercase tracking-wider">Progress</th>

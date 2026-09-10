@@ -287,8 +287,9 @@ const Clients = () => {
                 </select>
               </div>
             </div>
-          </Card>
-
+            </Card>
+          </div>
+  
         {/* 4. Clients Data Table */}
         <Card extra="border border-[#E2E8F0] overflow-hidden shadow-sm">
           <div className="overflow-auto w-full max-h-[calc(100vh-320px)]">
