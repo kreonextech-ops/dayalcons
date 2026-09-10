@@ -210,7 +210,8 @@ const Clients = () => {
     <div className="w-full max-w-full bg-[#F8FAFC] min-h-screen pt-12 pb-24">
       <div className="max-w-[1180px] mx-auto px-4 sm:px-6 lg:px-8 font-sans text-[#475569]">
         
-        {/* 1. Breadcrumb & Header */}
+        <div className="sticky top-[80px] z-30 bg-[#F8FAFC] pt-2 pb-4 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
+          {/* 1. Breadcrumb & Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4 mt-8 md:mt-2">
           <div>
             <p className="text-[12px] font-medium text-[#64748B] mb-1">Pages / Clients</p>
@@ -290,11 +291,12 @@ const Clients = () => {
 
         {/* 4. Clients Data Table */}
         <Card extra="border border-[#E2E8F0] overflow-hidden shadow-sm">
-          <div className="overflow-x-auto w-full">
+          <div className="overflow-auto w-full max-h-[calc(100vh-320px)]">
             <table className="w-full text-left border-collapse min-w-[900px]">
-              <thead>
+              <thead className="sticky top-0 z-20 bg-[#F8FAFC] shadow-sm">
                 <tr className="bg-[#F8FAFC] border-b border-[#E2E8F0]">
                   <th className="py-4 px-6 w-12"><input type="checkbox" className="w-4 h-4 rounded text-[#2563EB] border-[#E2E8F0] cursor-pointer" /></th>
+                    <th className="py-4 px-4 w-12 text-[12px] font-medium text-[#64748B] uppercase tracking-wider">Sl. No.</th>
                   <th className="py-4 px-4 text-[12px] font-medium text-[#64748B] uppercase tracking-wider">Client Entity</th>
                   <th className="py-4 px-4 text-[12px] font-medium text-[#64748B] uppercase tracking-wider">Contact Info</th>
                   <th className="py-4 px-4 text-[12px] font-medium text-[#64748B] uppercase tracking-wider">Active Projects</th>
@@ -325,11 +327,14 @@ const Clients = () => {
                      }
                      if (loading) return <tr><td colSpan="6" className="py-12 text-center text-gray-500">Loading clients...</td></tr>;
                      if (filtered.length === 0) return <tr><td colSpan="6" className="py-12 text-center text-gray-500">No clients found.</td></tr>;
-                     return filtered.map(client => (
+                     return filtered.map((client, index) => (
                         <tr key={client.id} className="border-b border-gray-100 hover:bg-gray-50 cursor-pointer" onClick={() => setSelectedClient(client)}>
                            <td className="py-4 px-6" onClick={(e) => e.stopPropagation()}>
                               <input type="checkbox" className="w-4 h-4 rounded text-[#2563EB] border-[#E2E8F0] cursor-pointer" />
                            </td>
+                             <td className="py-4 px-4 text-sm text-gray-800 font-bold">
+                                {index + 1}
+                             </td>
                            <td className="py-4 px-4">
                               <p className="text-sm text-gray-800 font-bold">{client.name}</p>
                               {client.company && <p className="text-[12px] text-gray-500">{client.company}</p>}

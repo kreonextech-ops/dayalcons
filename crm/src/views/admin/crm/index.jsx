@@ -345,9 +345,9 @@ const CRMLeads = () => {
           </div>
         </div>
       )}
-      <div className="max-w-[1180px] mx-auto px-4 sm:px-6 lg:px-8 font-sans text-[#475569]">
-        
-        {/* 1. Breadcrumb & Header */}
+        <div className="max-w-[1180px] mx-auto px-4 sm:px-6 lg:px-8 font-sans text-[#475569]">
+          <div className="sticky top-[80px] z-30 bg-[#F8FAFC] pt-2 pb-4 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
+          {/* 1. Breadcrumb & Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4 mt-8 md:mt-2">
           <div>
             <p className="text-[12px] font-medium text-[#64748B] mb-1">Pages / Leads</p>
@@ -446,15 +446,17 @@ const CRMLeads = () => {
                   </select>
               </div>
             </div>
-          </Card>
+            </Card>
+          </div>
 
         {/* 4. Leads Data Table */}
         <Card extra="border border-[#E2E8F0] overflow-hidden shadow-sm">
-          <div className="overflow-x-auto w-full">
+          <div className="overflow-auto w-full max-h-[calc(100vh-320px)]">
             <table className="w-full text-left border-collapse min-w-[900px]">
-              <thead>
+              <thead className="sticky top-0 z-20 bg-[#F8FAFC] shadow-sm">
                 <tr className="bg-[#F8FAFC] border-b border-[#E2E8F0]">
                   <th className="py-4 px-6 w-12"><input type="checkbox" className="w-4 h-4 rounded text-[#2563EB] border-[#E2E8F0] cursor-pointer" /></th>
+                  <th className="py-4 px-4 w-12 text-[12px] font-medium text-[#64748B] uppercase tracking-wider">Sl. No.</th>
                   <th className="py-4 px-4 text-[12px] font-medium text-[#64748B] uppercase tracking-wider">Lead</th>
                   <th className="py-4 px-4 text-[12px] font-medium text-[#64748B] uppercase tracking-wider">Source</th>
                   <th className="py-4 px-4 text-[12px] font-medium text-[#64748B] uppercase tracking-wider">Service</th>
@@ -516,11 +518,14 @@ const CRMLeads = () => {
                      }
                      if (loading) return <tr><td colSpan="7" className="py-12 text-center text-gray-500">Loading leads...</td></tr>;
                      if (filtered.length === 0) return <tr><td colSpan="7" className="py-12 text-center text-gray-500">No leads found.</td></tr>;
-                     return filtered.map(lead => (
+                     return filtered.map((lead, index) => (
                         <tr key={lead.id} className="border-b border-gray-100 hover:bg-gray-50 cursor-pointer" onClick={() => setSelectedLead(lead)}>
                            <td className="py-4 px-6" onClick={(e) => e.stopPropagation()}>
                               <input type="checkbox" className="w-4 h-4 rounded text-[#2563EB] border-[#E2E8F0] cursor-pointer" />
                            </td>
+                             <td className="py-4 px-4 text-sm text-gray-800 font-bold">
+                                {index + 1}
+                             </td>
                            <td className="py-4 px-4">
                               <p className="text-sm text-gray-800 font-bold">{lead.name}</p>
                               {lead.email && <p className="text-[12px] text-gray-500">{lead.email}</p>}
