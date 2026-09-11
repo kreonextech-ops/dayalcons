@@ -232,8 +232,10 @@ const Projects = () => {
           ))}
         </div>
 
-        {/* Search & Filters */}
-        <Card extra="p-4 border border-[#E2E8F0] mb-6 shadow-sm">
+        {/* GREEN PART: STICKY WRAPPER */}
+          <div className="sticky top-[80px] z-30 bg-[#F8FAFC] pt-4 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 h-[calc(100vh-80px)] flex flex-col pb-4">
+          {/* Search & Filters */}
+        <Card extra="shrink-0 p-4 border border-[#E2E8F0] mb-4 shadow-sm">
           <div className="flex flex-col lg:flex-row justify-between items-center gap-4">
             <div className="relative w-full lg:w-[350px]">
               <MdSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#64748B] text-xl" />
@@ -266,8 +268,8 @@ const Projects = () => {
         </Card>
 
         {/* Table */}
-        <Card extra="border border-[#E2E8F0] overflow-hidden shadow-sm">
-           <div className="overflow-auto w-full max-h-[calc(100vh-320px)]">
+        <Card extra="flex-1 flex flex-col min-h-0 border border-[#E2E8F0] overflow-hidden shadow-sm">
+           <div className="flex-1 overflow-auto w-full">
              <table className="w-full text-left border-collapse min-w-[900px]">
                <thead className="sticky top-0 z-20 bg-[#F8FAFC] shadow-sm">
                  <tr className="bg-[#F8FAFC] border-b border-[#E2E8F0]">
