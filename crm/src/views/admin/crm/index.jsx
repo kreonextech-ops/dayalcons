@@ -450,9 +450,8 @@ const CRMLeads = () => {
               </div>
             </div>
             </Card>
-          </div>
 
-        {/* 4. Leads Data Table */}
+          {/* 4. Leads Data Table */}
         <Card extra="flex-1 flex flex-col min-h-0 border border-[#E2E8F0] overflow-hidden shadow-sm">
           <div className="flex-1 overflow-auto w-full">
             <table className="w-full text-left border-collapse min-w-[900px]">
