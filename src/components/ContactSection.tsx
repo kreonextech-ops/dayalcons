@@ -143,15 +143,6 @@ export default function ContactSection() {
                 </div>
               </motion.div>
             </motion.div>
-
-            {/* Social Icons */}
-            <motion.div variants={fadeUp} className="flex items-center gap-3">
-              {['facebook', 'work', 'camera_alt', 'play_arrow'].map((icon, i) => (
-                <a key={i} href="#" className="w-[36px] h-[36px] rounded-full bg-[#EBF4FA] flex items-center justify-center text-[#071A2F] hover:bg-[#1EA7FF] hover:text-white transition-colors">
-                  <span className="material-symbols-outlined text-[16px]">{icon}</span>
-                </a>
-              ))}
-            </motion.div>
           </motion.div>
 
           {/* CENTER COLUMN: Floating Form */}
@@ -273,7 +264,7 @@ export default function ContactSection() {
           className="w-full flex flex-wrap justify-between gap-8 pt-[80px]"
         >
           {[
-            { icon: 'verified_user', title: 'Trusted Expertise', sub: '10+ Years of Experience' },
+            { icon: 'verified_user', title: 'Trusted Expertise', sub: '20+ Years of Experience' },
             { icon: 'architecture', title: 'Quality Assurance', sub: 'Premium Materials & Standards' },
             { icon: 'supervisor_account', title: 'Client Focused', sub: 'Personalized Solutions' },
             { icon: 'handshake', title: 'On-Time Delivery', sub: 'Commitment You Can Count On' }

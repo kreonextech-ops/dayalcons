@@ -3,6 +3,7 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import Link from "next/link";
 import { useRef, useState } from "react";
+import { projectsData } from "@/lib/projectsData";
 
 // ==========================================
 // ANIMATION VARIANTS
@@ -25,6 +26,8 @@ const staggerContainer = {
 };
 
 // Trust Badges Data
+const categories = ["All", "Residential", "Commercial", "Interior"];
+
 const trustBadges = [
   { icon: "verified_user", text: "Quality Assurance" },
   { icon: "groups", text: "Expert Team" },
@@ -32,33 +35,16 @@ const trustBadges = [
   { icon: "receipt_long", text: "Transparent Process" },
 ];
 
-// Project Placeholders Data (12 items)
-const projects = [
-  { id: 1, aspect: "aspect-[5/4]", src: "https://pub-00d1d73a43a643edb96c64ca062ab6df.r2.dev/website/images/project/1000579291.jpg.jpg" },
-  { id: 2, aspect: "aspect-[4/5]", src: "https://pub-00d1d73a43a643edb96c64ca062ab6df.r2.dev/website/images/project/1000609146.jpg.jpg" },
-  { id: 3, aspect: "aspect-[16/10]", src: "https://pub-00d1d73a43a643edb96c64ca062ab6df.r2.dev/website/images/project/1000609147.jpg.jpg" },
-  { id: 4, aspect: "aspect-[1/1]", src: "https://pub-00d1d73a43a643edb96c64ca062ab6df.r2.dev/website/images/project/1000609148.jpg.jpg" },
-  { id: 5, aspect: "aspect-[5/4]", src: "https://pub-00d1d73a43a643edb96c64ca062ab6df.r2.dev/website/images/project/1000609149.jpg.jpg" },
-  { id: 6, aspect: "aspect-[4/5]", src: "https://pub-00d1d73a43a643edb96c64ca062ab6df.r2.dev/website/images/project/1000630512.jpg.jpg" },
-  { id: 7, aspect: "aspect-[16/10]", src: "https://pub-00d1d73a43a643edb96c64ca062ab6df.r2.dev/website/images/project/1000630513.jpg.jpg" },
-  { id: 8, aspect: "aspect-[1/1]", src: "https://pub-00d1d73a43a643edb96c64ca062ab6df.r2.dev/website/images/project/1000714135.jpg.jpg" },
-  { id: 9, aspect: "aspect-[5/4]", src: "https://pub-00d1d73a43a643edb96c64ca062ab6df.r2.dev/website/images/project/1000714139.jpg.jpg" },
-  { id: 10, aspect: "aspect-[4/5]", src: "https://pub-00d1d73a43a643edb96c64ca062ab6df.r2.dev/website/images/project/1000714140.jpg.jpg" },
-  { id: 11, aspect: "aspect-[16/10]", src: "https://pub-00d1d73a43a643edb96c64ca062ab6df.r2.dev/website/images/project/1000714143.jpg.jpg" },
-  { id: 12, aspect: "aspect-[1/1]", src: "https://pub-00d1d73a43a643edb96c64ca062ab6df.r2.dev/website/images/project/1000714144.jpg.jpg" },
-  { id: 13, aspect: "aspect-[5/4]", src: "https://pub-00d1d73a43a643edb96c64ca062ab6df.r2.dev/website/images/project/1000714148.jpg.jpg" },
-  { id: 14, aspect: "aspect-[4/5]", src: "https://pub-00d1d73a43a643edb96c64ca062ab6df.r2.dev/website/images/project/1000714151.jpg.jpg" },
-  { id: 15, aspect: "aspect-[16/10]", src: "https://pub-00d1d73a43a643edb96c64ca062ab6df.r2.dev/website/images/project/chatgpt-10_16_10-am.jpg" },
-  { id: 16, aspect: "aspect-[1/1]", src: "https://pub-00d1d73a43a643edb96c64ca062ab6df.r2.dev/website/images/project/chatgpt-10_19_32-am.jpg" },
-  { id: 17, aspect: "aspect-[5/4]", src: "https://pub-00d1d73a43a643edb96c64ca062ab6df.r2.dev/website/images/project/chatgpt-10_20_48-am.jpg" },
-  { id: 18, aspect: "aspect-[4/5]", src: "https://pub-00d1d73a43a643edb96c64ca062ab6df.r2.dev/website/images/project/chatgpt-10_25_00-am.jpg" },
-  { id: 19, aspect: "aspect-[16/10]", src: "https://pub-00d1d73a43a643edb96c64ca062ab6df.r2.dev/website/images/project/chatgpt-10_28_39-am.jpg" },
-  { id: 20, aspect: "aspect-[1/1]", src: "https://pub-00d1d73a43a643edb96c64ca062ab6df.r2.dev/website/images/project/chatgpt-10_29_57-am.jpg" },
-  { id: 21, aspect: "aspect-[5/4]", src: "https://pub-00d1d73a43a643edb96c64ca062ab6df.r2.dev/website/images/project/chatgpt-10_30_29-am.jpg" },
-  { id: 22, aspect: "aspect-[4/5]", src: "https://pub-00d1d73a43a643edb96c64ca062ab6df.r2.dev/website/images/project/chatgpt-10_30_36-am.jpg" },
-  { id: 23, aspect: "aspect-[16/10]", src: "https://pub-00d1d73a43a643edb96c64ca062ab6df.r2.dev/website/images/project/1000579291.jpg.jpg" },
-  { id: 24, aspect: "aspect-[1/1]", src: "https://pub-00d1d73a43a643edb96c64ca062ab6df.r2.dev/website/images/project/1000609146.jpg.jpg" },
-];
+// Project Data (Dynamic)
+const projects = projectsData.map((p, index) => {
+  const aspects = ["aspect-[5/4]", "aspect-[4/5]", "aspect-[16/10]", "aspect-[1/1]"];
+  return {
+    id: index + 1,
+    aspect: aspects[index % 4],
+    src: "https://pub-00d1d73a43a643edb96c64ca062ab6df.r2.dev/website/images/project/" + p.img,
+    category: p.category
+  };
+});
 
 // Excellence Cards Data
 const excellenceFeatures = [
@@ -72,6 +58,7 @@ const excellenceFeatures = [
 
 export default function ProjectsPage() {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState("All");
   const heroRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: heroRef,
@@ -82,6 +69,7 @@ export default function ProjectsPage() {
   const yContent = useTransform(scrollYProgress, [0, 1], [0, 150]);
   const opacityContent = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
   const headingWords = "Built with Trust. Delivered with Pride.".split(" ");
+  const filteredProjects = activeTab === "All" ? projects : projects.filter(p => p.category === activeTab);
 
   return (
     <main className="w-full bg-white text-[#475569] overflow-hidden font-['Manrope',_sans-serif]">
@@ -210,11 +198,31 @@ export default function ProjectsPage() {
           </motion.div>
 
           {/* Masonry Gallery */}
+
+          {/* Category Tabs */}
+          <div className="flex flex-wrap items-center gap-2 md:gap-4 mb-8">
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setActiveTab(cat)}
+                className={`px-5 py-2 rounded-full text-sm font-bold transition-all duration-300 ${
+                  activeTab === cat 
+                    ? "bg-[#18AFFF] text-white shadow-[0_4px_14px_rgba(24,175,255,0.39)]" 
+                    : "bg-gray-100 text-[#5B6472] hover:bg-gray-200"
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+
+          {filteredProjects.length > 0 ? (
+
           <motion.div 
             initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={staggerContainer}
             className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6"
           >
-            {projects.map((project) => (
+            {filteredProjects.map((project) => (
               <motion.div 
                 key={project.id} 
                 variants={fadeUp}
@@ -227,6 +235,9 @@ export default function ProjectsPage() {
               </motion.div>
             ))}
           </motion.div>
+          ) : (
+            <div className="w-full py-12 text-center bg-gray-50 rounded-2xl border border-dashed border-gray-300"><p className="text-gray-500 font-medium">New {activeTab} projects coming soon.</p></div>
+          )}
 
         </div>
       </section>

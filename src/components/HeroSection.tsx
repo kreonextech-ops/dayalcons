@@ -38,17 +38,19 @@ export default function HeroSection() {
     <section className="relative w-full h-[100dvh] md:h-[calc(100vh-88px)] md:mt-[88px] flex flex-col overflow-hidden bg-black">
       
       {/* Background Container - Video Background */}
-      <div className="absolute inset-0 z-0 bg-black">
+      <div className="absolute inset-0 z-0 bg-[#071A2F]">
         <video 
           autoPlay 
           loop 
           muted 
           playsInline
-          className="w-full h-full object-cover object-[center_bottom]"
+          webkit-playsinline="true"
+          poster="/images/saved.png"
+          className="w-full h-full object-cover object-[center_bottom] opacity-80"
         >
           <source src="https://pub-00d1d73a43a643edb96c64ca062ab6df.r2.dev/website/hero.mp4" type="video/mp4" />
         </video>
-        <div className="absolute inset-0 blueprint-grid opacity-5"></div>
+        <div className="absolute inset-0 blueprint-grid opacity-10"></div>
       </div>
 
       {/* Content Container */}

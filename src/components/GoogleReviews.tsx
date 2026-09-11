@@ -258,7 +258,7 @@ export default function GoogleReviews() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {[
             { stat: '4.9★', text: 'Google Rating', icon: 'star_rate' },
-            { stat: '10+ Years', text: 'Engineering Excellence', icon: 'military_tech' },
+            { stat: '20+ Years', text: 'Engineering Excellence', icon: 'military_tech' },
             { stat: 'Residential · Commercial · Industrial', text: 'Multi-sector Expertise', icon: 'domain' },
             { stat: 'Quality Without Compromise', text: 'Built to Last', icon: 'verified' }
           ].map((tile, i) => (

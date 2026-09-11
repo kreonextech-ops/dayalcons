@@ -8,6 +8,7 @@ import SpecializedSectorsHeader from '@/components/SpecializedSectorsHeader';
 import SpecializedSectorsCards from '@/components/SpecializedSectorsCards';
 import TrustSection from '@/components/TrustSection';
 import ProcessTimeline from '@/components/ProcessTimeline';
+import FeaturedWorkTabs from '@/components/FeaturedWorkTabs';
 import ServicesMarquee from '@/components/ServicesMarquee';
 import PartneredBrands from '@/components/PartneredBrands';
 import GoogleReviews from '@/components/GoogleReviews';
@@ -39,7 +40,7 @@ export default function Home() {
           <StaggerContainer className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-16 divide-x divide-gray-200 text-center">
             <StaggerItem>
               <div className="flex flex-col items-center">
-                <span className="text-[84px] leading-[92px] font-bold tracking-[-0.04em] text-[#000101]" style={{ fontFamily: 'Montserrat, sans-serif' }}>25+</span>
+                <span className="text-[84px] leading-[92px] font-bold tracking-[-0.04em] text-[#000101]" style={{ fontFamily: 'Montserrat, sans-serif' }}>20+</span>
                 <span className="text-[12px] leading-[16px] font-bold uppercase tracking-[0.1em] text-[#44474a] mt-4" style={{ fontFamily: 'Hanken Grotesk, sans-serif' }}>Years of Excellence</span>
               </div>
             </StaggerItem>
@@ -96,13 +97,7 @@ export default function Home() {
               </Link>
             </FadeIn>
           </div>
-          <StaggerContainer className="grid grid-cols-2 md:grid-cols-5 gap-4 md:gap-6">
-              {["1000579291.jpg.jpg", "1000609146.jpg.jpg", "1000630512.jpg.jpg", "1000714135.jpg.jpg", "1000714139.jpg.jpg"].map((img, idx) => (
-                <StaggerItem key={idx}>
-                  <HomeGalleryImage img={img} idx={idx} />
-                </StaggerItem>
-              ))}
-          </StaggerContainer>
+          <FeaturedWorkTabs />
         </div>
       </section>
 
