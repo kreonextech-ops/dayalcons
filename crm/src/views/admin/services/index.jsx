@@ -392,7 +392,9 @@ const Services = () => {
              </table>
            </div>
         </Card>
-      </div>
+         </div> {/* Close Green Sticky Wrapper */}
+         <div className="h-[25vh] shrink-0" />
+        </div>
 
       {/* New Service Case Modal (Multi-step) */}
       {showNewModal && (

@@ -382,8 +382,10 @@ const Projects = () => {
                </tbody>
              </table>
            </div>
-        </Card>
-      </div>
+         </Card>
+         </div> {/* Close Green Sticky Wrapper */}
+         <div className="h-[25vh] shrink-0" />
+        </div>
 
       {/* New Project Modal (Multi-step) */}
       {showNewModal && (
