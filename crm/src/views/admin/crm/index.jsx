@@ -571,10 +571,12 @@ const CRMLeads = () => {
              </div>
           </div>
         </Card>
+        </div> {/* Close Green Sticky Wrapper */}
+        <div className="h-[25vh] shrink-0" />
 
-      </div>
+        </div>
 
-      {/* New Lead Modal */}
+        {/* New Lead Modal */}
       {showNewLeadModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
           <div className="w-full max-w-[600px] bg-white rounded-[20px] shadow-[0_20px_60px_rgba(15,23,42,0.2)] flex flex-col max-h-[90vh] animate-fade-in">
