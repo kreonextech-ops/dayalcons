@@ -10,6 +10,7 @@ import TabWorkspace from "./components/TabWorkspace";
 import TabRequirements from "./components/TabRequirements";
 import TabSteps from "./components/TabSteps";
 import TabPayments from "./components/TabPayments";
+import TabLegal from "./components/TabLegal";
 
 // CRM shared tabs
 import TabTasks from "../crm/components/TabTasks";
@@ -108,7 +109,7 @@ const ServiceDetail = ({ serviceCase, onBack, onUpdate }) => {
   const isAdmin = loggedInUser?.role === 'Admin' || loggedInUser?.role === 'CRO';
 
   const tabs = [
-    "Overview", "Requirements", "Workspace", "Steps", "Payments", "Follow Ups", "Tasks", 
+    "Overview", "Requirements", "Workspace", "Steps", "Payments", "Legal Details", "Follow Ups", "Tasks", 
     "Timeline", "Communication"
   ];
 

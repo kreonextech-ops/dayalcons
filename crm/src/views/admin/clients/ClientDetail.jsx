@@ -19,6 +19,7 @@ import TabTasks from "../crm/components/TabTasks";
 import TabFollowUps from "../crm/components/TabFollowUps";
 import TabEstimate from "../crm/components/TabEstimate";
 import TabDocuments from "../crm/components/TabDocuments";
+import TabQuotations from "./components/TabQuotations";
 import TabServiceRequirement from "../crm/components/TabServiceRequirement";
 import TabServiceWorkspace from "../crm/components/TabServiceWorkspace";
 
@@ -246,8 +247,8 @@ const ClientDetail = ({ client, onBack }) => {
   const tabs = [
     "Overview", "Communication", "Service Requirement", "Service Workspace", 
     ...(isAdmin ? ["Amount"] : []), "Projects", "Follow Ups", "Tasks", "Timeline", "Site Visit", 
-    "Documents"
-  ];
+    "Documents", "Quotations"
+    ];
 
   return (
     <div className="relative min-h-screen bg-[#F8FAFC] dark:bg-navy-900 p-4 sm:p-8 font-sans pb-24">
@@ -415,6 +416,7 @@ const ClientDetail = ({ client, onBack }) => {
                         <div className="flex flex-col"><label className="text-xs text-gray-500">Email</label><input type="email" className="border rounded p-2 text-sm outline-none border-[#16A34A]" value={clientData.email} onChange={e => setClientData({...clientData, email: e.target.value})} /></div>
                         <div className="flex flex-col"><label className="text-xs text-gray-500">GST / PAN</label><input type="text" className="border rounded p-2 text-sm outline-none border-[#16A34A]" value={clientData.gst} onChange={e => setClientData({...clientData, gst: e.target.value})} /></div>
                         <div className="flex flex-col"><label className="text-xs text-gray-500">Billing Address</label><input type="text" className="border rounded p-2 text-sm outline-none border-[#16A34A]" value={clientData.address} onChange={e => setClientData({...clientData, address: e.target.value})} /></div>
+                          <div className="flex flex-col"><label className="text-xs text-gray-500">Work Types</label><input type="text" className="border rounded p-2 text-sm outline-none border-[#16A34A]" value={clientData.work_types || ""} onChange={e => setClientData({...clientData, work_types: e.target.value})} /></div>
                       </>
                     ) : (
                       <>
@@ -424,6 +426,7 @@ const ClientDetail = ({ client, onBack }) => {
                         <div className="flex flex-col"><span className="text-[12px] font-medium text-[#64748B] dark:text-gray-400">Email Address</span><span className="text-[14px] font-semibold text-[#0F172A] dark:text-white">{clientData.email || "—"}</span></div>
                         <div className="flex flex-col"><span className="text-[12px] font-medium text-[#64748B] dark:text-gray-400">GST / PAN</span><span className="text-[14px] font-semibold text-[#0F172A] dark:text-white">{clientData.gst || "—"}</span></div>
                         <div className="flex flex-col"><span className="text-[12px] font-medium text-[#64748B] dark:text-gray-400">Billing Address</span><span className="text-[14px] font-semibold text-[#0F172A] dark:text-white">{clientData.address || "—"}</span></div>
+                          <div className="flex flex-col"><span className="text-[12px] font-medium text-[#64748B] dark:text-gray-400">Work Types / Tags</span><span className="text-[14px] font-semibold text-brand-500">{clientData.work_types || "None"}</span></div>
                       </>
                     )}
                   </div>

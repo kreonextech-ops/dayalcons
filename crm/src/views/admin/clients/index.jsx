@@ -34,7 +34,7 @@ const Clients = () => {
 
   // New Client Form State
   const [newClient, setNewClient] = useState({
-    name: "", phone: "", email: "", address: "", company: "", gst: "", source: ""
+    name: "", phone: "", email: "", address: "", company: "", gst: "", source: "", work_types: ""
   });
 
   const fileInputRef = useRef(null);
@@ -171,8 +171,9 @@ const Clients = () => {
     e.preventDefault();
     const { data: newClientData, error } = await supabase.from("clients").insert([{
       name: newClient.name,
-      status: 'active'
-    }]).select();
+        status: 'active',
+        work_types: newClient.work_types
+      }]).select();
     
     if (!error && newClientData && newClientData.length > 0) {
       // Save extra fields to local storage
@@ -186,7 +187,7 @@ const Clients = () => {
       }));
 
       setShowNewClientModal(false);
-      setNewClient({ name: "", phone: "", email: "", address: "", company: "", gst: "" });
+      setNewClient({ name: "", phone: "", email: "", address: "", company: "", gst: "", source: "", work_types: "" });
       fetchClients();
     } else {
       console.error(error);

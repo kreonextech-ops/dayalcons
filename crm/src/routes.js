@@ -13,6 +13,7 @@ import Finance from "views/admin/finance";
 import ClientLogins from "views/admin/client-logins";
 import Documents from "views/admin/documents";
 import Vendors from "views/admin/vendors";
+import SiteVisits from "views/admin/site-visits";
 
 import AuditLogs from "views/admin/auditlogs";
 import ProfileSettings from "views/admin/profile";
@@ -66,6 +67,13 @@ const routes = [
     icon: <MdPerson className="h-6 w-6" />,
     path: "clients",
     component: <Clients />,
+  },
+  {
+    name: "Site Visits",
+    layout: "/admin",
+    icon: <MdLocationCity className="h-6 w-6" />,
+    path: "site-visits",
+    component: <SiteVisits />,
   },
   {
     name: "Design & Legal Services",
