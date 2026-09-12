@@ -180,6 +180,21 @@ const ClientDetail = ({ client, onBack }) => {
     else setNextTask(null);
   };
 
+  const handleSaveClientInfo = async () => {
+    setIsEditingClient(false);
+    if (clientData.id) {
+       await supabase.from("clients").update({
+          company: clientData.company,
+          name: clientData.name,
+          phone: clientData.phone,
+          email: clientData.email,
+          address: clientData.address,
+          source: clientData.source,
+          created_at: clientData.created_at
+       }).eq("id", clientData.id);
+    }
+  };
+
   const handleCompleteTask = async () => {
     if (!nextTask) return;
     const { error } = await supabase.from('tasks').update({ status: 'Completed' }).eq('id', nextTask.id);
@@ -402,7 +417,7 @@ const ClientDetail = ({ client, onBack }) => {
                   <div className="flex justify-between items-center mb-4">
                     <h3 className="text-[16px] font-semibold text-[#0F172A] dark:text-white">Entity Information</h3>
                     {isEditingClient ? (
-                       <button onClick={() => setIsEditingClient(false)} className="text-[#16A34A] flex items-center gap-1 font-bold text-sm"><MdSave /> Save</button>
+                       <button onClick={handleSaveClientInfo} className="text-[#16A34A] flex items-center gap-1 font-bold text-sm"><MdSave /> Save</button>
                     ) : (
                        <MdEdit onClick={() => setIsEditingClient(true)} className="text-[#64748B] dark:text-gray-400 cursor-pointer hover:text-[#16A34A]" />
                     )}
@@ -416,7 +431,8 @@ const ClientDetail = ({ client, onBack }) => {
                         <div className="flex flex-col"><label className="text-xs text-gray-500">Email</label><input type="email" className="border rounded p-2 text-sm outline-none border-[#16A34A]" value={clientData.email} onChange={e => setClientData({...clientData, email: e.target.value})} /></div>
                         <div className="flex flex-col"><label className="text-xs text-gray-500">GST / PAN</label><input type="text" className="border rounded p-2 text-sm outline-none border-[#16A34A]" value={clientData.gst} onChange={e => setClientData({...clientData, gst: e.target.value})} /></div>
                         <div className="flex flex-col"><label className="text-xs text-gray-500">Billing Address</label><input type="text" className="border rounded p-2 text-sm outline-none border-[#16A34A]" value={clientData.address} onChange={e => setClientData({...clientData, address: e.target.value})} /></div>
-                          <div className="flex flex-col"><label className="text-xs text-gray-500">Work Types</label><input type="text" className="border rounded p-2 text-sm outline-none border-[#16A34A]" value={clientData.work_types || ""} onChange={e => setClientData({...clientData, work_types: e.target.value})} /></div>
+                        <div className="flex flex-col"><label className="text-xs text-gray-500">Work Types</label><input type="text" className="border rounded p-2 text-sm outline-none border-[#16A34A]" value={clientData.work_types || ""} onChange={e => setClientData({...clientData, work_types: e.target.value})} /></div>
+                        <div className="flex flex-col"><label className="text-xs text-gray-500">Arriving Date</label><input type="date" className="border rounded p-2 text-sm outline-none border-[#16A34A]" value={clientData.created_at ? new Date(clientData.created_at).toISOString().split('T')[0] : ""} onChange={e => setClientData({...clientData, created_at: e.target.value})} /></div>
                       </>
                     ) : (
                       <>
@@ -426,7 +442,8 @@ const ClientDetail = ({ client, onBack }) => {
                         <div className="flex flex-col"><span className="text-[12px] font-medium text-[#64748B] dark:text-gray-400">Email Address</span><span className="text-[14px] font-semibold text-[#0F172A] dark:text-white">{clientData.email || "—"}</span></div>
                         <div className="flex flex-col"><span className="text-[12px] font-medium text-[#64748B] dark:text-gray-400">GST / PAN</span><span className="text-[14px] font-semibold text-[#0F172A] dark:text-white">{clientData.gst || "—"}</span></div>
                         <div className="flex flex-col"><span className="text-[12px] font-medium text-[#64748B] dark:text-gray-400">Billing Address</span><span className="text-[14px] font-semibold text-[#0F172A] dark:text-white">{clientData.address || "—"}</span></div>
-                          <div className="flex flex-col"><span className="text-[12px] font-medium text-[#64748B] dark:text-gray-400">Work Types / Tags</span><span className="text-[14px] font-semibold text-brand-500">{clientData.work_types || "None"}</span></div>
+                        <div className="flex flex-col"><span className="text-[12px] font-medium text-[#64748B] dark:text-gray-400">Work Types / Tags</span><span className="text-[14px] font-semibold text-brand-500">{clientData.work_types || "None"}</span></div>
+                        <div className="flex flex-col"><span className="text-[12px] font-medium text-[#64748B] dark:text-gray-400">Arriving Date</span><span className="text-[14px] font-semibold text-[#0F172A] dark:text-white">{clientData.created_at ? new Date(clientData.created_at).toLocaleDateString('en-GB') : "N/A"}</span></div>
                       </>
                     )}
                   </div>

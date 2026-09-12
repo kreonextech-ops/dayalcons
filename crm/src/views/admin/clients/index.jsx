@@ -172,7 +172,8 @@ const Clients = () => {
     const { data: newClientData, error } = await supabase.from("clients").insert([{
       name: newClient.name,
         status: 'active',
-        work_types: newClient.work_types
+        work_types: newClient.work_types,
+        ...(newClient.created_at ? { created_at: new Date(newClient.created_at).toISOString() } : {})
       }]).select();
     
     if (!error && newClientData && newClientData.length > 0) {
@@ -337,7 +338,7 @@ const Clients = () => {
                               <input type="checkbox" className="w-4 h-4 rounded text-[#2563EB] border-[#E2E8F0] dark:border-navy-700 cursor-pointer" />
                            </td>
                              <td className="py-4 px-4 text-sm text-gray-800 font-bold">
-                                {index + 1}
+                                {filtered.length - index}
                              </td>
                            <td className="py-4 px-4">
                               <p className="text-sm text-gray-800 font-bold">{client.name}</p>
@@ -407,6 +408,10 @@ const Clients = () => {
                 <div>
                   <label className="block text-[12px] font-bold text-[#475569] dark:text-gray-200 dark:text-white mb-1.5 uppercase tracking-wide">GST / PAN (Tax ID)</label>
                   <input value={newClient.gst} onChange={e=>setNewClient({...newClient, gst: e.target.value})} type="text" placeholder="Enter tax ID" className="w-full h-11 px-3 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 text-[14px] text-[#0F172A] dark:text-white outline-none focus:border-[#2563EB] transition-colors" />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block text-[12px] font-bold text-[#475569] dark:text-gray-200 dark:text-white mb-1.5 uppercase tracking-wide">Arriving Date</label>
+                  <input type="date" value={newClient.created_at || ""} onChange={e=>setNewClient({...newClient, created_at: e.target.value})} className="w-full h-11 px-3 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 text-[14px] text-[#0F172A] dark:text-white outline-none focus:border-[#2563EB] transition-colors" />
                 </div>
                 <div className="md:col-span-2">
                   <label className="block text-[12px] font-bold text-[#475569] dark:text-gray-200 dark:text-white mb-1.5 uppercase tracking-wide">Billing Address</label>

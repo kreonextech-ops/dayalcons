@@ -22,6 +22,7 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 
 const DESIGN_SERVICES = [
   { id: "Land Registration & Mutation", icon: <FiFileText /> },
+  { id: "L.U.C.C", icon: <FiFileText /> },
   { id: "Building Plan Approval", icon: <MdDomainVerification /> },
   { id: "2D Floor Plan Design", icon: <MdLayers /> },
   { id: "3D Floor Plan Design", icon: <MdLayers /> },

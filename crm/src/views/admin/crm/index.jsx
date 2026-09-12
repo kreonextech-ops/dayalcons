@@ -216,13 +216,14 @@ const CRMLeads = () => {
   const handleCreateLead = async (e) => {
     e.preventDefault();
     // Only insert schema-supported columns
-    const { data: newLeadData, error } = await supabase.from("leads").insert([{
-       name: newLead.name,
-       phone: newLead.phone,
-       service_type: newLead.service_type,
-       source: newLead.source === "Other" ? (newLead.source_custom || "Other") : newLead.source,
-       status: newLead.status
-    }]).select();
+      const { data: newLeadData, error } = await supabase.from("leads").insert([{
+         name: newLead.name,
+         phone: newLead.phone,
+         service_type: newLead.service_type,
+         source: newLead.source === "Other" ? (newLead.source_custom || "Other") : newLead.source,
+         status: newLead.status,
+         ...(newLead.created_at ? { created_at: new Date(newLead.created_at).toISOString() } : {})
+      }]).select();
 
     if (!error && newLeadData && newLeadData.length > 0) {
       // Save unmapped fields to localStorage
@@ -525,9 +526,9 @@ const CRMLeads = () => {
                            <td className="py-4 px-6" onClick={(e) => e.stopPropagation()}>
                               <input type="checkbox" className="w-4 h-4 rounded text-[#2563EB] border-[#E2E8F0] dark:border-navy-700 cursor-pointer" />
                            </td>
-                             <td className="py-4 px-4 text-sm text-gray-800 font-bold">
-                                {index + 1}
-                             </td>
+                               <td className="py-4 px-4 text-sm text-gray-800 font-bold">
+                                  {filtered.length - index}
+                               </td>
                            <td className="py-4 px-4">
                               <p className="text-sm text-gray-800 font-bold">{lead.name}</p>
                               {lead.email && <p className="text-[12px] text-gray-500">{lead.email}</p>}
@@ -591,7 +592,7 @@ const CRMLeads = () => {
                 </div>
                 <div>
                   <label className="block text-[12px] font-bold text-[#475569] dark:text-gray-200 dark:text-white mb-1.5 uppercase tracking-wide">Phone Number</label>
-                  <input required value={newLead.phone} onChange={e=>setNewLead({...newLead, phone: e.target.value})} type="text" placeholder="Enter phone" className="w-full h-11 px-3 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 text-[14px] text-[#0F172A] dark:text-white outline-none focus:border-[#2563EB] transition-colors" />
+                  <input value={newLead.phone} onChange={e=>setNewLead({...newLead, phone: e.target.value})} type="text" placeholder="Enter phone" className="w-full h-11 px-3 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 text-[14px] text-[#0F172A] dark:text-white outline-none focus:border-[#2563EB] transition-colors" />
                 </div>
                 <div>
                   <label className="block text-[12px] font-bold text-[#475569] dark:text-gray-200 dark:text-white mb-1.5 uppercase tracking-wide">WhatsApp</label>
@@ -622,6 +623,10 @@ const CRMLeads = () => {
                   {newLead.source === "Other" && (
                     <input type="text" placeholder="Please specify..." onChange={e => setNewLead({...newLead, source_custom: e.target.value})} className="w-full h-11 px-3 mt-2 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 text-[14px] text-[#0F172A] dark:text-white outline-none focus:border-[#2563EB] transition-colors" />
                   )}
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block text-[12px] font-bold text-[#475569] dark:text-gray-200 dark:text-white mb-1.5 uppercase tracking-wide">Arriving Date</label>
+                  <input type="date" value={newLead.created_at || ""} onChange={e=>setNewLead({...newLead, created_at: e.target.value})} className="w-full h-11 px-3 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 text-[14px] text-[#0F172A] dark:text-white outline-none focus:border-[#2563EB] transition-colors" />
                 </div>
                 <div className="md:col-span-2">
                   <label className="block text-[12px] font-bold text-[#475569] dark:text-gray-200 dark:text-white mb-1.5 uppercase tracking-wide">Address / Location</label>
