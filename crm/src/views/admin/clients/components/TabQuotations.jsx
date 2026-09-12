@@ -83,7 +83,7 @@ const TabQuotations = ({ clientId }) => {
                   <td className="py-3 pr-4 text-sm text-gray-600 dark:text-gray-200">{q.date_arrived || '-'}</td>
                   <td className="py-3 pr-4 text-sm text-gray-600 dark:text-gray-200">{q.submission_deadline || '-'}</td>
                   <td className="py-3 pr-4">
-                    <span className={\px-2 py-1 text-xs font-bold rounded-full \\}>
+                    <span className={`px-2 py-1 text-xs font-bold rounded-full ${q.status === 'Closed' ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'}`}>
                       {q.status}
                     </span>
                   </td>
