@@ -1,182 +1,153 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Card from "components/card";
-import { 
-  MdMap, MdCheckCircle, MdCloudUpload, MdImage,
-  MdLocationOn, MdAccessTime, MdPerson, MdCalendarToday, MdWbSunny
-} from "react-icons/md";
+import { MdAdd, MdClose, MdCheckCircle, MdSave } from "react-icons/md";
+import { createClient } from "@supabase/supabase-js";
 
-const TabSiteVisit = ({ leadData }) => {
-  const [checklist, setChecklist] = useState({
-    measured: false,
-    client: false,
-    soil: false,
-    photos: false,
-    neighbor: false,
-    utility: false,
-    structure: false,
-    signature: false
+const supabaseUrl = process.env.REACT_APP_SUPABASE_URL || "https://gdzligxryodasaxnhdco.supabase.co";
+const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdkemxpZ3hyeW9kYXNheG5oZGNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcxNTg1MDUsImV4cCI6MjEwMjczNDUwNX0.AYTyAMf22g8au51ATReRQdQc2IzDLYQ2vtQH_Uyfrpg";
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+const TabSiteVisit = ({ leadData, isClient=false }) => {
+  const [visits, setVisits] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [showModal, setShowModal] = useState(false);
+  const [newVisit, setNewVisit] = useState({
+    mobile_no: "",
+    location: "",
+    visiting_date: "",
+    requirement: "",
+    amount: "",
+    status: "Ongoing"
   });
 
-  const toggleCheck = (key) => setChecklist(prev => ({ ...prev, [key]: !prev[key] }));
+  const fetchVisits = async () => {
+    if (!leadData?.id) return;
+    setLoading(true);
+    let q = supabase.from('site_visits').select('*').order('created_at', { ascending: false });
+    if (isClient) {
+      q = q.eq('client_id', leadData.id);
+    } else {
+      q = q.eq('lead_id', leadData.id);
+    }
+    const { data } = await q;
+    if (data) setVisits(data);
+    setLoading(false);
+  };
 
-  const measurements = [
-    { item: "Length", value: "", unit: "ft" },
-    { item: "Width", value: "", unit: "ft" },
-    { item: "Area", value: "", unit: "sq.ft" },
-    { item: "Front Setback", value: "", unit: "ft" },
-    { item: "Rear Setback", value: "", unit: "ft" },
-  ];
+  useEffect(() => {
+    fetchVisits();
+  }, [leadData]);
+
+  const handleCreate = async (e) => {
+    e.preventDefault();
+    const payload = { ...newVisit, client_name: leadData?.name };
+    if (isClient) payload.client_id = leadData.id;
+    else payload.lead_id = leadData.id;
+    
+    const { error } = await supabase.from('site_visits').insert([payload]);
+    if (!error) {
+      setShowModal(false);
+      setNewVisit({ mobile_no: "", location: "", visiting_date: "", requirement: "", amount: "", status: "Ongoing" });
+      fetchVisits();
+    } else {
+      alert("Error saving site visit: " + error.message);
+    }
+  };
+
+  const updateStatus = async (id, newStatus) => {
+    await supabase.from('site_visits').update({ status: newStatus }).eq('id', id);
+    fetchVisits();
+  };
 
   return (
     <div className="flex flex-col gap-6 animate-fade-in">
-      {/* 1. Status Card */}
-      <Card extra="p-6 bg-gradient-to-r from-[#EFF6FF] to-white border border-[#E2E8F0]">
-        <div className="flex justify-between items-start mb-6">
-          <h2 className="text-[20px] font-semibold text-[#0F172A]">Site Visit</h2>
-          <span className="bg-[#2563EB] text-white px-3 py-1 rounded-full text-xs font-bold tracking-wide">PENDING</span>
-        </div>
-        <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 w-full text-sm">
-            <div className="flex flex-col"><span className="text-[#64748B] flex items-center gap-1"><MdPerson /> Engineer</span><span className="font-semibold text-[#0F172A]">Unassigned</span></div>
-            <div className="flex flex-col"><span className="text-[#64748B] flex items-center gap-1"><MdCalendarToday /> Date</span><span className="font-semibold text-[#0F172A]">TBD</span></div>
-            <div className="flex flex-col"><span className="text-[#64748B] flex items-center gap-1"><MdAccessTime /> Time</span><span className="font-semibold text-[#0F172A]">TBD</span></div>
-            <div className="flex flex-col"><span className="text-[#64748B] flex items-center gap-1"><MdWbSunny /> Weather</span><span className="font-semibold text-[#0F172A]">N/A</span></div>
-            <div className="flex flex-col col-span-2"><span className="text-[#64748B] flex items-center gap-1"><MdLocationOn /> GPS / Address</span><span className="font-semibold text-[#0F172A]">{leadData?.address || "Not Recorded"}</span></div>
-          </div>
-          <div className="flex-shrink-0 flex items-center justify-center h-24 w-24 rounded-full border-[6px] border-[#E2E8F0] text-[#64748B]">
-            <span className="text-xl font-bold">0%</span>
-          </div>
-        </div>
-      </Card>
-
-      {/* 2. Site Information Card (Connected to Overview) */}
-      <Card extra="p-6">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-[16px] font-semibold text-[#0F172A]">Site Information (Synced from Overview)</h3>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
-          <div className="space-y-4">
-            <div className="flex justify-between border-b border-[#EDF2F7] pb-2"><span className="text-[#64748B]">Plot Size</span><span className="font-semibold text-[#0F172A]">{leadData?.plotSize || "N/A"}</span></div>
-            <div className="flex justify-between border-b border-[#EDF2F7] pb-2"><span className="text-[#64748B]">Front Road Width</span><span className="font-semibold text-[#0F172A]">{leadData?.frontRoadWidth || "N/A"}</span></div>
-            <div className="flex justify-between border-b border-[#EDF2F7] pb-2"><span className="text-[#64748B]">Orientation</span><span className="font-semibold text-[#0F172A]">{leadData?.orientation || "N/A"}</span></div>
-            <div className="flex justify-between border-b border-[#EDF2F7] pb-2"><span className="text-[#64748B]">Planned Floors</span><span className="font-semibold text-[#0F172A]">{leadData?.plannedFloors || "N/A"}</span></div>
-            <div className="flex justify-between border-b border-[#EDF2F7] pb-2"><span className="text-[#64748B]">Soil Type</span><span className="font-semibold text-[#0F172A]">{leadData?.soilType || "N/A"}</span></div>
-          </div>
-          <div className="space-y-4">
-            <div className="flex justify-between border-b border-[#EDF2F7] pb-2"><span className="text-[#64748B]">Water Source</span><span className="font-semibold text-[#0F172A]">{leadData?.waterSource || "N/A"}</span></div>
-            <div className="flex justify-between border-b border-[#EDF2F7] pb-2"><span className="text-[#64748B]">Electricity</span><span className="font-semibold text-[#0F172A]">{leadData?.electricity || "N/A"}</span></div>
-            <div className="flex justify-between border-b border-[#EDF2F7] pb-2"><span className="text-[#64748B]">Municipal Approval</span><span className="font-semibold text-[#0F172A]">{leadData?.municipalApproval || "N/A"}</span></div>
-            <div className="flex justify-between border-b border-[#EDF2F7] pb-2"><span className="text-[#64748B]">Vastu Required</span><span className="font-semibold text-[#0F172A]">{leadData?.vastu || "N/A"}</span></div>
-            <div className="flex justify-between border-b border-[#EDF2F7] pb-2"><span className="text-[#64748B]">Boundary Wall</span><span className="font-semibold text-[#0F172A]">{leadData?.boundaryWall || "N/A"}</span></div>
-          </div>
-        </div>
-      </Card>
-
-      {/* 3. Inspection Checklist */}
-      <Card extra="p-6">
-        <h3 className="text-[16px] font-semibold text-[#0F172A] mb-4">Inspection Checklist</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {[
-            { key: "measured", label: "Plot measured" },
-            { key: "client", label: "Client present" },
-            { key: "soil", label: "Soil sample collected" },
-            { key: "photos", label: "Site photos uploaded" },
-            { key: "neighbor", label: "Neighbor access verified" },
-            { key: "utility", label: "Utility lines checked" },
-            { key: "structure", label: "Existing structure inspected" },
-            { key: "signature", label: "Engineer signature completed" }
-          ].map(item => (
-            <label key={item.key} className="flex items-center gap-3 cursor-pointer group" onClick={() => toggleCheck(item.key)}>
-              <div className={`w-5 h-5 rounded-md flex items-center justify-center transition-colors border-2 ${checklist[item.key] ? 'bg-[#2563EB] border-[#2563EB]' : 'border-[#E2E8F0] group-hover:border-[#2563EB]'}`}>
-                {checklist[item.key] && <MdCheckCircle className="text-white w-4 h-4" />}
-              </div>
-              <span className={`text-sm ${checklist[item.key] ? 'text-[#0F172A] font-medium' : 'text-[#475569]'}`}>{item.label}</span>
-            </label>
-          ))}
-        </div>
-      </Card>
-
-      {/* 4. Measurements */}
-      <Card extra="p-6">
-        <h3 className="text-[16px] font-semibold text-[#0F172A] mb-4">Site Measurements</h3>
-        <table className="w-full text-left border-collapse">
-          <thead>
-            <tr className="border-b border-[#E2E8F0] text-sm text-[#64748B]">
-              <th className="pb-2 font-medium">Item</th>
-              <th className="pb-2 font-medium">Value</th>
-              <th className="pb-2 font-medium">Unit</th>
-            </tr>
-          </thead>
-          <tbody>
-            {measurements.map((m, i) => (
-              <tr key={i} className="border-b border-[#EDF2F7]">
-                <td className="py-3 text-sm text-[#0F172A] font-medium">{m.item}</td>
-                <td className="py-3">
-                  <input type="text" placeholder="--" className="bg-gray-50 border border-[#E2E8F0] rounded-lg px-3 py-1 w-24 text-sm text-[#0F172A] outline-none focus:border-[#2563EB]" />
-                </td>
-                <td className="py-3 text-sm text-[#64748B]">{m.unit}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </Card>
-
-      {/* 5. Photo Gallery */}
-      <Card extra="p-6">
-        <div className="flex justify-between items-center mb-4">
-          <h3 className="text-[16px] font-semibold text-[#0F172A]">Photo Gallery</h3>
-          <button className="flex items-center gap-2 text-[#2563EB] text-sm font-bold hover:opacity-80 transition">
-            <MdCloudUpload className="text-lg" /> Upload Photos
+      <Card extra="w-full p-6 h-full">
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-xl font-bold text-[#0F172A] dark:text-white">Site Visits</h2>
+          <button onClick={() => setShowModal(true)} className="flex items-center gap-2 bg-brand-500 text-white px-4 py-2 rounded-[10px] font-bold text-sm hover:bg-brand-600 transition">
+            <MdAdd /> Add Visit
           </button>
         </div>
-        <div className="w-full border-2 border-dashed border-[#E2E8F0] rounded-[14px] p-8 flex flex-col items-center justify-center text-center bg-gray-50 hover:bg-gray-100 transition cursor-pointer">
-          <MdCloudUpload className="text-3xl text-[#64748B] mb-2" />
-          <p className="text-sm font-medium text-[#0F172A]">Drag files here or browse</p>
-          <p className="text-xs text-[#64748B]">Support JPG, PNG</p>
+
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="border-b border-gray-100 dark:border-navy-700 text-gray-500 text-sm">
+                <th className="pb-3 pr-4">Location</th>
+                <th className="pb-3 pr-4">Date</th>
+                <th className="pb-3 pr-4">Requirement</th>
+                <th className="pb-3 pr-4">Amount</th>
+                <th className="pb-3 pr-4">Status</th>
+                <th className="pb-3">Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loading ? (
+                <tr><td colSpan="6" className="py-4 text-center">Loading site visits...</td></tr>
+              ) : visits.length === 0 ? (
+                <tr><td colSpan="6" className="py-4 text-center text-gray-500">No site visits found.</td></tr>
+              ) : (
+                visits.map(v => (
+                  <tr key={v.id} className="border-b border-gray-50 dark:border-navy-700 hover:bg-gray-50 dark:hover:bg-navy-800 transition">
+                    <td className="py-4 pr-4 text-sm font-bold text-[#0F172A] dark:text-gray-200">{v.location || '-'}</td>
+                    <td className="py-4 pr-4 text-sm text-gray-600 dark:text-gray-200">{v.visiting_date || '-'}</td>
+                    <td className="py-4 pr-4 text-sm text-gray-600 dark:text-gray-200">{v.requirement || '-'}</td>
+                    <td className="py-4 pr-4 text-sm text-gray-600 dark:text-gray-200">{v.amount || '-'}</td>
+                    <td className="py-4 pr-4">
+                      <span className={\px-2 py-1 text-xs font-bold rounded-full \\}>
+                        {v.status}
+                      </span>
+                    </td>
+                    <td className="py-4">
+                      {v.status !== 'Completed' && (
+                         <button onClick={() => updateStatus(v.id, 'Completed')} className="text-green-500 hover:text-green-700 text-sm font-bold flex items-center gap-1">
+                            <MdCheckCircle /> Complete
+                         </button>
+                      )}
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
         </div>
       </Card>
 
-      {/* 6. Record Site Visit (Form) */}
-      <Card extra="p-6 border-l-4 border-[#06B6D4]">
-        <h3 className="text-[16px] font-semibold text-[#0F172A] mb-4">Record Site Visit</h3>
-        
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-           <div className="flex flex-col">
-             <label className="text-xs text-gray-500 mb-1">Date of Visit</label>
-             <input type="date" className="border border-[#E2E8F0] rounded p-2 text-sm outline-none focus:border-[#2563EB]" />
-           </div>
-           <div className="flex flex-col">
-             <label className="text-xs text-gray-500 mb-1">Conducted By</label>
-             <input type="text" placeholder="Employee Name" className="border border-[#E2E8F0] rounded p-2 text-sm outline-none focus:border-[#2563EB]" />
-           </div>
+      {showModal && (
+        <div className="fixed inset-0 z-[99] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+          <div className="bg-white dark:bg-navy-800 rounded-[20px] p-6 w-full max-w-2xl shadow-2xl">
+             <div className="flex justify-between items-center mb-6">
+               <h2 className="text-xl font-bold text-[#0F172A] dark:text-white">Add Site Visit</h2>
+               <MdClose className="text-2xl text-gray-500 cursor-pointer hover:text-red-500" onClick={() => setShowModal(false)} />
+             </div>
+             <form onSubmit={handleCreate} className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 mb-1">Location</label>
+                  <input type="text" value={newVisit.location} onChange={e=>setNewVisit({...newVisit, location: e.target.value})} className="w-full h-11 px-3 border rounded-[10px] dark:bg-navy-900 dark:border-navy-700 dark:text-white" />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 mb-1">Visiting Date</label>
+                  <input type="date" value={newVisit.visiting_date} onChange={e=>setNewVisit({...newVisit, visiting_date: e.target.value})} className="w-full h-11 px-3 border rounded-[10px] dark:bg-navy-900 dark:border-navy-700 dark:text-white" />
+                </div>
+                <div className="md:col-span-2">
+                  <label className="block text-xs font-bold text-gray-500 mb-1">Requirement</label>
+                  <input type="text" placeholder="e.g. Construction / Renovation" value={newVisit.requirement} onChange={e=>setNewVisit({...newVisit, requirement: e.target.value})} className="w-full h-11 px-3 border rounded-[10px] dark:bg-navy-900 dark:border-navy-700 dark:text-white" />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 mb-1">Mobile No.</label>
+                  <input type="text" value={newVisit.mobile_no} onChange={e=>setNewVisit({...newVisit, mobile_no: e.target.value})} className="w-full h-11 px-3 border rounded-[10px] dark:bg-navy-900 dark:border-navy-700 dark:text-white" />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 mb-1">Amount</label>
+                  <input type="text" placeholder="e.g. 3K (Three Thousand)" value={newVisit.amount} onChange={e=>setNewVisit({...newVisit, amount: e.target.value})} className="w-full h-11 px-3 border rounded-[10px] dark:bg-navy-900 dark:border-navy-700 dark:text-white" />
+                </div>
+                <div className="md:col-span-2 mt-4 flex justify-end">
+                   <button type="submit" className="bg-brand-500 text-white font-bold px-6 py-2 rounded-[10px]">Save Site Visit</button>
+                </div>
+             </form>
+          </div>
         </div>
-        <div className="flex flex-col mb-4">
-             <label className="text-xs text-gray-500 mb-1">Visit Type</label>
-             <select className="border border-[#E2E8F0] rounded p-2 text-sm outline-none focus:border-[#2563EB]">
-               <option>Initial Inspection</option>
-               <option>Soil Testing</option>
-               <option>Measurement Verification</option>
-               <option>Other</option>
-             </select>
-        </div>
-
-        <label className="text-xs text-gray-500 mb-1 block">Visit Record & Observations</label>
-        <textarea 
-          className="w-full min-h-[120px] rounded-[10px] border border-[#E2E8F0] p-4 text-[14px] text-[#475569] outline-none focus:border-[#2563EB]"
-          placeholder="Document what was done, what is the record, and everything important..."
-        ></textarea>
-        
-        <div className="mt-4 flex justify-end">
-           <button className="rounded-[10px] bg-[#2563EB] px-6 py-2 text-sm font-bold text-white hover:opacity-90 transition">Save Record</button>
-        </div>
-      </Card>
-
-      {/* 7. Action */}
-      <Card extra="p-6">
-        <div className="flex flex-wrap gap-4">
-          <button className="h-12 flex-1 rounded-[12px] bg-gradient-to-r from-[#2563EB] to-[#06B6D4] px-6 font-bold text-white hover:opacity-90 transition" onClick={() => window.alert("Schedule Revisit feature opens calendar modal (To be implemented)")}>Schedule Revisit</button>
-        </div>
-      </Card>
+      )}
     </div>
   );
 };
