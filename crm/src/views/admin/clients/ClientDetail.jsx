@@ -511,7 +511,7 @@ const ClientDetail = ({ client, onBack }) => {
             )}
             
             {activeTab === "Amount" && (
-              <TabFinancials clientData={clientData} />
+              <TabEstimate leadData={clientData} isClient={true} />
             )}
             
             {activeTab === "Tasks" && (

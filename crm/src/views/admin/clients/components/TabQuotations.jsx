@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import Card from 'components/card';
 import { MdAdd, MdClose, MdSave, MdCheckCircle } from 'react-icons/md';
+import { uploadFileToR2 } from "utils/r2Storage";
+import { MdUploadFile, MdFileDownload } from "react-icons/md";
 import { createClient } from '@supabase/supabase-js';
 
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL || 'https://gdzligxryodasaxnhdco.supabase.co';
@@ -11,6 +13,8 @@ const TabQuotations = ({ clientId }) => {
   const [quotations, setQuotations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const [fileToUpload, setFileToUpload] = useState(null);
   const [newQuote, setNewQuote] = useState({
     quotation_no: '',
     description: '',
@@ -18,6 +22,7 @@ const TabQuotations = ({ clientId }) => {
     submission_deadline: '',
     action_taken: '',
     remarks: '',
+    file_url: '',
     status: 'Pending'
   });
 
@@ -34,14 +39,29 @@ const TabQuotations = ({ clientId }) => {
 
   const handleCreate = async (e) => {
     e.preventDefault();
-    const { error } = await supabase.from('quotations').insert([{ ...newQuote, client_id: clientId }]);
+    setUploading(true);
+    let finalFileUrl = newQuote.file_url;
+    
+    if (fileToUpload) {
+      try {
+        finalFileUrl = await uploadFileToR2(fileToUpload, 'quotations');
+      } catch (err) {
+        alert("Failed to upload file");
+        setUploading(false);
+        return;
+      }
+    }
+
+    const { error } = await supabase.from('quotations').insert([{ ...newQuote, file_url: finalFileUrl, client_id: clientId }]);
     if (!error) {
       setShowModal(false);
-      setNewQuote({ quotation_no: '', description: '', date_arrived: '', submission_deadline: '', action_taken: '', remarks: '', status: 'Pending' });
+      setNewQuote({ quotation_no: '', description: '', date_arrived: '', submission_deadline: '', action_taken: '', remarks: '', file_url: '', status: 'Pending' });
+      setFileToUpload(null);
       fetchQuotations();
     } else {
       alert('Error saving quotation: ' + error.message);
     }
+    setUploading(false);
   };
 
   const updateStatus = async (id, newStatus) => {
@@ -67,7 +87,8 @@ const TabQuotations = ({ clientId }) => {
               <th className="pb-3 pr-4">Date Arrived</th>
               <th className="pb-3 pr-4">Deadline</th>
               <th className="pb-3 pr-4">Status</th>
-              <th className="pb-3">Action</th>
+              <th className="pb-3 pr-4">Attachment</th>
+                <th className="pb-3">Action</th>
             </tr>
           </thead>
           <tbody>
@@ -125,12 +146,17 @@ const TabQuotations = ({ clientId }) => {
                   <label className="block text-xs font-bold text-gray-500 mb-1">Description of Work</label>
                   <input type="text" value={newQuote.description} onChange={e=>setNewQuote({...newQuote, description: e.target.value})} className="w-full h-11 px-3 border rounded-[10px] dark:bg-navy-900 dark:border-navy-700 dark:text-white" required />
                 </div>
-                <div className="md:col-span-2">
+                
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 mb-1">Attachment</label>
+                  <input type="file" onChange={(e) => setFileToUpload(e.target.files[0])} className="w-full h-11 px-3 border rounded-[10px] dark:bg-navy-900 dark:border-navy-700 dark:text-white pt-2 text-sm" />
+                </div>
+<div className="md:col-span-2">
                   <label className="block text-xs font-bold text-gray-500 mb-1">Action Taken</label>
                   <input type="text" value={newQuote.action_taken} onChange={e=>setNewQuote({...newQuote, action_taken: e.target.value})} className="w-full h-11 px-3 border rounded-[10px] dark:bg-navy-900 dark:border-navy-700 dark:text-white" />
                 </div>
                 <div className="md:col-span-2 mt-4 flex justify-end">
-                   <button type="submit" className="bg-brand-500 text-white font-bold px-6 py-2 rounded-[10px]">Save Quotation</button>
+                   <button type="submit" className="bg-brand-500 text-white font-bold px-6 py-2 rounded-[10px]">{uploading ? "Uploading..." : "Save Quotation"}</button>
                 </div>
              </form>
           </div>
