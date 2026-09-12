@@ -314,24 +314,24 @@ const LeadDetail = ({ lead, onBack }) => {
   };
 
   return (
-    <div className="relative min-h-screen bg-[#F8FAFC] p-4 sm:p-8 font-sans pb-24">
+    <div className="relative min-h-screen bg-[#F8FAFC] dark:bg-navy-900 p-4 sm:p-8 font-sans pb-24">
       {showConvertModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="bg-white rounded-[20px] p-6 w-full max-w-md shadow-2xl transform transition-all">
+          <div className="bg-white dark:bg-navy-800 rounded-[20px] p-6 w-full max-w-md shadow-2xl transform transition-all">
              <div className="flex justify-between items-center mb-4">
-               <h2 className="text-xl font-bold text-[#0F172A]">Convert to Client?</h2>
-               <MdClose className="text-2xl text-[#64748B] cursor-pointer hover:text-red-500" onClick={() => setShowConvertModal(false)} />
+               <h2 className="text-xl font-bold text-[#0F172A] dark:text-white">Convert to Client?</h2>
+               <MdClose className="text-2xl text-[#64748B] dark:text-gray-400 cursor-pointer hover:text-red-500" onClick={() => setShowConvertModal(false)} />
              </div>
-             <p className="text-[#475569] mb-6">You are marking <span className="font-bold text-[#0F172A]">{leadData.name}</span> as "Won". Would you like to remove them from Leads and officially convert them into a Client?</p>
+             <p className="text-[#475569] dark:text-gray-200 mb-6">You are marking <span className="font-bold text-[#0F172A] dark:text-white">{leadData.name}</span> as "Won". Would you like to remove them from Leads and officially convert them into a Client?</p>
              <div className="flex gap-3 justify-end">
-               <button onClick={() => setShowConvertModal(false)} className="px-5 py-2.5 rounded-[10px] font-bold text-[#475569] bg-gray-100 hover:bg-gray-200 transition-colors">Cancel</button>
+               <button onClick={() => setShowConvertModal(false)} className="px-5 py-2.5 rounded-[10px] font-bold text-[#475569] dark:text-gray-200 bg-gray-100 dark:bg-navy-700 hover:bg-gray-200 transition-colors">Cancel</button>
                <button onClick={confirmConvert} className="px-5 py-2.5 rounded-[10px] font-bold text-white bg-[#16A34A] hover:bg-green-700 transition-colors flex items-center gap-2"><MdCheckCircle /> Convert to Client</button>
              </div>
           </div>
         </div>
       )}
       {/* 1. Back Navigation */}
-      <div className="mb-6 flex items-center gap-2 text-sm text-[#64748B]">
+      <div className="mb-6 flex items-center gap-2 text-sm text-[#64748B] dark:text-gray-400">
         <button onClick={onBack} className="flex items-center gap-2 hover:text-brand-500 transition">
           <MdArrowBack className="h-5 w-5" />
           <span className="font-semibold">Back to Leads</span>
@@ -343,21 +343,21 @@ const LeadDetail = ({ lead, onBack }) => {
       </div>
 
       {/* 2. Hero Lead Card */}
-      <div className="rounded-[20px] bg-gradient-to-r from-[#2563EB]/10 to-white p-6 shadow-[0_10px_30px_rgba(15,23,42,0.06)] border border-[#E2E8F0] mb-6 flex flex-col md:flex-row justify-between items-start md:items-center">
+      <div className="rounded-[20px] bg-gradient-to-r from-[#2563EB]/10 to-white p-6 shadow-[0_10px_30px_rgba(15,23,42,0.06)] border border-[#E2E8F0] dark:border-navy-700 mb-6 flex flex-col md:flex-row justify-between items-start md:items-center">
         <div className="flex items-center gap-6">
           <div className="flex h-20 w-20 items-center justify-center rounded-full bg-[#2563EB] text-3xl font-bold text-white">
             {leadData.name.charAt(0) || 'A'}
           </div>
           <div>
-            <h1 className="text-[32px] font-bold text-[#0F172A]">{leadData.name || 'Unnamed Lead'}</h1>
-            <div className="mt-2 flex flex-wrap items-center gap-4 text-sm text-[#475569]">
+            <h1 className="text-[32px] font-bold text-[#0F172A] dark:text-white">{leadData.name || 'Unnamed Lead'}</h1>
+            <div className="mt-2 flex flex-wrap items-center gap-4 text-sm text-[#475569] dark:text-gray-200">
               <span className="flex items-center gap-1"><MdPhone /> {leadData.phone || 'Not provided'}</span>
               {leadData.email && <span className="flex items-center gap-1"><MdEmail /> {leadData.email}</span>}
               {leadData.address && <span className="flex items-center gap-1"><MdLocationOn /> {leadData.address}</span>}
             </div>
             <div className="mt-3 flex gap-2 text-xs flex-wrap">
               <span className="rounded-md bg-blue-50 border border-blue-100 px-3 py-1 text-blue-700 font-bold uppercase tracking-wider">Source: {leadData.source || 'Website'}</span>
-              <span className="rounded-md bg-gray-100 px-3 py-1 text-[#64748B] font-medium">
+              <span className="rounded-md bg-gray-100 dark:bg-navy-700 px-3 py-1 text-[#64748B] dark:text-gray-400 font-medium">
                 Assigned: {leadData.assigned_to 
                   ? (leadData.assigned_to.split(',').filter(Boolean).map(id => employees.find(e => e.id === id)?.name).filter(Boolean).join(', ') || 'Unknown') 
                   : 'Unassigned'}
@@ -390,8 +390,8 @@ const LeadDetail = ({ lead, onBack }) => {
               <option value="Cold">COLD LEAD</option>
             </select>
           </div>
-          <p className="mt-2 text-sm font-semibold text-[#64748B]">Est. Project Value</p>
-          <p className="text-[28px] font-bold text-[#0F172A]">{leadData.budget || "—"}</p>
+          <p className="mt-2 text-sm font-semibold text-[#64748B] dark:text-gray-400">Est. Project Value</p>
+          <p className="text-[28px] font-bold text-[#0F172A] dark:text-white">{leadData.budget || "—"}</p>
           <button 
             onClick={handleConvertToClient}
             disabled={leadData.status === "Won"}
@@ -409,11 +409,11 @@ const LeadDetail = ({ lead, onBack }) => {
           {stages.map((stage, idx) => {
             const isActive = idx <= currentIndex; 
             return (
-              <div key={stage} className="flex flex-col items-center gap-2 bg-white px-2">
+              <div key={stage} className="flex flex-col items-center gap-2 bg-white dark:bg-navy-800 px-2">
                 <div className={`h-8 w-8 rounded-full flex items-center justify-center border-4 border-white ${isActive ? 'bg-[#2563EB]' : 'bg-[#E2E8F0]'}`}>
                   {isActive && <MdCheckCircle className="text-white w-5 h-5" />}
                 </div>
-                <span className={`text-[12px] font-semibold ${isActive ? 'text-[#0F172A]' : 'text-[#64748B]'}`}>{stage}</span>
+                <span className={`text-[12px] font-semibold ${isActive ? 'text-[#0F172A] dark:text-white' : 'text-[#64748B] dark:text-gray-400'}`}>{stage}</span>
               </div>
             );
           })}
@@ -433,8 +433,8 @@ const LeadDetail = ({ lead, onBack }) => {
                 {kpi.icon}
               </div>
               <div>
-                <p className="text-xs font-semibold text-[#64748B] uppercase">{kpi.title}</p>
-                <p className="text-[20px] font-bold text-[#0F172A]">{kpi.value}</p>
+                <p className="text-xs font-semibold text-[#64748B] dark:text-gray-400 uppercase">{kpi.title}</p>
+                <p className="text-[20px] font-bold text-[#0F172A] dark:text-white">{kpi.value}</p>
               </div>
             </div>
           </Card>
@@ -446,10 +446,10 @@ const LeadDetail = ({ lead, onBack }) => {
         {/* Schedule Task Modal */}
       {showScheduleModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
+          <div className="w-full max-w-md rounded-2xl bg-white dark:bg-navy-800 p-6 shadow-2xl">
             <div className="flex items-center justify-between mb-6">
-               <h2 className="text-xl font-bold text-[#0F172A]">Schedule Follow-up</h2>
-               <MdClose className="text-2xl text-[#64748B] cursor-pointer hover:text-red-500" onClick={() => setShowScheduleModal(false)} />
+               <h2 className="text-xl font-bold text-[#0F172A] dark:text-white">Schedule Follow-up</h2>
+               <MdClose className="text-2xl text-[#64748B] dark:text-gray-400 cursor-pointer hover:text-red-500" onClick={() => setShowScheduleModal(false)} />
             </div>
             
             <form onSubmit={async (e) => {
@@ -479,15 +479,15 @@ const LeadDetail = ({ lead, onBack }) => {
               }
             }}>
               <div className="mb-4">
-                <label className="text-sm font-medium text-gray-700">Task Name</label>
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-200">Task Name</label>
                 <input type="text" name="name" defaultValue="Follow up call" className="w-full mt-1 p-2 border border-gray-300 rounded-lg outline-none focus:border-blue-500" required />
               </div>
               <div className="mb-6">
-                <label className="text-sm font-medium text-gray-700">Due Date</label>
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-200">Due Date</label>
                 <input type="datetime-local" name="due_date" className="w-full mt-1 p-2 border border-gray-300 rounded-lg outline-none focus:border-blue-500" required />
               </div>
               <div className="flex justify-end gap-3">
-                <button type="button" onClick={() => setShowScheduleModal(false)} className="px-4 py-2 rounded-lg text-gray-600 bg-gray-100 hover:bg-gray-200">Cancel</button>
+                <button type="button" onClick={() => setShowScheduleModal(false)} className="px-4 py-2 rounded-lg text-gray-600 bg-gray-100 dark:bg-navy-700 hover:bg-gray-200">Cancel</button>
                 <button type="submit" className="px-4 py-2 rounded-lg text-white bg-blue-600 hover:bg-blue-700">Schedule Task</button>
               </div>
             </form>
@@ -498,7 +498,7 @@ const LeadDetail = ({ lead, onBack }) => {
         {/* Left Content (72%) */}
         <div className="w-full lg:w-[72%]">
           {/* Tabs */}
-          <div className="sticky top-0 z-10 flex gap-2 overflow-x-auto bg-[#F8FAFC] py-4 border-b border-[#E2E8F0] mb-6">
+          <div className="sticky top-0 z-10 flex gap-2 overflow-x-auto bg-[#F8FAFC] dark:bg-navy-900 py-4 border-b border-[#E2E8F0] dark:border-navy-700 mb-6">
             {tabs.map(tab => (
               <button
                 key={tab}
@@ -506,7 +506,7 @@ const LeadDetail = ({ lead, onBack }) => {
                 className={`rounded-[12px] px-5 py-2.5 text-sm font-semibold transition ${
                   activeTab === tab 
                   ? 'bg-[#2563EB] text-white shadow-md' 
-                  : 'text-[#64748B] hover:bg-white'
+                  : 'text-[#64748B] dark:text-gray-400 hover:bg-white dark:bg-navy-800'
                 }`}
               >
                 {tab}
@@ -522,11 +522,11 @@ const LeadDetail = ({ lead, onBack }) => {
                 {/* Client Info Card */}
                 <Card extra="p-6">
                   <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-[16px] font-semibold text-[#0F172A]">Client Information</h3>
+                    <h3 className="text-[16px] font-semibold text-[#0F172A] dark:text-white">Client Information</h3>
                     {isEditingClient ? (
                        <button onClick={handleSaveClientInfo} className="text-[#16A34A] flex items-center gap-1 font-bold text-sm"><MdSave /> Save</button>
                     ) : (
-                       <MdEdit onClick={() => setIsEditingClient(true)} className="text-[#64748B] cursor-pointer hover:text-[#2563EB]" />
+                       <MdEdit onClick={() => setIsEditingClient(true)} className="text-[#64748B] dark:text-gray-400 cursor-pointer hover:text-[#2563EB]" />
                     )}
                   </div>
                   <div className="space-y-4">
@@ -572,8 +572,8 @@ const LeadDetail = ({ lead, onBack }) => {
                           { label: "Arriving Date", val: leadData.created_at ? new Date(leadData.created_at).toLocaleDateString('en-GB') : "N/A" },
                         ].map((item, i) => (
                           <div key={i} className="flex flex-col">
-                            <span className="text-[12px] font-medium text-[#64748B]">{item.label}</span>
-                            <span className="text-[14px] font-semibold text-[#0F172A]">{item.val}</span>
+                            <span className="text-[12px] font-medium text-[#64748B] dark:text-gray-400">{item.label}</span>
+                            <span className="text-[14px] font-semibold text-[#0F172A] dark:text-white">{item.val}</span>
                           </div>
                         ))}
                       </>
@@ -584,11 +584,11 @@ const LeadDetail = ({ lead, onBack }) => {
                 {/* Project Req & Site Info Card */}
                 <Card extra="col-span-1 md:col-span-2 p-6">
                   <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-[16px] font-semibold text-[#0F172A]">Project & Site Information</h3>
+                    <h3 className="text-[16px] font-semibold text-[#0F172A] dark:text-white">Project & Site Information</h3>
                     {isEditingProject ? (
                        <button onClick={handleSaveProjectInfo} className="text-[#16A34A] flex items-center gap-1 font-bold text-sm"><MdSave /> Save</button>
                     ) : (
-                       <MdEdit onClick={() => setIsEditingProject(true)} className="text-[#64748B] cursor-pointer hover:text-[#2563EB]" />
+                       <MdEdit onClick={() => setIsEditingProject(true)} className="text-[#64748B] dark:text-gray-400 cursor-pointer hover:text-[#2563EB]" />
                     )}
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -639,8 +639,8 @@ const LeadDetail = ({ lead, onBack }) => {
                           { label: "Boundary Wall", val: leadData.boundaryWall || "N/A" },
                         ].map((item, i) => (
                           <div key={i} className="flex flex-col">
-                            <span className="text-[12px] font-medium text-[#64748B]">{item.label}</span>
-                            <span className="text-[14px] font-semibold text-[#0F172A]">{item.val}</span>
+                            <span className="text-[12px] font-medium text-[#64748B] dark:text-gray-400">{item.label}</span>
+                            <span className="text-[14px] font-semibold text-[#0F172A] dark:text-white">{item.val}</span>
                           </div>
                         ))}
                       </>
@@ -648,7 +648,7 @@ const LeadDetail = ({ lead, onBack }) => {
                   </div>
                 </Card>
                 <Card extra="col-span-1 md:col-span-2 p-6 flex flex-col h-[500px]">
-                  <h3 className="text-[16px] font-semibold text-[#0F172A] mb-4">Comments</h3>
+                  <h3 className="text-[16px] font-semibold text-[#0F172A] dark:text-white mb-4">Comments</h3>
                   <div className="flex-1 overflow-y-auto mb-4 space-y-4 pr-2">
                     {comments.length === 0 ? (
                        <p className="text-sm text-gray-400 italic">No comments yet. Be the first to add one!</p>
@@ -666,7 +666,7 @@ const LeadDetail = ({ lead, onBack }) => {
                   </div>
                   <div className="mt-auto flex flex-col gap-2">
                     <textarea 
-                      className="w-full rounded-[10px] border border-[#E2E8F0] p-3 text-[14px] text-[#475569] outline-none focus:border-[#2563EB] resize-none"
+                      className="w-full rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 p-3 text-[14px] text-[#475569] dark:text-gray-200 outline-none focus:border-[#2563EB] resize-none"
                       rows="3"
                       placeholder="Write a comment..."
                       value={newComment}
@@ -690,7 +690,7 @@ const LeadDetail = ({ lead, onBack }) => {
             {/* Other tabs omitted for brevity but can be expanded */}
             {!["Overview", "Timeline", "Service Requirement", "Service Workspace", "Tasks", "Quotation", "Documents", "Communication"].includes(activeTab) && (
               <Card extra="p-12 text-center">
-                <p className="text-[#64748B] font-medium">Content for {activeTab} is ready to be connected.</p>
+                <p className="text-[#64748B] dark:text-gray-400 font-medium">Content for {activeTab} is ready to be connected.</p>
               </Card>
             )}
           </div>
@@ -701,7 +701,7 @@ const LeadDetail = ({ lead, onBack }) => {
           <div className="sticky top-6 flex flex-col gap-6">
 
             <Card extra="p-6">
-              <h3 className="text-[16px] font-semibold text-[#0F172A] mb-1">Next Follow-up</h3>
+              <h3 className="text-[16px] font-semibold text-[#0F172A] dark:text-white mb-1">Next Follow-up</h3>
               {nextTask ? (
                 <>
                   <p className="text-[14px] font-bold text-[#DC2626] mb-1">{nextTask.due_date ? new Date(nextTask.due_date).toLocaleString() : 'No Due Date'}</p>
@@ -712,7 +712,7 @@ const LeadDetail = ({ lead, onBack }) => {
                     <button onClick={() => handleQuickAction('Call')} className="w-full rounded-[10px] bg-blue-600 py-2 text-[12px] font-bold text-white hover:bg-blue-700 transition">Follow up</button>
                     <div className="flex gap-2">
                       <button onClick={handleCompleteTask} className="flex-1 rounded-[10px] bg-[#16A34A] py-2 text-[12px] font-bold text-white hover:bg-green-700 transition">Mark Complete</button>
-                      <button onClick={() => setShowScheduleModal(true)} className="flex-1 rounded-[10px] border border-[#E2E8F0] py-2 text-[12px] font-bold text-[#0F172A] hover:bg-gray-50 transition">Reschedule</button>
+                      <button onClick={() => setShowScheduleModal(true)} className="flex-1 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 py-2 text-[12px] font-bold text-[#0F172A] dark:text-white hover:bg-gray-50 dark:hover:bg-navy-800 transition">Reschedule</button>
                     </div>
                   </div>
                 </>
@@ -725,7 +725,7 @@ const LeadDetail = ({ lead, onBack }) => {
             </Card>
 
             <Card extra="p-6">
-              <h3 className="text-[16px] font-semibold text-[#0F172A] mb-4">Quick Actions</h3>
+              <h3 className="text-[16px] font-semibold text-[#0F172A] dark:text-white mb-4">Quick Actions</h3>
               <div className="grid grid-cols-2 gap-3">
                 {[
                   { label: "Call", icon: <MdPhone /> },
@@ -733,22 +733,22 @@ const LeadDetail = ({ lead, onBack }) => {
                   { label: "Add Note", icon: <FiFileText /> },
                   { label: "Schedule", icon: <MdEvent /> },
                 ].map((act, i) => (
-                  <button key={i} onClick={() => handleQuickAction(act.label)} className="flex flex-col items-center justify-center rounded-[12px] border border-[#E2E8F0] p-3 hover:bg-[#F8FAFC] transition hover:border-[#2563EB]">
+                  <button key={i} onClick={() => handleQuickAction(act.label)} className="flex flex-col items-center justify-center rounded-[12px] border border-[#E2E8F0] dark:border-navy-700 p-3 hover:bg-[#F8FAFC] dark:bg-navy-900 transition hover:border-[#2563EB]">
                     <span className="text-[#2563EB] text-xl mb-1">{act.icon}</span>
-                    <span className="text-[11px] font-medium text-[#475569]">{act.label}</span>
+                    <span className="text-[11px] font-medium text-[#475569] dark:text-gray-200">{act.label}</span>
                   </button>
                 ))}
               </div>
             </Card>
 
             <Card extra="p-6">
-              <h3 className="text-[16px] font-semibold text-[#0F172A] mb-4">Assigned Team</h3>
+              <h3 className="text-[16px] font-semibold text-[#0F172A] dark:text-white mb-4">Assigned Team</h3>
               <div className="space-y-4">
                   <div className="max-h-[200px] overflow-y-auto border border-gray-100 rounded-lg p-2 space-y-2">
                     {employees.map(emp => {
                       const isAssigned = (leadData.assigned_to || '').split(',').includes(emp.id);
                       return (
-                        <div key={emp.id} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg cursor-pointer transition" onClick={() => handleToggleAssignEmployee(emp.id)}>
+                        <div key={emp.id} className="flex items-center gap-3 p-2 hover:bg-gray-50 dark:hover:bg-navy-800 rounded-lg cursor-pointer transition" onClick={() => handleToggleAssignEmployee(emp.id)}>
                            <input type="checkbox" checked={isAssigned} readOnly className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500" />
                            <div className="h-8 w-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-xs">
                              {emp.name?.charAt(0) || 'U'}
@@ -772,12 +772,12 @@ const LeadDetail = ({ lead, onBack }) => {
       <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 w-[90%] max-w-[800px] rounded-[20px] bg-white/80 backdrop-blur-md border border-white shadow-[0_10px_40px_rgba(15,23,42,0.1)] p-4 flex items-center justify-between z-50">
         <div className="flex gap-8 px-4">
           <div className="hidden sm:block">
-            <p className="text-[11px] text-[#64748B] font-medium uppercase">Current Stage</p>
+            <p className="text-[11px] text-[#64748B] dark:text-gray-400 font-medium uppercase">Current Stage</p>
             <p className="text-[16px] font-bold text-[#2563EB]">{leadData.status}</p>
           </div>
           <div className="hidden sm:block">
-            <p className="text-[11px] text-[#64748B] font-medium uppercase">Est. Value</p>
-            <p className="text-[16px] font-bold text-[#0F172A]">{leadData.budget || "—"}</p>
+            <p className="text-[11px] text-[#64748B] dark:text-gray-400 font-medium uppercase">Est. Value</p>
+            <p className="text-[16px] font-bold text-[#0F172A] dark:text-white">{leadData.budget || "—"}</p>
           </div>
         </div>
         <button 

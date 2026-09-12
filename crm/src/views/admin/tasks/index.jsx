@@ -253,39 +253,39 @@ const Tasks = () => {
   }
 
   return (
-    <div className="w-full bg-[#F8FAFC] min-h-screen pt-12 pb-24 font-sans text-[#475569]">
+    <div className="w-full bg-[#F8FAFC] dark:bg-navy-900 min-h-screen pt-12 pb-24 font-sans text-[#475569] dark:text-gray-200">
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4 mt-8 md:mt-2">
           <div>
-            <p className="text-[12px] font-medium text-[#64748B] mb-1">Pages / Work Management</p>
-            <h1 className="text-[32px] font-bold text-[#0F172A] leading-tight flex flex-col md:flex-row md:items-center gap-4">
+            <p className="text-[12px] font-medium text-[#64748B] dark:text-gray-400 mb-1">Pages / Work Management</p>
+            <h1 className="text-[32px] font-bold text-[#0F172A] dark:text-white leading-tight flex flex-col md:flex-row md:items-center gap-4">
                Task Management
-               <div className="flex bg-gray-100 rounded-lg p-1 mt-2 md:mt-0 w-fit">
+               <div className="flex bg-gray-100 dark:bg-navy-700 rounded-lg p-1 mt-2 md:mt-0 w-fit">
                   <button 
                      onClick={() => setTaskScope("My Tasks")}
-                     className={`px-3 py-1.5 rounded-md text-[13px] font-bold transition whitespace-nowrap ${taskScope === "My Tasks" ? "bg-white text-blue-600 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
+                     className={`px-3 py-1.5 rounded-md text-[13px] font-bold transition whitespace-nowrap ${taskScope === "My Tasks" ? "bg-white dark:bg-navy-800 text-blue-600 shadow-sm" : "text-gray-500 hover:text-gray-700 dark:text-gray-200"}`}
                   >My Tasks</button>
                   <button 
                      onClick={() => setTaskScope("Given Tasks")}
-                     className={`px-3 py-1.5 rounded-md text-[13px] font-bold transition whitespace-nowrap ${taskScope === "Given Tasks" ? "bg-white text-blue-600 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
+                     className={`px-3 py-1.5 rounded-md text-[13px] font-bold transition whitespace-nowrap ${taskScope === "Given Tasks" ? "bg-white dark:bg-navy-800 text-blue-600 shadow-sm" : "text-gray-500 hover:text-gray-700 dark:text-gray-200"}`}
                   >Given Tasks</button>
                   {isAdminOrMD && (
                      <button 
                         onClick={() => setTaskScope("All Tasks")}
-                        className={`px-3 py-1.5 rounded-md text-[13px] font-bold transition whitespace-nowrap ${taskScope === "All Tasks" ? "bg-white text-blue-600 shadow-sm" : "text-gray-500 hover:text-gray-700"}`}
+                        className={`px-3 py-1.5 rounded-md text-[13px] font-bold transition whitespace-nowrap ${taskScope === "All Tasks" ? "bg-white dark:bg-navy-800 text-blue-600 shadow-sm" : "text-gray-500 hover:text-gray-700 dark:text-gray-200"}`}
                      >All Tasks</button>
                   )}
                </div>
             </h1>
-            <p className="text-[14px] text-[#64748B] mt-1 max-w-2xl">Manage every assigned task across sales, architecture, legal, engineering, construction, interior, accounts, HR, and internal operations.</p>
+            <p className="text-[14px] text-[#64748B] dark:text-gray-400 mt-1 max-w-2xl">Manage every assigned task across sales, architecture, legal, engineering, construction, interior, accounts, HR, and internal operations.</p>
           </div>
           <div className="flex gap-3 z-10 relative">
-            <button className="h-10 px-4 rounded-[12px] border border-[#E2E8F0] bg-white text-[14px] font-bold text-[#0F172A] hover:bg-gray-50 flex items-center gap-2 transition">
+            <button className="h-10 px-4 rounded-[12px] border border-[#E2E8F0] dark:border-navy-700 bg-white dark:bg-navy-800 text-[14px] font-bold text-[#0F172A] dark:text-white hover:bg-gray-50 dark:hover:bg-navy-800 flex items-center gap-2 transition">
               <MdCalendarToday /> Calendar View
             </button>
-            <button className="h-10 px-4 rounded-[12px] border border-[#E2E8F0] bg-white text-[14px] font-bold text-[#0F172A] hover:bg-gray-50 flex items-center gap-2 transition">
+            <button className="h-10 px-4 rounded-[12px] border border-[#E2E8F0] dark:border-navy-700 bg-white dark:bg-navy-800 text-[14px] font-bold text-[#0F172A] dark:text-white hover:bg-gray-50 dark:hover:bg-navy-800 flex items-center gap-2 transition">
               Export
             </button>
             <button onClick={() => setShowNewModal(true)} className="h-10 px-5 rounded-[12px] bg-[#2563EB] text-[14px] font-bold text-white hover:bg-[#1D4ED8] flex items-center gap-2 transition shadow-sm">
@@ -297,39 +297,39 @@ const Tasks = () => {
         {/* KPIs */}
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3 mb-6">
           {kpis.map((kpi, i) => (
-             <Card key={i} extra="p-4 border border-[#E2E8F0] shadow-sm hover:shadow-md transition text-center">
-                <p className="text-[10px] font-bold text-[#64748B] uppercase leading-tight mb-2 tracking-wider">{kpi.title}</p>
-                <p className={`text-[24px] font-bold text-[#0F172A]`}>{kpi.value}</p>
+             <Card key={i} extra="p-4 border border-[#E2E8F0] dark:border-navy-700 shadow-sm hover:shadow-md transition text-center">
+                <p className="text-[10px] font-bold text-[#64748B] dark:text-gray-400 uppercase leading-tight mb-2 tracking-wider">{kpi.title}</p>
+                <p className={`text-[24px] font-bold text-[#0F172A] dark:text-white`}>{kpi.value}</p>
              </Card>
           ))}
         </div>
 
         {/* Filters & Views Bar */}
-        <div className="bg-white p-4 rounded-2xl border border-[#E2E8F0] shadow-sm mb-6 flex flex-col xl:flex-row justify-between items-center gap-4">
+        <div className="bg-white dark:bg-navy-800 p-4 rounded-2xl border border-[#E2E8F0] dark:border-navy-700 shadow-sm mb-6 flex flex-col xl:flex-row justify-between items-center gap-4">
            {/* Search & Filters */}
            <div className="flex flex-wrap items-center gap-3 w-full xl:w-auto">
               <div className="relative w-full sm:w-[250px]">
-                <MdSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#64748B] text-xl" />
-                <input type="text" placeholder="Search task, client, employee..." className="w-full pl-10 pr-4 h-10 rounded-[10px] bg-gray-50 border border-transparent text-[13px] outline-none focus:bg-white focus:border-[#2563EB] transition-colors" />
+                <MdSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#64748B] dark:text-gray-400 text-xl" />
+                <input type="text" placeholder="Search task, client, employee..." className="w-full pl-10 pr-4 h-10 rounded-[10px] bg-gray-50 border border-transparent text-[13px] outline-none focus:bg-white dark:bg-navy-800 focus:border-[#2563EB] transition-colors" />
               </div>
               {["Module", "Department", "Employee", "Client", "Project", "Status"].map(f => (
-                 <select key={f} className="h-10 px-3 rounded-[10px] border border-[#E2E8F0] text-[12px] font-medium text-[#475569] bg-white outline-none hover:border-[#2563EB] cursor-pointer">
+                 <select key={f} className="h-10 px-3 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 text-[12px] font-medium text-[#475569] dark:text-gray-200 bg-white dark:bg-navy-800 outline-none hover:border-[#2563EB] cursor-pointer">
                     <option>{f}</option>
                  </select>
               ))}
               <div className="flex gap-2 ml-auto sm:ml-2">
-                 <button className="text-[12px] font-bold text-[#64748B] hover:text-[#0F172A]">Reset</button>
+                 <button className="text-[12px] font-bold text-[#64748B] dark:text-gray-400 hover:text-[#0F172A] dark:text-white">Reset</button>
                  <button className="text-[12px] font-bold text-[#2563EB] hover:underline">Save Filter</button>
               </div>
            </div>
 
            {/* View Toggles */}
-           <div className="flex bg-gray-100 p-1 rounded-xl w-full sm:w-auto">
+           <div className="flex bg-gray-100 dark:bg-navy-700 p-1 rounded-xl w-full sm:w-auto">
               {views.map(v => (
                  <button
                     key={v.name}
                     onClick={() => setActiveView(v.name)}
-                    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-[13px] font-bold transition flex-1 sm:flex-none justify-center ${activeView === v.name ? 'bg-white text-[#2563EB] shadow-sm' : 'text-[#64748B] hover:text-[#0F172A]'}`}
+                    className={`flex items-center gap-2 px-4 py-2 rounded-lg text-[13px] font-bold transition flex-1 sm:flex-none justify-center ${activeView === v.name ? 'bg-white dark:bg-navy-800 text-[#2563EB] shadow-sm' : 'text-[#64748B] dark:text-gray-400 hover:text-[#0F172A] dark:text-white'}`}
                  >
                     {v.icon} {v.name}
                  </button>
@@ -368,12 +368,12 @@ const Tasks = () => {
       {/* Add Task Modal (4 steps) */}
       {showNewModal && (
          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-            <div className="w-full max-w-[1000px] bg-white rounded-[20px] shadow-2xl flex flex-col max-h-[90vh]">
+            <div className="w-full max-w-[1000px] bg-white dark:bg-navy-800 rounded-[20px] shadow-2xl flex flex-col max-h-[90vh]">
                {/* Header */}
-               <div className="p-6 border-b border-[#E2E8F0] flex justify-between items-center bg-[#F8FAFC] rounded-t-[20px]">
+               <div className="p-6 border-b border-[#E2E8F0] dark:border-navy-700 flex justify-between items-center bg-[#F8FAFC] dark:bg-navy-900 rounded-t-[20px]">
                   <div>
-                    <h2 className="text-[20px] font-bold text-[#0F172A]">Create New Task</h2>
-                    <p className="text-[13px] text-[#64748B] mt-1">Step {modalStep} of 4</p>
+                    <h2 className="text-[20px] font-bold text-[#0F172A] dark:text-white">Create New Task</h2>
+                    <p className="text-[13px] text-[#64748B] dark:text-gray-400 mt-1">Step {modalStep} of 4</p>
                   </div>
                   <button onClick={() => setShowNewModal(false)} className="w-8 h-8 rounded-full hover:bg-gray-200 flex items-center justify-center text-gray-500 transition">
                      <MdClose size={20} />
@@ -386,7 +386,7 @@ const Tasks = () => {
                   {/* Step 1: Source Module */}
                   {modalStep === 1 && (
                      <div className="animate-fade-in max-w-4xl mx-auto">
-                        <h3 className="text-[18px] font-bold text-[#0F172A] mb-6 text-center">Where does this task belong?</h3>
+                        <h3 className="text-[18px] font-bold text-[#0F172A] dark:text-white mb-6 text-center">Where does this task belong?</h3>
                         <p className="text-center text-[13px] text-gray-500 mb-8 max-w-xl mx-auto">A task must never exist independently. Every task must be linked to a module.</p>
                         
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -394,12 +394,12 @@ const Tasks = () => {
                               <div 
                                  key={mod} 
                                  onClick={() => { setNewTask({...newTask, module: mod}); setModalStep(mod === "Office Work" ? 3 : 2); }}
-                                 className={`p-6 border-2 ${newTask.module === mod ? 'border-[#2563EB] bg-blue-50' : 'border-[#E2E8F0]'} rounded-xl hover:border-[#2563EB] cursor-pointer text-center group transition`}
+                                 className={`p-6 border-2 ${newTask.module === mod ? 'border-[#2563EB] bg-blue-50' : 'border-[#E2E8F0] dark:border-navy-700'} rounded-xl hover:border-[#2563EB] cursor-pointer text-center group transition`}
                               >
                                  <div className="w-12 h-12 bg-gray-50 group-hover:bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4 text-gray-400 group-hover:text-blue-600 text-2xl transition">
                                     <MdAssignment />
                                  </div>
-                                 <h4 className="text-[15px] font-bold text-[#0F172A]">{mod}</h4>
+                                 <h4 className="text-[15px] font-bold text-[#0F172A] dark:text-white">{mod}</h4>
                               </div>
                            ))}
                         </div>
@@ -409,11 +409,11 @@ const Tasks = () => {
                   {/* Step 2: Link Entity */}
                   {modalStep === 2 && (
                      <div className="animate-fade-in max-w-2xl mx-auto text-center">
-                        <h3 className="text-[18px] font-bold text-[#0F172A] mb-6">Link {newTask.module} Record</h3>
+                        <h3 className="text-[18px] font-bold text-[#0F172A] dark:text-white mb-6">Link {newTask.module} Record</h3>
                         {newTask.module === "Other" ? (
-                           <div className="mt-8 border border-[#E2E8F0] rounded-xl bg-gray-50 p-12 flex flex-col items-center justify-center">
-                              <label className="block text-[11px] font-bold text-[#475569] mb-1.5 uppercase">Specify Category</label>
-                              <input type="text" value={newTask.linkedRecordName} onChange={e => setNewTask({...newTask, linkedRecordName: e.target.value})} placeholder="E.g. Marketing, Event" className="w-full h-14 px-4 rounded-xl border-2 border-[#E2E8F0] text-[15px] outline-none focus:border-[#2563EB]" />
+                           <div className="mt-8 border border-[#E2E8F0] dark:border-navy-700 rounded-xl bg-gray-50 p-12 flex flex-col items-center justify-center">
+                              <label className="block text-[11px] font-bold text-[#475569] dark:text-gray-200 mb-1.5 uppercase">Specify Category</label>
+                              <input type="text" value={newTask.linkedRecordName} onChange={e => setNewTask({...newTask, linkedRecordName: e.target.value})} placeholder="E.g. Marketing, Event" className="w-full h-14 px-4 rounded-xl border-2 border-[#E2E8F0] dark:border-navy-700 text-[15px] outline-none focus:border-[#2563EB]" />
                               <button onClick={() => { setModalStep(3); }} className="mt-4 px-6 h-10 bg-[#2563EB] text-white font-bold rounded-lg hover:bg-blue-700">Continue</button>
                            </div>
                         ) : (
@@ -429,12 +429,12 @@ const Tasks = () => {
                                        // Actually, let's just use a local state in the component. Wait, I can't easily add state hook inside the JSX. 
                                     }}
                                     placeholder={`Search existing ${newTask.module}s in database...`} 
-                                    className="w-full h-14 pl-12 pr-4 rounded-xl border-2 border-[#E2E8F0] text-[15px] outline-none focus:border-[#2563EB] transition shadow-sm" 
+                                    className="w-full h-14 pl-12 pr-4 rounded-xl border-2 border-[#E2E8F0] dark:border-navy-700 text-[15px] outline-none focus:border-[#2563EB] transition shadow-sm" 
                                     title={`You MUST select an existing ${newTask.module} from the database.`}
                                  />
                                  <p className="text-[11px] text-gray-400 mt-2 text-left ml-2">You can only select a {newTask.module} that already exists in the CRM database.</p>
                               </div>
-                              <div className="max-h-[300px] overflow-y-auto custom-scrollbar text-left border border-[#E2E8F0] rounded-xl">
+                              <div className="max-h-[300px] overflow-y-auto custom-scrollbar text-left border border-[#E2E8F0] dark:border-navy-700 rounded-xl">
                                  {availableRecords.length === 0 ? (
                                     <div className="p-8 text-center">
                                        <p className="text-[14px] font-bold text-red-500 mb-2">No {newTask.module}s found in database.</p>
@@ -445,9 +445,9 @@ const Tasks = () => {
                                        <div 
                                           key={rec.id} 
                                           onClick={() => { setNewTask({...newTask, linkedRecordId: rec.id, linkedRecordName: rec.name || rec.projectName || rec.clientName || rec.leadName || rec.title}); setModalStep(3); }}
-                                          className={`p-4 border-b border-[#E2E8F0] hover:bg-blue-50 cursor-pointer transition ${newTask.linkedRecordId === rec.id ? 'bg-blue-50' : ''}`}
+                                          className={`p-4 border-b border-[#E2E8F0] dark:border-navy-700 hover:bg-blue-50 cursor-pointer transition ${newTask.linkedRecordId === rec.id ? 'bg-blue-50' : ''}`}
                                        >
-                                          <p className="text-[14px] font-bold text-[#0F172A]">{rec.name || rec.projectName || rec.clientName || rec.leadName || rec.title || "Unnamed Record"}</p>
+                                          <p className="text-[14px] font-bold text-[#0F172A] dark:text-white">{rec.name || rec.projectName || rec.clientName || rec.leadName || rec.title || "Unnamed Record"}</p>
                                           <p className="text-[12px] text-gray-500">{rec.id}</p>
                                        </div>
                                     ))
@@ -461,13 +461,13 @@ const Tasks = () => {
                   {/* Step 3: Assign Employee */}
                   {modalStep === 3 && (
                      <div className="animate-fade-in max-w-2xl mx-auto text-center">
-                        <h3 className="text-[18px] font-bold text-[#0F172A] mb-6">Assign Employee</h3>
+                        <h3 className="text-[18px] font-bold text-[#0F172A] dark:text-white mb-6">Assign Employee</h3>
                         <div className="relative max-w-xl mx-auto mb-6">
                            <MdSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-2xl" />
-                           <input type="text" placeholder="Search employee..." className="w-full h-14 pl-12 pr-4 rounded-xl border-2 border-[#E2E8F0] text-[15px] outline-none focus:border-[#2563EB] transition shadow-sm" />
+                           <input type="text" placeholder="Search employee..." className="w-full h-14 pl-12 pr-4 rounded-xl border-2 border-[#E2E8F0] dark:border-navy-700 text-[15px] outline-none focus:border-[#2563EB] transition shadow-sm" />
                            <p className="text-[11px] text-gray-400 mt-2 text-left ml-2">Select an employee from the directory to assign this task.</p>
                         </div>
-                        <div className="max-h-[300px] overflow-y-auto custom-scrollbar text-left border border-[#E2E8F0] rounded-xl">
+                        <div className="max-h-[300px] overflow-y-auto custom-scrollbar text-left border border-[#E2E8F0] dark:border-navy-700 rounded-xl">
                            {availableEmployees.length === 0 ? (
                               <div className="p-8 text-center">
                                  <p className="text-[14px] text-gray-500">No employees found in directory.</p>
@@ -492,17 +492,17 @@ const Tasks = () => {
                                    }
                                    
                                    if (validEmps.length === 0) {
-                                      return <div className="p-4 text-center text-[#64748B]">No available employees found for this task context.</div>;
+                                      return <div className="p-4 text-center text-[#64748B] dark:text-gray-400">No available employees found for this task context.</div>;
                                    }
 
                                    return validEmps.map(emp => (
                                       <div 
                                          key={emp.id} 
                                          onClick={() => { setNewTask({...newTask, assigneeId: emp.id, assigneeName: emp.name, department: emp.department}); setModalStep(4); }}
-                                         className={`p-4 border-b border-[#E2E8F0] hover:bg-blue-50 cursor-pointer transition flex items-center justify-between ${newTask.assigneeId === emp.id ? 'bg-blue-50' : ''}`}
+                                         className={`p-4 border-b border-[#E2E8F0] dark:border-navy-700 hover:bg-blue-50 cursor-pointer transition flex items-center justify-between ${newTask.assigneeId === emp.id ? 'bg-blue-50' : ''}`}
                                       >
                                          <div>
-                                            <p className="text-[14px] font-bold text-[#0F172A]">{emp.name}</p>
+                                            <p className="text-[14px] font-bold text-[#0F172A] dark:text-white">{emp.name}</p>
                                             <p className="text-[12px] text-gray-500">{emp.designation} • {emp.department}</p>
                                          </div>
                                          <div className="text-right">
@@ -519,21 +519,21 @@ const Tasks = () => {
                   {/* Step 4: Task Information */}
                   {modalStep === 4 && (
                      <div className="animate-fade-in max-w-3xl mx-auto">
-                        <h3 className="text-[18px] font-bold text-[#0F172A] mb-6 text-center">Task Details</h3>
+                        <h3 className="text-[18px] font-bold text-[#0F172A] dark:text-white mb-6 text-center">Task Details</h3>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                           <div className="md:col-span-2"><label className="block text-[11px] font-bold text-[#475569] mb-1.5 uppercase">Task Title *</label><input type="text" value={newTask.title} onChange={e => setNewTask({...newTask, title: e.target.value})} placeholder="Enter task title" className="w-full h-11 px-3 rounded-[10px] border border-[#E2E8F0] text-[14px] outline-none focus:border-[#2563EB]" /></div>
-                           <div className="md:col-span-2"><label className="block text-[11px] font-bold text-[#475569] mb-1.5 uppercase">Description</label><textarea value={newTask.description} onChange={e => setNewTask({...newTask, description: e.target.value})} placeholder="Enter task description" className="w-full h-24 p-3 rounded-[10px] border border-[#E2E8F0] text-[14px] outline-none focus:border-[#2563EB] resize-none" /></div>
-                           <div><label className="block text-[11px] font-bold text-[#475569] mb-1.5 uppercase">Priority</label><select value={newTask.priority} onChange={e => setNewTask({...newTask, priority: e.target.value})} className="w-full h-11 px-3 rounded-[10px] border border-[#E2E8F0] text-[14px] outline-none bg-white"><option>Low</option><option>Medium</option><option>High</option><option>Critical</option></select></div>
-                           <div><label className="block text-[11px] font-bold text-[#475569] mb-1.5 uppercase">Department</label>
-                              <select value={newTask.department} onChange={e => setNewTask({...newTask, department: e.target.value})} className="w-full h-11 px-3 rounded-[10px] border border-[#E2E8F0] text-[14px] outline-none bg-white">
+                           <div className="md:col-span-2"><label className="block text-[11px] font-bold text-[#475569] dark:text-gray-200 mb-1.5 uppercase">Task Title *</label><input type="text" value={newTask.title} onChange={e => setNewTask({...newTask, title: e.target.value})} placeholder="Enter task title" className="w-full h-11 px-3 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 text-[14px] outline-none focus:border-[#2563EB]" /></div>
+                           <div className="md:col-span-2"><label className="block text-[11px] font-bold text-[#475569] dark:text-gray-200 mb-1.5 uppercase">Description</label><textarea value={newTask.description} onChange={e => setNewTask({...newTask, description: e.target.value})} placeholder="Enter task description" className="w-full h-24 p-3 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 text-[14px] outline-none focus:border-[#2563EB] resize-none" /></div>
+                           <div><label className="block text-[11px] font-bold text-[#475569] dark:text-gray-200 mb-1.5 uppercase">Priority</label><select value={newTask.priority} onChange={e => setNewTask({...newTask, priority: e.target.value})} className="w-full h-11 px-3 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 text-[14px] outline-none bg-white dark:bg-navy-800"><option>Low</option><option>Medium</option><option>High</option><option>Critical</option></select></div>
+                           <div><label className="block text-[11px] font-bold text-[#475569] dark:text-gray-200 mb-1.5 uppercase">Department</label>
+                              <select value={newTask.department} onChange={e => setNewTask({...newTask, department: e.target.value})} className="w-full h-11 px-3 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 text-[14px] outline-none bg-white dark:bg-navy-800">
                                  <option value="">Select Department</option>
                                  {availableDepts.map(d => <option key={d.name} value={d.name}>{d.name}</option>)}
                               </select>
                            </div>
-                           <div><label className="block text-[11px] font-bold text-[#475569] mb-1.5 uppercase">Start Date</label><input type="date" value={newTask.startDate} onChange={e => setNewTask({...newTask, startDate: e.target.value})} className="w-full h-11 px-3 rounded-[10px] border border-[#E2E8F0] text-[14px] outline-none" /></div>
-                           <div><label className="block text-[11px] font-bold text-[#475569] mb-1.5 uppercase">Due Date</label><input type="date" value={newTask.dueDate} onChange={e => setNewTask({...newTask, dueDate: e.target.value})} className="w-full h-11 px-3 rounded-[10px] border border-[#E2E8F0] text-[14px] outline-none" /></div>
-                           <div><label className="block text-[11px] font-bold text-[#475569] mb-1.5 uppercase">Estimated Hours</label><input type="number" value={newTask.estimatedHours} onChange={e => setNewTask({...newTask, estimatedHours: e.target.value})} placeholder="—" className="w-full h-11 px-3 rounded-[10px] border border-[#E2E8F0] text-[14px] outline-none" /></div>
-                           <div><label className="block text-[11px] font-bold text-[#475569] mb-1.5 uppercase">Attachments</label><div className="w-full h-11 px-3 rounded-[10px] border border-dashed border-gray-400 bg-gray-50 flex items-center justify-center text-[12px] text-gray-500 font-bold cursor-pointer">Upload Files</div></div>
+                           <div><label className="block text-[11px] font-bold text-[#475569] dark:text-gray-200 mb-1.5 uppercase">Start Date</label><input type="date" value={newTask.startDate} onChange={e => setNewTask({...newTask, startDate: e.target.value})} className="w-full h-11 px-3 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 text-[14px] outline-none" /></div>
+                           <div><label className="block text-[11px] font-bold text-[#475569] dark:text-gray-200 mb-1.5 uppercase">Due Date</label><input type="date" value={newTask.dueDate} onChange={e => setNewTask({...newTask, dueDate: e.target.value})} className="w-full h-11 px-3 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 text-[14px] outline-none" /></div>
+                           <div><label className="block text-[11px] font-bold text-[#475569] dark:text-gray-200 mb-1.5 uppercase">Estimated Hours</label><input type="number" value={newTask.estimatedHours} onChange={e => setNewTask({...newTask, estimatedHours: e.target.value})} placeholder="—" className="w-full h-11 px-3 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 text-[14px] outline-none" /></div>
+                           <div><label className="block text-[11px] font-bold text-[#475569] dark:text-gray-200 mb-1.5 uppercase">Attachments</label><div className="w-full h-11 px-3 rounded-[10px] border border-dashed border-gray-400 bg-gray-50 flex items-center justify-center text-[12px] text-gray-500 font-bold cursor-pointer">Upload Files</div></div>
                         </div>
                      </div>
                   )}
@@ -541,11 +541,11 @@ const Tasks = () => {
                </div>
 
                {/* Footer */}
-               <div className="p-6 border-t border-[#E2E8F0] flex justify-between items-center bg-white rounded-b-[20px]">
+               <div className="p-6 border-t border-[#E2E8F0] dark:border-navy-700 flex justify-between items-center bg-white dark:bg-navy-800 rounded-b-[20px]">
                   <button 
                      onClick={() => setModalStep(modalStep - 1)} 
                      disabled={modalStep === 1}
-                     className={`flex items-center gap-1 h-10 px-4 rounded-[12px] font-bold text-sm transition ${modalStep === 1 ? 'text-gray-300 cursor-not-allowed' : 'text-[#64748B] hover:bg-gray-100'}`}
+                     className={`flex items-center gap-1 h-10 px-4 rounded-[12px] font-bold text-sm transition ${modalStep === 1 ? 'text-gray-300 cursor-not-allowed' : 'text-[#64748B] dark:text-gray-400 hover:bg-gray-100 dark:bg-navy-700'}`}
                   >
                      <MdChevronLeft size={20} /> Back
                   </button>

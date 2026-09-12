@@ -311,7 +311,7 @@ const CRMLeads = () => {
       case 'Negotiation': return 'bg-yellow-100 text-yellow-700';
       case 'Won': return 'bg-green-100 text-green-700';
       case 'Lost': return 'bg-red-100 text-red-700';
-      default: return 'bg-gray-100 text-gray-700';
+      default: return 'bg-gray-100 dark:bg-navy-700 text-gray-700 dark:text-gray-200';
     }
   };
 
@@ -320,7 +320,7 @@ const CRMLeads = () => {
       case 'Hot Lead': return 'bg-red-100 text-red-700';
       case 'Warm Lead': return 'bg-orange-100 text-orange-700';
       case 'Cold Lead': return 'bg-blue-100 text-blue-700';
-      default: return 'bg-gray-100 text-gray-700';
+      default: return 'bg-gray-100 dark:bg-navy-700 text-gray-700 dark:text-gray-200';
     }
   };
 
@@ -329,36 +329,36 @@ const CRMLeads = () => {
   }
 
   return (
-    <div className="w-full max-w-full bg-[#F8FAFC] min-h-screen pt-12 pb-24">
+    <div className="w-full max-w-full bg-[#F8FAFC] dark:bg-navy-900 min-h-screen pt-12 pb-24">
       {convertLeadData && (
         <div className="fixed inset-0 z-[99] flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="bg-white rounded-[20px] p-6 w-full max-w-md shadow-2xl transform transition-all">
+          <div className="bg-white dark:bg-navy-800 rounded-[20px] p-6 w-full max-w-md shadow-2xl transform transition-all">
              <div className="flex justify-between items-center mb-4">
-               <h2 className="text-xl font-bold text-[#0F172A]">Convert to Client?</h2>
-               <MdClose className="text-2xl text-[#64748B] cursor-pointer hover:text-red-500" onClick={() => setConvertLeadData(null)} />
+               <h2 className="text-xl font-bold text-[#0F172A] dark:text-white">Convert to Client?</h2>
+               <MdClose className="text-2xl text-[#64748B] dark:text-gray-400 cursor-pointer hover:text-red-500" onClick={() => setConvertLeadData(null)} />
              </div>
-             <p className="text-[#475569] mb-6">You are marking <span className="font-bold text-[#0F172A]">{convertLeadData.name}</span> as "Won". Would you like to remove them from Leads and officially convert them into a Client?</p>
+             <p className="text-[#475569] dark:text-gray-200 dark:text-white mb-6">You are marking <span className="font-bold text-[#0F172A] dark:text-white">{convertLeadData.name}</span> as "Won". Would you like to remove them from Leads and officially convert them into a Client?</p>
              <div className="flex gap-3 justify-end">
-               <button onClick={() => setConvertLeadData(null)} className="px-5 py-2.5 rounded-[10px] font-bold text-[#475569] bg-gray-100 hover:bg-gray-200 transition-colors">Cancel</button>
+               <button onClick={() => setConvertLeadData(null)} className="px-5 py-2.5 rounded-[10px] font-bold text-[#475569] dark:text-gray-200 dark:text-white bg-gray-100 dark:bg-navy-700 hover:bg-gray-200 transition-colors">Cancel</button>
                <button onClick={confirmConvert} className="px-5 py-2.5 rounded-[10px] font-bold text-white bg-[#16A34A] hover:bg-green-700 transition-colors flex items-center gap-2"><MdCheckCircle /> Convert to Client</button>
              </div>
           </div>
         </div>
       )}
-        <div className="max-w-[1180px] mx-auto px-4 sm:px-6 lg:px-8 font-sans text-[#475569]">
+        <div className="max-w-[1180px] mx-auto px-4 sm:px-6 lg:px-8 font-sans text-[#475569] dark:text-gray-200 dark:text-white">
           <div className="pt-2 pb-4 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
           {/* 1. Breadcrumb & Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4 mt-8 md:mt-2">
           <div>
-            <p className="text-[12px] font-medium text-[#64748B] mb-1">Pages / Leads</p>
-            <h1 className="text-[32px] font-bold text-[#0F172A] leading-tight">Leads Management</h1>
+            <p className="text-[12px] font-medium text-[#64748B] dark:text-gray-400 mb-1">Pages / Leads</p>
+            <h1 className="text-[32px] font-bold text-[#0F172A] dark:text-white leading-tight">Leads Management</h1>
           </div>
           <div className="flex gap-3 z-10 relative">
             <input type="file" ref={fileInputRef} onChange={handleImport} accept=".csv, .xlsx, .xls" className="hidden" />
-            <button onClick={() => fileInputRef.current.click()} disabled={importing} className="h-10 px-4 rounded-[12px] border border-[#E2E8F0] bg-white text-[14px] font-bold text-[#0F172A] hover:bg-gray-50 flex items-center gap-2 transition disabled:opacity-50">
+            <button onClick={() => fileInputRef.current.click()} disabled={importing} className="h-10 px-4 rounded-[12px] border border-[#E2E8F0] dark:border-navy-700 bg-white dark:bg-navy-800 text-[14px] font-bold text-[#0F172A] dark:text-white hover:bg-gray-50 dark:hover:bg-navy-800 flex items-center gap-2 transition disabled:opacity-50">
               <MdCloudDownload /> {importing ? "Importing..." : "Import Excel"}
             </button>
-            <button onClick={handleExport} className="h-10 px-4 rounded-[12px] border border-[#E2E8F0] bg-white text-[14px] font-bold text-[#0F172A] hover:bg-gray-50 flex items-center gap-2 transition">
+            <button onClick={handleExport} className="h-10 px-4 rounded-[12px] border border-[#E2E8F0] dark:border-navy-700 bg-white dark:bg-navy-800 text-[14px] font-bold text-[#0F172A] dark:text-white hover:bg-gray-50 dark:hover:bg-navy-800 flex items-center gap-2 transition">
               <MdCloudDownload /> Export Data
             </button>
             <button onClick={() => setShowNewLeadModal(true)} className="h-10 px-5 rounded-[12px] bg-[#2563EB] text-[14px] font-bold text-white hover:bg-[#1D4ED8] flex items-center gap-2 transition shadow-[0_2px_10px_rgba(37,99,235,0.2)]">
@@ -375,11 +375,11 @@ const CRMLeads = () => {
              { title: "Follow-up Today", val: "0", icon: <MdToday className="text-[#F59E0B]" />, bg: "bg-orange-50" },
              { title: "Converted This Month", val: leads.filter(l => l.status === 'Won').length || "0", icon: <MdCheckCircle className="text-[#16A34A]" />, bg: "bg-green-50" }
           ].map((kpi, i) => (
-            <Card key={i} extra="p-6 border border-[#E2E8F0] hover:-translate-y-1 hover:shadow-[0_8px_24px_rgba(15,23,42,0.08)] hover:border-blue-200 transition-all duration-300">
+            <Card key={i} extra="p-6 border border-[#E2E8F0] dark:border-navy-700 hover:-translate-y-1 hover:shadow-[0_8px_24px_rgba(15,23,42,0.08)] hover:border-blue-200 transition-all duration-300">
                <div className="flex justify-between items-start">
                   <div>
-                    <p className="text-[12px] font-medium text-[#64748B] mb-1">{kpi.title}</p>
-                    <p className="text-[28px] font-bold text-[#0F172A] leading-none">{kpi.val}</p>
+                    <p className="text-[12px] font-medium text-[#64748B] dark:text-gray-400 mb-1">{kpi.title}</p>
+                    <p className="text-[28px] font-bold text-[#0F172A] dark:text-white leading-none">{kpi.val}</p>
                   </div>
                   <div className={`w-10 h-10 rounded-full flex items-center justify-center text-xl ${kpi.bg}`}>
                      {kpi.icon}
@@ -391,31 +391,31 @@ const CRMLeads = () => {
 
         </div> {/* Close Red Part */}
           {/* GREEN PART: STICKY WRAPPER */}
-          <div className="sticky top-[80px] z-30 bg-[#F8FAFC] pt-4 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 h-[calc(100vh-80px)] flex flex-col pb-4">
+          <div className="sticky top-[80px] z-30 bg-[#F8FAFC] dark:bg-navy-900 pt-4 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 h-[calc(100vh-80px)] flex flex-col pb-4">
           {/* 3. Search & Filter Toolbar */}
-        <Card extra="shrink-0 p-4 border border-[#E2E8F0] mb-4 shadow-sm">
+        <Card extra="shrink-0 p-4 border border-[#E2E8F0] dark:border-navy-700 mb-4 shadow-sm">
             <div className="flex flex-col lg:flex-row justify-between items-center gap-4">
               <div className="relative w-full lg:w-[350px]">
-                <MdSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#64748B] text-xl" />
+                <MdSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#64748B] dark:text-gray-400 text-xl" />
                 <input 
                   type="text" 
                   value={searchTerm} 
                   onChange={(e) => setSearchTerm(e.target.value)} 
                   placeholder="Search name, phone, address..." 
-                  className="w-full pl-10 pr-4 h-10 rounded-[10px] border border-[#E2E8F0] text-[14px] outline-none focus:border-[#2563EB] transition-colors" 
+                  className="w-full pl-10 pr-4 h-10 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 text-[14px] outline-none focus:border-[#2563EB] transition-colors" 
                 />
               </div>
                 <div className="flex gap-3 w-full lg:w-auto flex-wrap">
-                  <input type="month" value={filterMonth} onChange={(e) => setFilterMonth(e.target.value)} className="h-10 px-3 rounded-[10px] border border-[#E2E8F0] text-[14px] text-[#475569] outline-none focus:border-[#2563EB] bg-white cursor-pointer" title="Filter by Month" />
+                  <input type="month" value={filterMonth} onChange={(e) => setFilterMonth(e.target.value)} className="h-10 px-3 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 text-[14px] text-[#475569] dark:text-gray-200 dark:text-white outline-none focus:border-[#2563EB] bg-transparent dark:bg-navy-900 cursor-pointer" title="Filter by Month" />
                   <div className="flex items-center gap-1">
-                     <input type="date" value={filterStartDate} onChange={(e) => setFilterStartDate(e.target.value)} className="h-10 px-2 rounded-[10px] border border-[#E2E8F0] text-[14px] text-[#475569] outline-none focus:border-[#2563EB] bg-white cursor-pointer" title="Start Date" />
-                     <span className="text-[#64748B] text-sm">to</span>
-                     <input type="date" value={filterEndDate} onChange={(e) => setFilterEndDate(e.target.value)} className="h-10 px-2 rounded-[10px] border border-[#E2E8F0] text-[14px] text-[#475569] outline-none focus:border-[#2563EB] bg-white cursor-pointer" title="End Date" />
+                     <input type="date" value={filterStartDate} onChange={(e) => setFilterStartDate(e.target.value)} className="h-10 px-2 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 text-[14px] text-[#475569] dark:text-gray-200 dark:text-white outline-none focus:border-[#2563EB] bg-transparent dark:bg-navy-900 cursor-pointer" title="Start Date" />
+                     <span className="text-[#64748B] dark:text-gray-400 text-sm">to</span>
+                     <input type="date" value={filterEndDate} onChange={(e) => setFilterEndDate(e.target.value)} className="h-10 px-2 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 text-[14px] text-[#475569] dark:text-gray-200 dark:text-white outline-none focus:border-[#2563EB] bg-transparent dark:bg-navy-900 cursor-pointer" title="End Date" />
                   </div>
                   <select 
                     value={filterTemp}
                     onChange={(e) => setFilterTemp(e.target.value)}
-                    className="h-10 px-4 rounded-[10px] border border-[#E2E8F0] text-[14px] text-[#475569] outline-none focus:border-[#2563EB] bg-white cursor-pointer"
+                    className="h-10 px-4 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 text-[14px] text-[#475569] dark:text-gray-200 dark:text-white outline-none focus:border-[#2563EB] bg-transparent dark:bg-navy-900 cursor-pointer"
                   >
                     <option value="">All Temperatures</option>
                     <option value="Hot">Hot</option>
@@ -425,7 +425,7 @@ const CRMLeads = () => {
                   <select 
                     value={filterStatus}
                     onChange={(e) => setFilterStatus(e.target.value)}
-                    className="h-10 px-4 rounded-[10px] border border-[#E2E8F0] text-[14px] text-[#475569] outline-none focus:border-[#2563EB] bg-white cursor-pointer"
+                    className="h-10 px-4 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 text-[14px] text-[#475569] dark:text-gray-200 dark:text-white outline-none focus:border-[#2563EB] bg-transparent dark:bg-navy-900 cursor-pointer"
                   >
                     <option value="">All Statuses</option>
                     <option value="New">New</option>
@@ -439,7 +439,7 @@ const CRMLeads = () => {
                     <select 
                       value={sortOrder}
                     onChange={(e) => setSortOrder(e.target.value)}
-                    className="h-10 px-4 rounded-[10px] border border-[#E2E8F0] text-[14px] text-[#475569] outline-none focus:border-[#2563EB] bg-white cursor-pointer"
+                    className="h-10 px-4 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 text-[14px] text-[#475569] dark:text-gray-200 dark:text-white outline-none focus:border-[#2563EB] bg-transparent dark:bg-navy-900 cursor-pointer"
                   >
                     <option value="newest">Sort: Newest First</option>
                     <option value="oldest">Sort: Oldest First</option>
@@ -452,21 +452,21 @@ const CRMLeads = () => {
             </Card>
 
           {/* 4. Leads Data Table */}
-        <Card extra="flex-1 flex flex-col min-h-0 border border-[#E2E8F0] overflow-hidden shadow-sm">
+        <Card extra="flex-1 flex flex-col min-h-0 border border-[#E2E8F0] dark:border-navy-700 overflow-hidden shadow-sm">
           <div className="flex-1 overflow-auto w-full">
             <table className="w-full text-left border-collapse min-w-[900px]">
-              <thead className="sticky top-0 z-20 bg-[#F8FAFC] shadow-sm">
-                <tr className="bg-[#F8FAFC] border-b border-[#E2E8F0]">
-                  <th className="py-4 px-6 w-12"><input type="checkbox" className="w-4 h-4 rounded text-[#2563EB] border-[#E2E8F0] cursor-pointer" /></th>
-                  <th className="py-4 px-4 w-12 text-[12px] font-medium text-[#64748B] uppercase tracking-wider">Sl. No.</th>
-                  <th className="py-4 px-4 text-[12px] font-medium text-[#64748B] uppercase tracking-wider">Lead</th>
-                  <th className="py-4 px-4 text-[12px] font-medium text-[#64748B] uppercase tracking-wider">Source</th>
-                  <th className="py-4 px-4 text-[12px] font-medium text-[#64748B] uppercase tracking-wider">Service</th>
-                  <th className="py-4 px-4 text-[12px] font-medium text-[#64748B] uppercase tracking-wider">Status</th>
-                  <th className="py-4 px-4 text-[12px] font-medium text-[#64748B] uppercase tracking-wider">Temperature</th>
-                  <th className="py-4 px-4 text-[12px] font-medium text-[#64748B] uppercase tracking-wider">Arriving Date</th>
-                  <th className="py-4 px-4 text-[12px] font-medium text-[#64748B] uppercase tracking-wider">Assigned</th>
-                  <th className="py-4 px-6 text-[12px] font-medium text-[#64748B] uppercase tracking-wider text-right">Actions</th>
+              <thead className="sticky top-0 z-20 bg-[#F8FAFC] dark:bg-navy-900 shadow-sm">
+                <tr className="bg-[#F8FAFC] dark:bg-navy-900 border-b border-[#E2E8F0] dark:border-navy-700">
+                  <th className="py-4 px-6 w-12"><input type="checkbox" className="w-4 h-4 rounded text-[#2563EB] border-[#E2E8F0] dark:border-navy-700 cursor-pointer" /></th>
+                  <th className="py-4 px-4 w-12 text-[12px] font-medium text-[#64748B] dark:text-gray-400 uppercase tracking-wider">Sl. No.</th>
+                  <th className="py-4 px-4 text-[12px] font-medium text-[#64748B] dark:text-gray-400 uppercase tracking-wider">Lead</th>
+                  <th className="py-4 px-4 text-[12px] font-medium text-[#64748B] dark:text-gray-400 uppercase tracking-wider">Source</th>
+                  <th className="py-4 px-4 text-[12px] font-medium text-[#64748B] dark:text-gray-400 uppercase tracking-wider">Service</th>
+                  <th className="py-4 px-4 text-[12px] font-medium text-[#64748B] dark:text-gray-400 uppercase tracking-wider">Status</th>
+                  <th className="py-4 px-4 text-[12px] font-medium text-[#64748B] dark:text-gray-400 uppercase tracking-wider">Temperature</th>
+                  <th className="py-4 px-4 text-[12px] font-medium text-[#64748B] dark:text-gray-400 uppercase tracking-wider">Arriving Date</th>
+                  <th className="py-4 px-4 text-[12px] font-medium text-[#64748B] dark:text-gray-400 uppercase tracking-wider">Assigned</th>
+                  <th className="py-4 px-6 text-[12px] font-medium text-[#64748B] dark:text-gray-400 uppercase tracking-wider text-right">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -521,9 +521,9 @@ const CRMLeads = () => {
                      if (loading) return <tr><td colSpan="7" className="py-12 text-center text-gray-500">Loading leads...</td></tr>;
                      if (filtered.length === 0) return <tr><td colSpan="7" className="py-12 text-center text-gray-500">No leads found.</td></tr>;
                      return filtered.map((lead, index) => (
-                        <tr key={lead.id} className="border-b border-gray-100 hover:bg-gray-50 cursor-pointer" onClick={() => setSelectedLead(lead)}>
+                        <tr key={lead.id} className="border-b border-gray-100 hover:bg-gray-50 dark:hover:bg-navy-800 cursor-pointer" onClick={() => setSelectedLead(lead)}>
                            <td className="py-4 px-6" onClick={(e) => e.stopPropagation()}>
-                              <input type="checkbox" className="w-4 h-4 rounded text-[#2563EB] border-[#E2E8F0] cursor-pointer" />
+                              <input type="checkbox" className="w-4 h-4 rounded text-[#2563EB] border-[#E2E8F0] dark:border-navy-700 cursor-pointer" />
                            </td>
                              <td className="py-4 px-4 text-sm text-gray-800 font-bold">
                                 {index + 1}
@@ -535,7 +535,7 @@ const CRMLeads = () => {
                            <td className="py-4 px-4 text-sm text-gray-600">{lead.source || lead.phone || "-"}</td>
                            <td className="py-4 px-4 text-sm text-gray-600">{lead.service_type || "-"}</td>
                            <td className="py-4 px-4 text-sm">
-                              <span className={`px-3 py-1 rounded-full text-xs font-bold ${lead.status === 'New' ? 'bg-blue-100 text-blue-700' : lead.status === 'Contacted' ? 'bg-yellow-100 text-yellow-700' : lead.status === 'Converted' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
+                              <span className={`px-3 py-1 rounded-full text-xs font-bold ${lead.status === 'New' ? 'bg-blue-100 text-blue-700' : lead.status === 'Contacted' ? 'bg-yellow-100 text-yellow-700' : lead.status === 'Converted' ? 'bg-green-100 text-green-700' : 'bg-gray-100 dark:bg-navy-700 text-gray-600'}`}>
                                  {lead.status}
                               </span>
                            </td>
@@ -562,12 +562,12 @@ const CRMLeads = () => {
             </table>
           </div>
           {/* Pagination */}
-          <div className="p-4 border-t border-[#E2E8F0] flex justify-between items-center bg-white">
-             <span className="text-[13px] font-medium text-[#64748B]">Showing {leads.length > 0 ? `1 - ${leads.length}` : '—'} of {leads.length > 0 ? leads.length : '—'} leads</span>
+          <div className="p-4 border-t border-[#E2E8F0] dark:border-navy-700 flex justify-between items-center bg-white dark:bg-navy-800">
+             <span className="text-[13px] font-medium text-[#64748B] dark:text-gray-400">Showing {leads.length > 0 ? `1 - ${leads.length}` : '—'} of {leads.length > 0 ? leads.length : '—'} leads</span>
              <div className="flex gap-1">
-               <button className="h-8 px-3 rounded border border-[#E2E8F0] text-[13px] font-medium text-[#64748B] hover:bg-gray-50 flex items-center transition"><MdKeyboardArrowLeft /> Prev</button>
+               <button className="h-8 px-3 rounded border border-[#E2E8F0] dark:border-navy-700 text-[13px] font-medium text-[#64748B] dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-navy-800 flex items-center transition"><MdKeyboardArrowLeft /> Prev</button>
                <button className="h-8 px-3 rounded bg-[#2563EB] text-white text-[13px] font-medium shadow-sm">1</button>
-               <button className="h-8 px-3 rounded border border-[#E2E8F0] text-[13px] font-medium text-[#64748B] hover:bg-gray-50 flex items-center transition">Next <MdKeyboardArrowRight /></button>
+               <button className="h-8 px-3 rounded border border-[#E2E8F0] dark:border-navy-700 text-[13px] font-medium text-[#64748B] dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-navy-800 flex items-center transition">Next <MdKeyboardArrowRight /></button>
              </div>
           </div>
         </Card>
@@ -579,31 +579,31 @@ const CRMLeads = () => {
         {/* New Lead Modal */}
       {showNewLeadModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-          <div className="w-full max-w-[600px] bg-white rounded-[20px] shadow-[0_20px_60px_rgba(15,23,42,0.2)] flex flex-col max-h-[90vh] animate-fade-in">
-            <div className="p-6 border-b border-[#E2E8F0] flex justify-between items-center bg-white rounded-t-[20px]">
-              <h2 className="text-[20px] font-bold text-[#0F172A]">New Lead</h2>
+          <div className="w-full max-w-[600px] bg-white dark:bg-navy-800 rounded-[20px] shadow-[0_20px_60px_rgba(15,23,42,0.2)] flex flex-col max-h-[90vh] animate-fade-in">
+            <div className="p-6 border-b border-[#E2E8F0] dark:border-navy-700 flex justify-between items-center bg-white dark:bg-navy-800 rounded-t-[20px]">
+              <h2 className="text-[20px] font-bold text-[#0F172A] dark:text-white">New Lead</h2>
             </div>
-            <div className="p-6 overflow-y-auto flex-1 bg-white">
+            <div className="p-6 overflow-y-auto flex-1 bg-white dark:bg-navy-800">
               <form id="newLeadForm" onSubmit={handleCreateLead} className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div className="md:col-span-2">
-                  <label className="block text-[12px] font-bold text-[#475569] mb-1.5 uppercase tracking-wide">Full Name</label>
-                  <input required value={newLead.name} onChange={e=>setNewLead({...newLead, name: e.target.value})} type="text" placeholder="Enter full name" className="w-full h-11 px-3 rounded-[10px] border border-[#E2E8F0] text-[14px] text-[#0F172A] outline-none focus:border-[#2563EB] transition-colors" />
+                  <label className="block text-[12px] font-bold text-[#475569] dark:text-gray-200 dark:text-white mb-1.5 uppercase tracking-wide">Full Name</label>
+                  <input required value={newLead.name} onChange={e=>setNewLead({...newLead, name: e.target.value})} type="text" placeholder="Enter full name" className="w-full h-11 px-3 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 text-[14px] text-[#0F172A] dark:text-white outline-none focus:border-[#2563EB] transition-colors" />
                 </div>
                 <div>
-                  <label className="block text-[12px] font-bold text-[#475569] mb-1.5 uppercase tracking-wide">Phone Number</label>
-                  <input required value={newLead.phone} onChange={e=>setNewLead({...newLead, phone: e.target.value})} type="text" placeholder="Enter phone" className="w-full h-11 px-3 rounded-[10px] border border-[#E2E8F0] text-[14px] text-[#0F172A] outline-none focus:border-[#2563EB] transition-colors" />
+                  <label className="block text-[12px] font-bold text-[#475569] dark:text-gray-200 dark:text-white mb-1.5 uppercase tracking-wide">Phone Number</label>
+                  <input required value={newLead.phone} onChange={e=>setNewLead({...newLead, phone: e.target.value})} type="text" placeholder="Enter phone" className="w-full h-11 px-3 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 text-[14px] text-[#0F172A] dark:text-white outline-none focus:border-[#2563EB] transition-colors" />
                 </div>
                 <div>
-                  <label className="block text-[12px] font-bold text-[#475569] mb-1.5 uppercase tracking-wide">WhatsApp</label>
-                  <input value={newLead.whatsapp} onChange={e=>setNewLead({...newLead, whatsapp: e.target.value})} type="text" placeholder="Enter WhatsApp" className="w-full h-11 px-3 rounded-[10px] border border-[#E2E8F0] text-[14px] text-[#0F172A] outline-none focus:border-[#2563EB] transition-colors" />
+                  <label className="block text-[12px] font-bold text-[#475569] dark:text-gray-200 dark:text-white mb-1.5 uppercase tracking-wide">WhatsApp</label>
+                  <input value={newLead.whatsapp} onChange={e=>setNewLead({...newLead, whatsapp: e.target.value})} type="text" placeholder="Enter WhatsApp" className="w-full h-11 px-3 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 text-[14px] text-[#0F172A] dark:text-white outline-none focus:border-[#2563EB] transition-colors" />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="block text-[12px] font-bold text-[#475569] mb-1.5 uppercase tracking-wide">Email Address</label>
-                  <input value={newLead.email} onChange={e=>setNewLead({...newLead, email: e.target.value})} type="email" placeholder="Enter email" className="w-full h-11 px-3 rounded-[10px] border border-[#E2E8F0] text-[14px] text-[#0F172A] outline-none focus:border-[#2563EB] transition-colors" />
+                  <label className="block text-[12px] font-bold text-[#475569] dark:text-gray-200 dark:text-white mb-1.5 uppercase tracking-wide">Email Address</label>
+                  <input value={newLead.email} onChange={e=>setNewLead({...newLead, email: e.target.value})} type="email" placeholder="Enter email" className="w-full h-11 px-3 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 text-[14px] text-[#0F172A] dark:text-white outline-none focus:border-[#2563EB] transition-colors" />
                 </div>
                 <div>
-                  <label className="block text-[12px] font-bold text-[#475569] mb-1.5 uppercase tracking-wide">Service</label>
-                  <select value={newLead.service_type} onChange={e=>setNewLead({...newLead, service_type: e.target.value})} className="w-full h-11 px-3 rounded-[10px] border border-[#E2E8F0] text-[14px] text-[#0F172A] outline-none focus:border-[#2563EB] transition-colors cursor-pointer bg-white">
+                  <label className="block text-[12px] font-bold text-[#475569] dark:text-gray-200 dark:text-white mb-1.5 uppercase tracking-wide">Service</label>
+                  <select value={newLead.service_type} onChange={e=>setNewLead({...newLead, service_type: e.target.value})} className="w-full h-11 px-3 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 text-[14px] text-[#0F172A] dark:text-white outline-none focus:border-[#2563EB] transition-colors cursor-pointer bg-white dark:bg-navy-800">
                     <option value="">Select service</option>
                     <option value="Residential">Residential</option>
                     <option value="Commercial">Commercial</option>
@@ -611,8 +611,8 @@ const CRMLeads = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-[12px] font-bold text-[#475569] mb-1.5 uppercase tracking-wide">Lead Source</label>
-                  <select value={newLead.source} onChange={e=>setNewLead({...newLead, source: e.target.value})} className="w-full h-11 px-3 rounded-[10px] border border-[#E2E8F0] text-[14px] text-[#0F172A] outline-none focus:border-[#2563EB] transition-colors cursor-pointer bg-white">
+                  <label className="block text-[12px] font-bold text-[#475569] dark:text-gray-200 dark:text-white mb-1.5 uppercase tracking-wide">Lead Source</label>
+                  <select value={newLead.source} onChange={e=>setNewLead({...newLead, source: e.target.value})} className="w-full h-11 px-3 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 text-[14px] text-[#0F172A] dark:text-white outline-none focus:border-[#2563EB] transition-colors cursor-pointer bg-white dark:bg-navy-800">
                     <option value="">Select source</option>
                     <option value="Website">Website</option>
                     <option value="Referral">Referral</option>
@@ -620,21 +620,21 @@ const CRMLeads = () => {
                     <option value="Other">Other</option>
                   </select>
                   {newLead.source === "Other" && (
-                    <input type="text" placeholder="Please specify..." onChange={e => setNewLead({...newLead, source_custom: e.target.value})} className="w-full h-11 px-3 mt-2 rounded-[10px] border border-[#E2E8F0] text-[14px] text-[#0F172A] outline-none focus:border-[#2563EB] transition-colors" />
+                    <input type="text" placeholder="Please specify..." onChange={e => setNewLead({...newLead, source_custom: e.target.value})} className="w-full h-11 px-3 mt-2 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 text-[14px] text-[#0F172A] dark:text-white outline-none focus:border-[#2563EB] transition-colors" />
                   )}
                 </div>
                 <div className="md:col-span-2">
-                  <label className="block text-[12px] font-bold text-[#475569] mb-1.5 uppercase tracking-wide">Address / Location</label>
-                  <input value={newLead.address} onChange={e=>setNewLead({...newLead, address: e.target.value})} type="text" placeholder="Enter location" className="w-full h-11 px-3 rounded-[10px] border border-[#E2E8F0] text-[14px] text-[#0F172A] outline-none focus:border-[#2563EB] transition-colors" />
+                  <label className="block text-[12px] font-bold text-[#475569] dark:text-gray-200 dark:text-white mb-1.5 uppercase tracking-wide">Address / Location</label>
+                  <input value={newLead.address} onChange={e=>setNewLead({...newLead, address: e.target.value})} type="text" placeholder="Enter location" className="w-full h-11 px-3 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 text-[14px] text-[#0F172A] dark:text-white outline-none focus:border-[#2563EB] transition-colors" />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="block text-[12px] font-bold text-[#475569] mb-1.5 uppercase tracking-wide">Initial Notes</label>
-                  <textarea value={newLead.notes} onChange={e=>setNewLead({...newLead, notes: e.target.value})} placeholder="Enter any specific requirements..." className="w-full min-h-[100px] p-3 rounded-[10px] border border-[#E2E8F0] text-[14px] text-[#0F172A] outline-none focus:border-[#2563EB] transition-colors resize-y"></textarea>
+                  <label className="block text-[12px] font-bold text-[#475569] dark:text-gray-200 dark:text-white mb-1.5 uppercase tracking-wide">Initial Notes</label>
+                  <textarea value={newLead.notes} onChange={e=>setNewLead({...newLead, notes: e.target.value})} placeholder="Enter any specific requirements..." className="w-full min-h-[100px] p-3 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 text-[14px] text-[#0F172A] dark:text-white outline-none focus:border-[#2563EB] transition-colors resize-y"></textarea>
                 </div>
               </form>
             </div>
-            <div className="p-6 border-t border-[#E2E8F0] flex justify-end gap-3 bg-[#F8FAFC] rounded-b-[20px]">
-              <button onClick={() => setShowNewLeadModal(false)} className="h-10 px-6 rounded-[12px] border border-[#E2E8F0] bg-white text-[14px] font-bold text-[#475569] hover:bg-gray-100 hover:text-[#0F172A] transition">Cancel</button>
+            <div className="p-6 border-t border-[#E2E8F0] dark:border-navy-700 flex justify-end gap-3 bg-[#F8FAFC] dark:bg-navy-900 rounded-b-[20px]">
+              <button onClick={() => setShowNewLeadModal(false)} className="h-10 px-6 rounded-[12px] border border-[#E2E8F0] dark:border-navy-700 bg-white dark:bg-navy-800 text-[14px] font-bold text-[#475569] dark:text-gray-200 dark:text-white hover:bg-gray-100 dark:bg-navy-700 hover:text-[#0F172A] dark:text-white transition">Cancel</button>
               <button form="newLeadForm" type="submit" className="h-10 px-6 rounded-[12px] bg-[#2563EB] text-[14px] font-bold text-white hover:bg-[#1D4ED8] transition shadow-md">Create Lead</button>
             </div>
           </div>
@@ -644,16 +644,16 @@ const CRMLeads = () => {
       {/* Change Status Modal Placeholder */}
       {showStatusModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-          <div className="w-full max-w-[400px] bg-white rounded-[20px] shadow-2xl p-6">
-            <h2 className="text-[20px] font-bold text-[#0F172A] mb-4">Change Status</h2>
+          <div className="w-full max-w-[400px] bg-white dark:bg-navy-800 rounded-[20px] shadow-2xl p-6">
+            <h2 className="text-[20px] font-bold text-[#0F172A] dark:text-white mb-4">Change Status</h2>
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-[12px] font-bold text-[#475569] mb-1.5 uppercase">New Status</label>
+                  <label className="block text-[12px] font-bold text-[#475569] dark:text-gray-200 dark:text-white mb-1.5 uppercase">New Status</label>
                   <select 
                     value={statusUpdateData.status} 
                     onChange={e => setStatusUpdateData({...statusUpdateData, status: e.target.value})}
-                    className="w-full h-11 px-3 rounded-[10px] border border-[#E2E8F0] text-[14px] text-[#0F172A] outline-none focus:border-[#2563EB]"
+                    className="w-full h-11 px-3 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 text-[14px] text-[#0F172A] dark:text-white outline-none focus:border-[#2563EB]"
                   >
                     <option>New</option>
                     <option>Contacted</option>
@@ -665,11 +665,11 @@ const CRMLeads = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-[12px] font-bold text-[#475569] mb-1.5 uppercase">Temperature</label>
+                  <label className="block text-[12px] font-bold text-[#475569] dark:text-gray-200 dark:text-white mb-1.5 uppercase">Temperature</label>
                   <select 
                     value={statusUpdateData.lead_temperature} 
                     onChange={e => setStatusUpdateData({...statusUpdateData, lead_temperature: e.target.value})}
-                    className="w-full h-11 px-3 rounded-[10px] border border-[#E2E8F0] text-[14px] text-[#0F172A] outline-none focus:border-[#2563EB]"
+                    className="w-full h-11 px-3 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 text-[14px] text-[#0F172A] dark:text-white outline-none focus:border-[#2563EB]"
                   >
                     <option>Hot Lead</option>
                     <option>Warm Lead</option>
@@ -678,28 +678,28 @@ const CRMLeads = () => {
                 </div>
               </div>
               <div>
-                <label className="block text-[12px] font-bold text-[#475569] mb-1.5 uppercase">Reason</label>
+                <label className="block text-[12px] font-bold text-[#475569] dark:text-gray-200 dark:text-white mb-1.5 uppercase">Reason</label>
                 <textarea 
                   value={statusUpdateData.reason}
                   onChange={e => setStatusUpdateData({...statusUpdateData, reason: e.target.value})}
                   placeholder="Enter reason..." 
-                  className="w-full h-20 p-3 rounded-[10px] border border-[#E2E8F0] text-[14px] text-[#0F172A] outline-none focus:border-[#2563EB]"></textarea>
+                  className="w-full h-20 p-3 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 text-[14px] text-[#0F172A] dark:text-white outline-none focus:border-[#2563EB]"></textarea>
               </div>
               <div>
-                <label className="block text-[12px] font-bold text-[#475569] mb-1.5 uppercase">Next Follow-up</label>
+                <label className="block text-[12px] font-bold text-[#475569] dark:text-gray-200 dark:text-white mb-1.5 uppercase">Next Follow-up</label>
                 <input 
                   type="date" 
                   value={statusUpdateData.followup}
                   onChange={e => setStatusUpdateData({...statusUpdateData, followup: e.target.value})}
-                  className="w-full h-11 px-3 rounded-[10px] border border-[#E2E8F0] text-[14px] text-[#0F172A] outline-none focus:border-[#2563EB]" />
+                  className="w-full h-11 px-3 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 text-[14px] text-[#0F172A] dark:text-white outline-none focus:border-[#2563EB]" />
               </div>
               <div className="flex items-center gap-2">
-                <input type="checkbox" id="notify" className="w-4 h-4 rounded text-[#2563EB] border-[#E2E8F0]" />
-                <label htmlFor="notify" className="text-[13px] text-[#475569]">Notify Assigned Executive</label>
+                <input type="checkbox" id="notify" className="w-4 h-4 rounded text-[#2563EB] border-[#E2E8F0] dark:border-navy-700" />
+                <label htmlFor="notify" className="text-[13px] text-[#475569] dark:text-gray-200 dark:text-white">Notify Assigned Executive</label>
               </div>
             </div>
             <div className="mt-6 flex justify-end gap-3">
-              <button onClick={() => setShowStatusModal(null)} className="h-10 px-6 rounded-[12px] border border-[#E2E8F0] bg-white text-[14px] font-bold text-[#475569] hover:bg-gray-100 transition">Cancel</button>
+              <button onClick={() => setShowStatusModal(null)} className="h-10 px-6 rounded-[12px] border border-[#E2E8F0] dark:border-navy-700 bg-white dark:bg-navy-800 text-[14px] font-bold text-[#475569] dark:text-gray-200 dark:text-white hover:bg-gray-100 dark:bg-navy-700 transition">Cancel</button>
               <button onClick={handleUpdateStatus} className="h-10 px-6 rounded-[12px] bg-[#2563EB] text-[14px] font-bold text-white hover:bg-[#1D4ED8] transition">Update Status</button>
             </div>
           </div>
@@ -709,24 +709,24 @@ const CRMLeads = () => {
       {/* Assign Executive Modal Placeholder */}
       {showAssignModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-          <div className="w-full max-w-[400px] bg-white rounded-[20px] shadow-2xl p-6">
-            <h2 className="text-[20px] font-bold text-[#0F172A] mb-4">Assign Executive</h2>
+          <div className="w-full max-w-[400px] bg-white dark:bg-navy-800 rounded-[20px] shadow-2xl p-6">
+            <h2 className="text-[20px] font-bold text-[#0F172A] dark:text-white mb-4">Assign Executive</h2>
             <div className="relative mb-4">
-              <MdSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#64748B] text-xl" />
-              <input type="text" placeholder="Search employee..." className="w-full pl-10 pr-4 h-11 rounded-[10px] border border-[#E2E8F0] text-[14px] outline-none focus:border-[#2563EB]" />
+              <MdSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#64748B] dark:text-gray-400 text-xl" />
+              <input type="text" placeholder="Search employee..." className="w-full pl-10 pr-4 h-11 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 text-[14px] outline-none focus:border-[#2563EB]" />
             </div>
             <div className="space-y-2 mb-6 max-h-[200px] overflow-y-auto">
-              <div className="p-3 rounded-[10px] border border-[#E2E8F0] flex items-center gap-3 cursor-pointer hover:border-[#2563EB]">
+              <div className="p-3 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 flex items-center gap-3 cursor-pointer hover:border-[#2563EB]">
                 <div className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center font-bold text-blue-600 text-[12px]">JS</div>
                 <div>
-                  <p className="text-[14px] font-bold text-[#0F172A]">John Smith</p>
-                  <p className="text-[12px] text-[#64748B]">Senior Sales Executive</p>
+                  <p className="text-[14px] font-bold text-[#0F172A] dark:text-white">John Smith</p>
+                  <p className="text-[12px] text-[#64748B] dark:text-gray-400">Senior Sales Executive</p>
                 </div>
               </div>
               {/* More employees can go here */}
             </div>
             <div className="flex justify-end gap-3">
-              <button onClick={() => setShowAssignModal(false)} className="h-10 px-6 rounded-[12px] border border-[#E2E8F0] bg-white text-[14px] font-bold text-[#475569] hover:bg-gray-100 transition">Cancel</button>
+              <button onClick={() => setShowAssignModal(false)} className="h-10 px-6 rounded-[12px] border border-[#E2E8F0] dark:border-navy-700 bg-white dark:bg-navy-800 text-[14px] font-bold text-[#475569] dark:text-gray-200 dark:text-white hover:bg-gray-100 dark:bg-navy-700 transition">Cancel</button>
               <button onClick={() => setShowAssignModal(false)} className="h-10 px-6 rounded-[12px] bg-[#2563EB] text-[14px] font-bold text-white hover:bg-[#1D4ED8] transition">Assign</button>
             </div>
           </div>
@@ -736,14 +736,14 @@ const CRMLeads = () => {
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-          <div className="w-full max-w-[400px] bg-white rounded-[20px] shadow-[0_20px_60px_rgba(15,23,42,0.2)] p-6 text-center animate-fade-in">
+          <div className="w-full max-w-[400px] bg-white dark:bg-navy-800 rounded-[20px] shadow-[0_20px_60px_rgba(15,23,42,0.2)] p-6 text-center animate-fade-in">
             <div className="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center text-[#DC2626] text-3xl mx-auto mb-4">
               <MdDeleteOutline />
             </div>
-            <h2 className="text-[20px] font-bold text-[#0F172A] mb-2">Delete Lead?</h2>
-            <p className="text-[14px] text-[#64748B] mb-6">Are you sure you want to delete <strong>{showDeleteModal.name}</strong>? This action cannot be undone.</p>
+            <h2 className="text-[20px] font-bold text-[#0F172A] dark:text-white mb-2">Delete Lead?</h2>
+            <p className="text-[14px] text-[#64748B] dark:text-gray-400 mb-6">Are you sure you want to delete <strong>{showDeleteModal.name}</strong>? This action cannot be undone.</p>
             <div className="flex justify-center gap-3">
-              <button onClick={() => setShowDeleteModal(null)} className="flex-1 h-11 rounded-[12px] border border-[#E2E8F0] bg-white text-[14px] font-bold text-[#475569] hover:bg-gray-100 transition">Cancel</button>
+              <button onClick={() => setShowDeleteModal(null)} className="flex-1 h-11 rounded-[12px] border border-[#E2E8F0] dark:border-navy-700 bg-white dark:bg-navy-800 text-[14px] font-bold text-[#475569] dark:text-gray-200 dark:text-white hover:bg-gray-100 dark:bg-navy-700 transition">Cancel</button>
               <button onClick={() => handleDeleteLead(showDeleteModal.id)} className="flex-1 h-11 rounded-[12px] bg-[#DC2626] text-[14px] font-bold text-white hover:bg-red-700 transition shadow-md">Delete Lead</button>
             </div>
           </div>

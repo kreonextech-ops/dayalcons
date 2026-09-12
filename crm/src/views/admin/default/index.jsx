@@ -335,8 +335,8 @@ const Dashboard = () => {
                          myProjects.slice(0, 5).map(project => (
                            <tr key={project.id} className="border-b border-gray-50">
                               <td className="py-3 text-sm font-bold text-navy-700">
-                                 <div className="text-[#0F172A]">{project.clientName}</div>
-                                 <div className="text-[#64748B] font-medium text-xs">{project.name || project.title || 'Untitled Project'}</div>
+                                 <div className="text-[#0F172A] dark:text-white">{project.clientName}</div>
+                                 <div className="text-[#64748B] dark:text-gray-400 font-medium text-xs">{project.name || project.title || 'Untitled Project'}</div>
                               </td>
                               <td className="py-3 text-sm font-medium">
                                  <span className="bg-orange-100 text-orange-700 px-2 py-1 rounded-md text-[12px] font-bold capitalize">{project.status}</span>
@@ -373,8 +373,8 @@ const Dashboard = () => {
                          myServices.slice(0, 5).map(service => (
                            <tr key={service.id} className="border-b border-gray-50">
                               <td className="py-3 text-sm font-bold text-navy-700">
-                                 <div className="text-[#0F172A]">{service.clientName}</div>
-                                 <div className="text-[#64748B] font-medium text-xs">{service.title || service.name || 'Untitled Service'}</div>
+                                 <div className="text-[#0F172A] dark:text-white">{service.clientName}</div>
+                                 <div className="text-[#64748B] dark:text-gray-400 font-medium text-xs">{service.title || service.name || 'Untitled Service'}</div>
                               </td>
                               <td className="py-3 text-sm font-medium">
                                  <span className="bg-blue-100 text-blue-700 px-2 py-1 rounded-md text-[12px] font-bold capitalize">{service.status}</span>

@@ -109,9 +109,9 @@ const TaskDetail = ({ task, onBack, onStatusChange, onDeleteTask }) => {
   });
 
   return (
-    <div className="relative min-h-screen bg-[#F8FAFC] p-4 sm:p-8 font-sans pb-24">
+    <div className="relative min-h-screen bg-[#F8FAFC] dark:bg-navy-900 p-4 sm:p-8 font-sans pb-24">
       {/* Back Navigation */}
-      <div className="mb-6 flex items-center gap-2 text-sm text-[#64748B]">
+      <div className="mb-6 flex items-center gap-2 text-sm text-[#64748B] dark:text-gray-400">
         <button onClick={onBack} className="flex items-center gap-2 hover:text-[#2563EB] transition">
           <MdArrowBack className="h-5 w-5" />
           <span className="font-semibold">Back to Tasks</span>
@@ -119,21 +119,21 @@ const TaskDetail = ({ task, onBack, onStatusChange, onDeleteTask }) => {
       </div>
 
       {/* Hero Header */}
-      <div className="rounded-[20px] bg-white p-8 shadow-sm border border-[#E2E8F0] mb-6 flex flex-col md:flex-row justify-between items-start md:items-center relative">
+      <div className="rounded-[20px] bg-white dark:bg-navy-800 p-8 shadow-sm border border-[#E2E8F0] dark:border-navy-700 mb-6 flex flex-col md:flex-row justify-between items-start md:items-center relative">
         <div className="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-6 w-full min-w-0">
            {/* Left */}
            <div>
               <div className="flex items-center gap-3 mb-2">
-                 {isEditingTitle ? <input type="text" autoFocus onBlur={handleTitleSave} onKeyDown={e => e.key === "Enter" && handleTitleSave()} value={editTitle} onChange={e => setEditTitle(e.target.value)} className="text-[24px] md:text-[28px] font-bold text-[#0F172A] tracking-tight border-b-2 border-blue-500 outline-none bg-transparent w-full max-w-md" /> : <h1 onClick={() => { setEditTitle(taskData.title); setIsEditingTitle(true); }} className="text-[24px] md:text-[28px] font-bold text-[#0F172A] tracking-tight cursor-pointer hover:bg-gray-100 rounded transition break-words" title="Click to edit">{taskData.title}</h1>}
-                 <span className="bg-gray-100 text-gray-500 px-3 py-1 rounded-md text-[12px] font-bold border border-gray-200 uppercase">{taskData.status}</span>
+                 {isEditingTitle ? <input type="text" autoFocus onBlur={handleTitleSave} onKeyDown={e => e.key === "Enter" && handleTitleSave()} value={editTitle} onChange={e => setEditTitle(e.target.value)} className="text-[24px] md:text-[28px] font-bold text-[#0F172A] dark:text-white tracking-tight border-b-2 border-blue-500 outline-none bg-transparent w-full max-w-md" /> : <h1 onClick={() => { setEditTitle(taskData.title); setIsEditingTitle(true); }} className="text-[24px] md:text-[28px] font-bold text-[#0F172A] dark:text-white tracking-tight cursor-pointer hover:bg-gray-100 dark:bg-navy-700 rounded transition break-words" title="Click to edit">{taskData.title}</h1>}
+                 <span className="bg-gray-100 dark:bg-navy-700 text-gray-500 px-3 py-1 rounded-md text-[12px] font-bold border border-gray-200 uppercase">{taskData.status}</span>
               </div>
               <div className="flex flex-wrap gap-4 text-[13px]">
                   <div className="flex items-center gap-1">
-           <span className="text-[#64748B]">Priority:</span>
+           <span className="text-[#64748B] dark:text-gray-400">Priority:</span>
            <select 
               value={task.priority || "Low"}
               onChange={handlePriorityChange}
-              className="bg-transparent border-b border-dashed border-gray-400 text-[#0F172A] font-bold text-[13px] outline-none cursor-pointer pb-0.5"
+              className="bg-transparent border-b border-dashed border-gray-400 text-[#0F172A] dark:text-white font-bold text-[13px] outline-none cursor-pointer pb-0.5"
            >
               <option value="Low">Low</option>
               <option value="Medium">Medium</option>
@@ -142,11 +142,11 @@ const TaskDetail = ({ task, onBack, onStatusChange, onDeleteTask }) => {
         </div>
                   
                   <div className="flex items-center gap-2">
-                     <span className="text-[#64748B]">Status:</span>
+                     <span className="text-[#64748B] dark:text-gray-400">Status:</span>
                      <select 
                         value={taskData.status}
                         onChange={(e) => onStatusChange(task.id, e.target.value)}
-                        className="bg-white border border-gray-300 text-gray-700 text-xs rounded focus:ring-blue-500 focus:border-blue-500 block px-2 py-1 outline-none font-bold cursor-pointer"
+                        className="bg-white dark:bg-navy-800 border border-gray-300 text-gray-700 dark:text-gray-200 text-xs rounded focus:ring-blue-500 focus:border-blue-500 block px-2 py-1 outline-none font-bold cursor-pointer"
                      >
                         <option value="To Do">To Do</option>
                         <option value="In Progress">In Progress</option>
@@ -161,7 +161,7 @@ const TaskDetail = ({ task, onBack, onStatusChange, onDeleteTask }) => {
            {/* Right Info */}
              <div className="flex flex-wrap md:flex-nowrap gap-6 md:gap-8 bg-gray-50 p-4 rounded-xl border border-gray-100 min-w-0">
                 <div className="min-w-[150px]">
-                   <p className="text-[10px] font-bold text-[#64748B] uppercase mb-1">Assigned To</p>
+                   <p className="text-[10px] font-bold text-[#64748B] dark:text-gray-400 uppercase mb-1">Assigned To</p>
                    <select 
                       value={task.assignee_id || ""}
                       onChange={handleAssigneeChange}
@@ -194,7 +194,7 @@ const TaskDetail = ({ task, onBack, onStatusChange, onDeleteTask }) => {
 
       {/* Tabs Layout */}
       <div className="flex flex-col gap-6">
-        <div className="flex gap-2 overflow-x-auto bg-[#F8FAFC] py-4 border-b border-[#E2E8F0] custom-scrollbar">
+        <div className="flex gap-2 overflow-x-auto bg-[#F8FAFC] dark:bg-navy-900 py-4 border-b border-[#E2E8F0] dark:border-navy-700 custom-scrollbar">
           {tabs.map(tab => (
             <button
               key={tab}
@@ -202,7 +202,7 @@ const TaskDetail = ({ task, onBack, onStatusChange, onDeleteTask }) => {
               className={`rounded-[12px] px-6 py-2.5 text-sm font-bold transition whitespace-nowrap ${
                 activeTab === tab 
                 ? 'bg-[#2563EB] text-white shadow-sm' 
-                : 'text-[#64748B] hover:bg-white border border-transparent hover:border-[#E2E8F0]'
+                : 'text-[#64748B] dark:text-gray-400 hover:bg-white dark:bg-navy-800 border border-transparent hover:border-[#E2E8F0] dark:border-navy-700'
               }`}
             >
               {tab}

@@ -207,22 +207,22 @@ const Clients = () => {
   }
 
   return (
-    <div className="w-full max-w-full bg-[#F8FAFC] min-h-screen pt-12 pb-24">
-      <div className="max-w-[1180px] mx-auto px-4 sm:px-6 lg:px-8 font-sans text-[#475569]">
+    <div className="w-full max-w-full bg-[#F8FAFC] dark:bg-navy-900 min-h-screen pt-12 pb-24">
+      <div className="max-w-[1180px] mx-auto px-4 sm:px-6 lg:px-8 font-sans text-[#475569] dark:text-gray-200 dark:text-white">
         
         <div className="pt-2 pb-4 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
           {/* 1. Breadcrumb & Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4 mt-8 md:mt-2">
           <div>
-            <p className="text-[12px] font-medium text-[#64748B] mb-1">Pages / Clients</p>
-            <h1 className="text-[32px] font-bold text-[#0F172A] leading-tight">Clients & Entities</h1>
+            <p className="text-[12px] font-medium text-[#64748B] dark:text-gray-400 mb-1">Pages / Clients</p>
+            <h1 className="text-[32px] font-bold text-[#0F172A] dark:text-white leading-tight">Clients & Entities</h1>
           </div>
           <div className="flex gap-3 z-10 relative">
             <input type="file" ref={fileInputRef} onChange={handleImport} accept=".csv, .xlsx, .xls" className="hidden" />
-            <button onClick={() => fileInputRef.current.click()} disabled={importing} className="h-10 px-4 rounded-[12px] border border-[#E2E8F0] bg-white text-[14px] font-bold text-[#0F172A] hover:bg-gray-50 flex items-center gap-2 transition disabled:opacity-50">
+            <button onClick={() => fileInputRef.current.click()} disabled={importing} className="h-10 px-4 rounded-[12px] border border-[#E2E8F0] dark:border-navy-700 bg-white dark:bg-navy-800 text-[14px] font-bold text-[#0F172A] dark:text-white hover:bg-gray-50 dark:hover:bg-navy-800 flex items-center gap-2 transition disabled:opacity-50">
               <MdCloudDownload /> {importing ? "Importing..." : "Import Excel"}
             </button>
-            <button onClick={handleExport} className="h-10 px-4 rounded-[12px] border border-[#E2E8F0] bg-white text-[14px] font-bold text-[#0F172A] hover:bg-gray-50 flex items-center gap-2 transition">
+            <button onClick={handleExport} className="h-10 px-4 rounded-[12px] border border-[#E2E8F0] dark:border-navy-700 bg-white dark:bg-navy-800 text-[14px] font-bold text-[#0F172A] dark:text-white hover:bg-gray-50 dark:hover:bg-navy-800 flex items-center gap-2 transition">
               <MdCloudDownload /> Export Data
             </button>
             <button onClick={() => setShowNewClientModal(true)} className="h-10 px-5 rounded-[12px] bg-[#2563EB] text-[14px] font-bold text-white hover:bg-[#1D4ED8] flex items-center gap-2 transition shadow-[0_2px_10px_rgba(37,99,235,0.2)]">
@@ -239,11 +239,11 @@ const Clients = () => {
              { title: "Total Lifetime Value", val: "₹0", icon: <MdAttachMoney className="text-[#16A34A]" />, bg: "bg-green-50" },
              { title: "Outstanding Dues", val: "₹0", icon: <MdAttachMoney className="text-[#DC2626]" />, bg: "bg-red-50" }
           ].map((kpi, i) => (
-            <Card key={i} extra="p-6 border border-[#E2E8F0] hover:-translate-y-1 hover:shadow-[0_8px_24px_rgba(15,23,42,0.08)] hover:border-blue-200 transition-all duration-300">
+            <Card key={i} extra="p-6 border border-[#E2E8F0] dark:border-navy-700 hover:-translate-y-1 hover:shadow-[0_8px_24px_rgba(15,23,42,0.08)] hover:border-blue-200 transition-all duration-300">
                <div className="flex justify-between items-start">
                   <div>
-                    <p className="text-[12px] font-medium text-[#64748B] mb-1">{kpi.title}</p>
-                    <p className="text-[28px] font-bold text-[#0F172A] leading-none">{kpi.val}</p>
+                    <p className="text-[12px] font-medium text-[#64748B] dark:text-gray-400 mb-1">{kpi.title}</p>
+                    <p className="text-[28px] font-bold text-[#0F172A] dark:text-white leading-none">{kpi.val}</p>
                   </div>
                   <div className={`w-10 h-10 rounded-full flex items-center justify-center text-xl ${kpi.bg}`}>
                      {kpi.icon}
@@ -255,25 +255,25 @@ const Clients = () => {
 
         </div> {/* Close Red Part */}
           {/* GREEN PART: STICKY WRAPPER */}
-          <div className="sticky top-[80px] z-30 bg-[#F8FAFC] pt-4 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 h-[calc(100vh-80px)] flex flex-col pb-4">
+          <div className="sticky top-[80px] z-30 bg-[#F8FAFC] dark:bg-navy-900 pt-4 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 h-[calc(100vh-80px)] flex flex-col pb-4">
           {/* 3. Search & Filter Toolbar */}
-        <Card extra="shrink-0 p-4 border border-[#E2E8F0] mb-4 shadow-sm">
+        <Card extra="shrink-0 p-4 border border-[#E2E8F0] dark:border-navy-700 mb-4 shadow-sm">
             <div className="flex flex-col lg:flex-row justify-between items-center gap-4">
               <div className="relative w-full lg:w-[350px]">
-                <MdSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#64748B] text-xl" />
+                <MdSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#64748B] dark:text-gray-400 text-xl" />
                 <input 
                   type="text" 
                   value={searchTerm} 
                   onChange={(e) => setSearchTerm(e.target.value)} 
                   placeholder="Search name, phone, address..." 
-                  className="w-full pl-10 pr-4 h-10 rounded-[10px] border border-[#E2E8F0] text-[14px] outline-none focus:border-[#2563EB] transition-colors" 
+                  className="w-full pl-10 pr-4 h-10 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 text-[14px] outline-none focus:border-[#2563EB] transition-colors" 
                 />
               </div>
               <div className="flex gap-3 w-full lg:w-auto">
                 <select 
                   value={filterStatus}
                   onChange={(e) => setFilterStatus(e.target.value)}
-                  className="h-10 px-4 rounded-[10px] border border-[#E2E8F0] text-[14px] text-[#475569] outline-none focus:border-[#2563EB] bg-white cursor-pointer"
+                  className="h-10 px-4 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 text-[14px] text-[#475569] dark:text-gray-200 dark:text-white outline-none focus:border-[#2563EB] bg-transparent dark:bg-navy-900 cursor-pointer"
                 >
                   <option value="">All Statuses</option>
                   <option value="Active">Active</option>
@@ -283,7 +283,7 @@ const Clients = () => {
                 <select 
                   value={sortOrder}
                   onChange={(e) => setSortOrder(e.target.value)}
-                  className="h-10 px-4 rounded-[10px] border border-[#E2E8F0] text-[14px] text-[#475569] outline-none focus:border-[#2563EB] bg-white cursor-pointer"
+                  className="h-10 px-4 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 text-[14px] text-[#475569] dark:text-gray-200 dark:text-white outline-none focus:border-[#2563EB] bg-transparent dark:bg-navy-900 cursor-pointer"
                 >
                   <option value="newest">Sort: Newest First</option>
                   <option value="oldest">Sort: Oldest First</option>
@@ -293,18 +293,18 @@ const Clients = () => {
             </Card>
 
           {/* 4. Clients Data Table */}
-        <Card extra="flex-1 flex flex-col min-h-0 border border-[#E2E8F0] overflow-hidden shadow-sm">
+        <Card extra="flex-1 flex flex-col min-h-0 border border-[#E2E8F0] dark:border-navy-700 overflow-hidden shadow-sm">
           <div className="flex-1 overflow-auto w-full">
             <table className="w-full text-left border-collapse min-w-[900px]">
-              <thead className="sticky top-0 z-20 bg-[#F8FAFC] shadow-sm">
-                <tr className="bg-[#F8FAFC] border-b border-[#E2E8F0]">
-                  <th className="py-4 px-6 w-12"><input type="checkbox" className="w-4 h-4 rounded text-[#2563EB] border-[#E2E8F0] cursor-pointer" /></th>
-                    <th className="py-4 px-4 w-12 text-[12px] font-medium text-[#64748B] uppercase tracking-wider">Sl. No.</th>
-                  <th className="py-4 px-4 text-[12px] font-medium text-[#64748B] uppercase tracking-wider">Client Entity</th>
-                  <th className="py-4 px-4 text-[12px] font-medium text-[#64748B] uppercase tracking-wider">Contact Info</th>
-                  <th className="py-4 px-4 text-[12px] font-medium text-[#64748B] uppercase tracking-wider">Active Projects</th>
-                  <th className="py-4 px-4 text-[12px] font-medium text-[#64748B] uppercase tracking-wider">Last Contacted</th>
-                  <th className="py-4 px-6 text-[12px] font-medium text-[#64748B] uppercase tracking-wider text-right">Actions</th>
+              <thead className="sticky top-0 z-20 bg-[#F8FAFC] dark:bg-navy-900 shadow-sm">
+                <tr className="bg-[#F8FAFC] dark:bg-navy-900 border-b border-[#E2E8F0] dark:border-navy-700">
+                  <th className="py-4 px-6 w-12"><input type="checkbox" className="w-4 h-4 rounded text-[#2563EB] border-[#E2E8F0] dark:border-navy-700 cursor-pointer" /></th>
+                    <th className="py-4 px-4 w-12 text-[12px] font-medium text-[#64748B] dark:text-gray-400 uppercase tracking-wider">Sl. No.</th>
+                  <th className="py-4 px-4 text-[12px] font-medium text-[#64748B] dark:text-gray-400 uppercase tracking-wider">Client Entity</th>
+                  <th className="py-4 px-4 text-[12px] font-medium text-[#64748B] dark:text-gray-400 uppercase tracking-wider">Contact Info</th>
+                  <th className="py-4 px-4 text-[12px] font-medium text-[#64748B] dark:text-gray-400 uppercase tracking-wider">Active Projects</th>
+                  <th className="py-4 px-4 text-[12px] font-medium text-[#64748B] dark:text-gray-400 uppercase tracking-wider">Last Contacted</th>
+                  <th className="py-4 px-6 text-[12px] font-medium text-[#64748B] dark:text-gray-400 uppercase tracking-wider text-right">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -331,9 +331,9 @@ const Clients = () => {
                      if (loading) return <tr><td colSpan="6" className="py-12 text-center text-gray-500">Loading clients...</td></tr>;
                      if (filtered.length === 0) return <tr><td colSpan="6" className="py-12 text-center text-gray-500">No clients found.</td></tr>;
                      return filtered.map((client, index) => (
-                        <tr key={client.id} className="border-b border-gray-100 hover:bg-gray-50 cursor-pointer" onClick={() => setSelectedClient(client)}>
+                        <tr key={client.id} className="border-b border-gray-100 hover:bg-gray-50 dark:hover:bg-navy-800 cursor-pointer" onClick={() => setSelectedClient(client)}>
                            <td className="py-4 px-6" onClick={(e) => e.stopPropagation()}>
-                              <input type="checkbox" className="w-4 h-4 rounded text-[#2563EB] border-[#E2E8F0] cursor-pointer" />
+                              <input type="checkbox" className="w-4 h-4 rounded text-[#2563EB] border-[#E2E8F0] dark:border-navy-700 cursor-pointer" />
                            </td>
                              <td className="py-4 px-4 text-sm text-gray-800 font-bold">
                                 {index + 1}
@@ -364,12 +364,12 @@ const Clients = () => {
             </table>
           </div>
           {/* Pagination */}
-          <div className="p-4 border-t border-[#E2E8F0] flex justify-between items-center bg-white">
-             <span className="text-[13px] font-medium text-[#64748B]">Showing {clients.length > 0 ? `1 - ${clients.length}` : '—'} of {clients.length > 0 ? clients.length : '—'} clients</span>
+          <div className="p-4 border-t border-[#E2E8F0] dark:border-navy-700 flex justify-between items-center bg-white dark:bg-navy-800">
+             <span className="text-[13px] font-medium text-[#64748B] dark:text-gray-400">Showing {clients.length > 0 ? `1 - ${clients.length}` : '—'} of {clients.length > 0 ? clients.length : '—'} clients</span>
              <div className="flex gap-1">
-               <button className="h-8 px-3 rounded border border-[#E2E8F0] text-[13px] font-medium text-[#64748B] hover:bg-gray-50 flex items-center transition"><MdKeyboardArrowLeft /> Prev</button>
+               <button className="h-8 px-3 rounded border border-[#E2E8F0] dark:border-navy-700 text-[13px] font-medium text-[#64748B] dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-navy-800 flex items-center transition"><MdKeyboardArrowLeft /> Prev</button>
                <button className="h-8 px-3 rounded bg-[#2563EB] text-white text-[13px] font-medium shadow-sm">1</button>
-               <button className="h-8 px-3 rounded border border-[#E2E8F0] text-[13px] font-medium text-[#64748B] hover:bg-gray-50 flex items-center transition">Next <MdKeyboardArrowRight /></button>
+               <button className="h-8 px-3 rounded border border-[#E2E8F0] dark:border-navy-700 text-[13px] font-medium text-[#64748B] dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-navy-800 flex items-center transition">Next <MdKeyboardArrowRight /></button>
              </div>
           </div>
         </Card>
@@ -381,40 +381,40 @@ const Clients = () => {
         {/* New Client Modal */}
       {showNewClientModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-          <div className="w-full max-w-[600px] bg-white rounded-[20px] shadow-[0_20px_60px_rgba(15,23,42,0.2)] flex flex-col max-h-[90vh] animate-fade-in">
-            <div className="p-6 border-b border-[#E2E8F0] flex justify-between items-center bg-white rounded-t-[20px]">
-              <h2 className="text-[20px] font-bold text-[#0F172A]">Add New Client</h2>
+          <div className="w-full max-w-[600px] bg-white dark:bg-navy-800 rounded-[20px] shadow-[0_20px_60px_rgba(15,23,42,0.2)] flex flex-col max-h-[90vh] animate-fade-in">
+            <div className="p-6 border-b border-[#E2E8F0] dark:border-navy-700 flex justify-between items-center bg-white dark:bg-navy-800 rounded-t-[20px]">
+              <h2 className="text-[20px] font-bold text-[#0F172A] dark:text-white">Add New Client</h2>
             </div>
-            <div className="p-6 overflow-y-auto flex-1 bg-white">
+            <div className="p-6 overflow-y-auto flex-1 bg-white dark:bg-navy-800">
               <form id="newClientForm" onSubmit={handleCreateClient} className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div className="md:col-span-2">
-                  <label className="block text-[12px] font-bold text-[#475569] mb-1.5 uppercase tracking-wide">Company / Legal Name</label>
-                  <input value={newClient.company} onChange={e=>setNewClient({...newClient, company: e.target.value})} type="text" placeholder="Enter company name (or leave blank for individual)" className="w-full h-11 px-3 rounded-[10px] border border-[#E2E8F0] text-[14px] text-[#0F172A] outline-none focus:border-[#2563EB] transition-colors" />
+                  <label className="block text-[12px] font-bold text-[#475569] dark:text-gray-200 dark:text-white mb-1.5 uppercase tracking-wide">Company / Legal Name</label>
+                  <input value={newClient.company} onChange={e=>setNewClient({...newClient, company: e.target.value})} type="text" placeholder="Enter company name (or leave blank for individual)" className="w-full h-11 px-3 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 text-[14px] text-[#0F172A] dark:text-white outline-none focus:border-[#2563EB] transition-colors" />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="block text-[12px] font-bold text-[#475569] mb-1.5 uppercase tracking-wide">Primary Contact Name *</label>
-                  <input required value={newClient.name} onChange={e=>setNewClient({...newClient, name: e.target.value})} type="text" placeholder="Enter full name" className="w-full h-11 px-3 rounded-[10px] border border-[#E2E8F0] text-[14px] text-[#0F172A] outline-none focus:border-[#2563EB] transition-colors" />
+                  <label className="block text-[12px] font-bold text-[#475569] dark:text-gray-200 dark:text-white mb-1.5 uppercase tracking-wide">Primary Contact Name *</label>
+                  <input required value={newClient.name} onChange={e=>setNewClient({...newClient, name: e.target.value})} type="text" placeholder="Enter full name" className="w-full h-11 px-3 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 text-[14px] text-[#0F172A] dark:text-white outline-none focus:border-[#2563EB] transition-colors" />
                 </div>
                 <div>
-                  <label className="block text-[12px] font-bold text-[#475569] mb-1.5 uppercase tracking-wide">Phone Number</label>
-                  <input value={newClient.phone} onChange={e=>setNewClient({...newClient, phone: e.target.value})} type="text" placeholder="Enter phone" className="w-full h-11 px-3 rounded-[10px] border border-[#E2E8F0] text-[14px] text-[#0F172A] outline-none focus:border-[#2563EB] transition-colors" />
+                  <label className="block text-[12px] font-bold text-[#475569] dark:text-gray-200 dark:text-white mb-1.5 uppercase tracking-wide">Phone Number</label>
+                  <input value={newClient.phone} onChange={e=>setNewClient({...newClient, phone: e.target.value})} type="text" placeholder="Enter phone" className="w-full h-11 px-3 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 text-[14px] text-[#0F172A] dark:text-white outline-none focus:border-[#2563EB] transition-colors" />
                 </div>
                 <div>
-                  <label className="block text-[12px] font-bold text-[#475569] mb-1.5 uppercase tracking-wide">Email Address</label>
-                  <input value={newClient.email} onChange={e=>setNewClient({...newClient, email: e.target.value})} type="email" placeholder="Enter email" className="w-full h-11 px-3 rounded-[10px] border border-[#E2E8F0] text-[14px] text-[#0F172A] outline-none focus:border-[#2563EB] transition-colors" />
+                  <label className="block text-[12px] font-bold text-[#475569] dark:text-gray-200 dark:text-white mb-1.5 uppercase tracking-wide">Email Address</label>
+                  <input value={newClient.email} onChange={e=>setNewClient({...newClient, email: e.target.value})} type="email" placeholder="Enter email" className="w-full h-11 px-3 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 text-[14px] text-[#0F172A] dark:text-white outline-none focus:border-[#2563EB] transition-colors" />
                 </div>
                 <div>
-                  <label className="block text-[12px] font-bold text-[#475569] mb-1.5 uppercase tracking-wide">GST / PAN (Tax ID)</label>
-                  <input value={newClient.gst} onChange={e=>setNewClient({...newClient, gst: e.target.value})} type="text" placeholder="Enter tax ID" className="w-full h-11 px-3 rounded-[10px] border border-[#E2E8F0] text-[14px] text-[#0F172A] outline-none focus:border-[#2563EB] transition-colors" />
+                  <label className="block text-[12px] font-bold text-[#475569] dark:text-gray-200 dark:text-white mb-1.5 uppercase tracking-wide">GST / PAN (Tax ID)</label>
+                  <input value={newClient.gst} onChange={e=>setNewClient({...newClient, gst: e.target.value})} type="text" placeholder="Enter tax ID" className="w-full h-11 px-3 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 text-[14px] text-[#0F172A] dark:text-white outline-none focus:border-[#2563EB] transition-colors" />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="block text-[12px] font-bold text-[#475569] mb-1.5 uppercase tracking-wide">Billing Address</label>
-                  <textarea value={newClient.address} onChange={e=>setNewClient({...newClient, address: e.target.value})} placeholder="Enter full billing address..." className="w-full min-h-[80px] p-3 rounded-[10px] border border-[#E2E8F0] text-[14px] text-[#0F172A] outline-none focus:border-[#2563EB] transition-colors resize-y"></textarea>
+                  <label className="block text-[12px] font-bold text-[#475569] dark:text-gray-200 dark:text-white mb-1.5 uppercase tracking-wide">Billing Address</label>
+                  <textarea value={newClient.address} onChange={e=>setNewClient({...newClient, address: e.target.value})} placeholder="Enter full billing address..." className="w-full min-h-[80px] p-3 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 text-[14px] text-[#0F172A] dark:text-white outline-none focus:border-[#2563EB] transition-colors resize-y"></textarea>
                 </div>
               </form>
             </div>
-            <div className="p-6 border-t border-[#E2E8F0] flex justify-end gap-3 bg-[#F8FAFC] rounded-b-[20px]">
-              <button onClick={() => setShowNewClientModal(false)} className="h-10 px-6 rounded-[12px] border border-[#E2E8F0] bg-white text-[14px] font-bold text-[#475569] hover:bg-gray-100 hover:text-[#0F172A] transition">Cancel</button>
+            <div className="p-6 border-t border-[#E2E8F0] dark:border-navy-700 flex justify-end gap-3 bg-[#F8FAFC] dark:bg-navy-900 rounded-b-[20px]">
+              <button onClick={() => setShowNewClientModal(false)} className="h-10 px-6 rounded-[12px] border border-[#E2E8F0] dark:border-navy-700 bg-white dark:bg-navy-800 text-[14px] font-bold text-[#475569] dark:text-gray-200 dark:text-white hover:bg-gray-100 dark:bg-navy-700 hover:text-[#0F172A] dark:text-white transition">Cancel</button>
               <button form="newClientForm" type="submit" className="h-10 px-6 rounded-[12px] bg-[#2563EB] text-[14px] font-bold text-white hover:bg-[#1D4ED8] transition shadow-md">Add Client</button>
             </div>
           </div>
@@ -424,14 +424,14 @@ const Clients = () => {
       {/* Delete Confirmation Modal */}
       {showDeleteModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
-          <div className="w-full max-w-[400px] bg-white rounded-[20px] shadow-[0_20px_60px_rgba(15,23,42,0.2)] p-6 text-center animate-fade-in">
+          <div className="w-full max-w-[400px] bg-white dark:bg-navy-800 rounded-[20px] shadow-[0_20px_60px_rgba(15,23,42,0.2)] p-6 text-center animate-fade-in">
             <div className="w-16 h-16 rounded-full bg-red-50 flex items-center justify-center text-[#DC2626] text-3xl mx-auto mb-4">
               <MdDeleteOutline />
             </div>
-            <h2 className="text-[20px] font-bold text-[#0F172A] mb-2">Delete Client?</h2>
-            <p className="text-[14px] text-[#64748B] mb-6">Are you sure you want to delete <strong>{showDeleteModal.company || showDeleteModal.name}</strong>? This action cannot be undone.</p>
+            <h2 className="text-[20px] font-bold text-[#0F172A] dark:text-white mb-2">Delete Client?</h2>
+            <p className="text-[14px] text-[#64748B] dark:text-gray-400 mb-6">Are you sure you want to delete <strong>{showDeleteModal.company || showDeleteModal.name}</strong>? This action cannot be undone.</p>
             <div className="flex justify-center gap-3">
-              <button onClick={() => setShowDeleteModal(null)} className="flex-1 h-11 rounded-[12px] border border-[#E2E8F0] bg-white text-[14px] font-bold text-[#475569] hover:bg-gray-100 transition">Cancel</button>
+              <button onClick={() => setShowDeleteModal(null)} className="flex-1 h-11 rounded-[12px] border border-[#E2E8F0] dark:border-navy-700 bg-white dark:bg-navy-800 text-[14px] font-bold text-[#475569] dark:text-gray-200 dark:text-white hover:bg-gray-100 dark:bg-navy-700 transition">Cancel</button>
               <button onClick={() => handleDeleteClient(showDeleteModal.id)} className="flex-1 h-11 rounded-[12px] bg-[#DC2626] text-[14px] font-bold text-white hover:bg-red-700 transition shadow-md">Delete</button>
             </div>
           </div>

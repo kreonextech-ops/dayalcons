@@ -141,9 +141,9 @@ const ProjectDetail = ({ projData, onBack, onUpdate }) => {
   };
 
   return (
-    <div className="relative min-h-screen bg-[#F8FAFC] p-4 sm:p-8 font-sans pb-24">
+    <div className="relative min-h-screen bg-[#F8FAFC] dark:bg-navy-900 p-4 sm:p-8 font-sans pb-24">
       {/* 1. Back Navigation */}
-      <div className="mb-6 flex items-center gap-2 text-sm text-[#64748B]">
+      <div className="mb-6 flex items-center gap-2 text-sm text-[#64748B] dark:text-gray-400">
         <button onClick={onBack} className="flex items-center gap-2 hover:text-brand-500 transition">
           <MdArrowBack className="h-5 w-5" />
           <span className="font-semibold">Back to Projects</span>
@@ -155,18 +155,18 @@ const ProjectDetail = ({ projData, onBack, onUpdate }) => {
       </div>
 
       {/* 2. Hero Card */}
-      <div className="rounded-[20px] bg-gradient-to-r from-[#2563EB]/10 to-white p-6 shadow-[0_10px_30px_rgba(15,23,42,0.06)] border border-[#E2E8F0] mb-6 flex flex-col md:flex-row justify-between items-start md:items-center">
+      <div className="rounded-[20px] bg-gradient-to-r from-[#2563EB]/10 to-white p-6 shadow-[0_10px_30px_rgba(15,23,42,0.06)] border border-[#E2E8F0] dark:border-navy-700 mb-6 flex flex-col md:flex-row justify-between items-start md:items-center">
         <div className="flex items-center gap-6">
           <div className="flex h-20 w-20 items-center justify-center rounded-full bg-[#2563EB] text-3xl font-bold text-white shadow-md">
             <MdDesignServices />
           </div>
           <div>
             <div className="flex items-center gap-3">
-               <h1 className="text-[28px] font-bold text-[#0F172A]">{(projData?.name || projData?.title)}</h1>
-               <span className="bg-gray-100 text-[#475569] px-3 py-1 rounded-md text-[12px] font-bold">SRV-{projData.id?.substring(0,5).toUpperCase()}</span>
+               <h1 className="text-[28px] font-bold text-[#0F172A] dark:text-white">{(projData?.name || projData?.title)}</h1>
+               <span className="bg-gray-100 dark:bg-navy-700 text-[#475569] dark:text-gray-200 px-3 py-1 rounded-md text-[12px] font-bold">SRV-{projData.id?.substring(0,5).toUpperCase()}</span>
             </div>
-            <div className="mt-2 flex flex-wrap items-center gap-4 text-sm text-[#475569]">
-              <span className="flex items-center gap-1 font-semibold text-[#0F172A]"><MdPerson /> Client: {clientName}</span>
+            <div className="mt-2 flex flex-wrap items-center gap-4 text-sm text-[#475569] dark:text-gray-200">
+              <span className="flex items-center gap-1 font-semibold text-[#0F172A] dark:text-white"><MdPerson /> Client: {clientName}</span>
             </div>
           </div>
         </div>
@@ -186,11 +186,11 @@ const ProjectDetail = ({ projData, onBack, onUpdate }) => {
           {isAdmin && (
             <div className="flex gap-4 text-right">
                <div>
-                  <p className="text-[11px] font-semibold text-[#64748B] uppercase">Total Value</p>
-                  <p className="text-[20px] font-bold text-[#0F172A]">₹ {totalAmount.toLocaleString()}</p>
+                  <p className="text-[11px] font-semibold text-[#64748B] dark:text-gray-400 uppercase">Total Value</p>
+                  <p className="text-[20px] font-bold text-[#0F172A] dark:text-white">₹ {totalAmount.toLocaleString()}</p>
                </div>
                <div>
-                  <p className="text-[11px] font-semibold text-[#64748B] uppercase">Balance</p>
+                  <p className="text-[11px] font-semibold text-[#64748B] dark:text-gray-400 uppercase">Balance</p>
                   <p className="text-[20px] font-bold text-[#DC2626]">₹ {balance.toLocaleString()}</p>
                </div>
             </div>
@@ -204,7 +204,7 @@ const ProjectDetail = ({ projData, onBack, onUpdate }) => {
         {/* Content */}
         <div className="w-full lg:w-[72%]">
           {/* Tabs */}
-          <div className="sticky top-0 z-10 flex gap-2 overflow-x-auto bg-[#F8FAFC] py-4 border-b border-[#E2E8F0] mb-6 custom-scrollbar">
+          <div className="sticky top-0 z-10 flex gap-2 overflow-x-auto bg-[#F8FAFC] dark:bg-navy-900 py-4 border-b border-[#E2E8F0] dark:border-navy-700 mb-6 custom-scrollbar">
             {tabs.map(tab => (
               <button
                 key={tab}
@@ -212,7 +212,7 @@ const ProjectDetail = ({ projData, onBack, onUpdate }) => {
                 className={`rounded-[12px] px-5 py-2.5 text-sm font-semibold transition whitespace-nowrap ${
                   activeTab === tab 
                   ? 'bg-[#2563EB] text-white shadow-md' 
-                  : 'text-[#64748B] hover:bg-white border border-transparent hover:border-[#E2E8F0]'
+                  : 'text-[#64748B] dark:text-gray-400 hover:bg-white dark:bg-navy-800 border border-transparent hover:border-[#E2E8F0] dark:border-navy-700'
                 }`}
               >
                 {tab}
@@ -225,26 +225,26 @@ const ProjectDetail = ({ projData, onBack, onUpdate }) => {
             {activeTab === "Overview" && (
                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 animate-fade-in">
                  {/* Client Info Card */}
-                 <Card extra="p-6 border border-[#E2E8F0] shadow-sm">
-                   <h3 className="text-[16px] font-semibold text-[#0F172A] mb-4">Client Information</h3>
+                 <Card extra="p-6 border border-[#E2E8F0] dark:border-navy-700 shadow-sm">
+                   <h3 className="text-[16px] font-semibold text-[#0F172A] dark:text-white mb-4">Client Information</h3>
                    <div className="space-y-4">
-                     <div className="flex flex-col"><span className="text-[12px] font-medium text-[#64748B]">Client / Company Name</span><span className="text-[14px] font-semibold text-[#0F172A]">{clientName}</span></div>
-                     <div className="flex flex-col"><span className="text-[12px] font-medium text-[#64748B]">Contact Email</span><span className="text-[14px] font-semibold text-[#0F172A]">{projData.client?.email || "—"}</span></div>
-                     <div className="flex flex-col"><span className="text-[12px] font-medium text-[#64748B]">Contact Phone</span><span className="text-[14px] font-semibold text-[#0F172A]">{projData.client?.phone || "—"}</span></div>
-                     <div className="flex flex-col"><span className="text-[12px] font-medium text-[#64748B]">Project Creation Date</span><span className="text-[14px] font-semibold text-[#0F172A]">{new Date(projData.created_at).toLocaleDateString('en-GB')}</span></div>
+                     <div className="flex flex-col"><span className="text-[12px] font-medium text-[#64748B] dark:text-gray-400">Client / Company Name</span><span className="text-[14px] font-semibold text-[#0F172A] dark:text-white">{clientName}</span></div>
+                     <div className="flex flex-col"><span className="text-[12px] font-medium text-[#64748B] dark:text-gray-400">Contact Email</span><span className="text-[14px] font-semibold text-[#0F172A] dark:text-white">{projData.client?.email || "—"}</span></div>
+                     <div className="flex flex-col"><span className="text-[12px] font-medium text-[#64748B] dark:text-gray-400">Contact Phone</span><span className="text-[14px] font-semibold text-[#0F172A] dark:text-white">{projData.client?.phone || "—"}</span></div>
+                     <div className="flex flex-col"><span className="text-[12px] font-medium text-[#64748B] dark:text-gray-400">Project Creation Date</span><span className="text-[14px] font-semibold text-[#0F172A] dark:text-white">{new Date(projData.created_at).toLocaleDateString('en-GB')}</span></div>
                    </div>
                  </Card>
 
                  {/* Project Info Card */}
-                 <Card extra="p-6 border border-[#E2E8F0] shadow-sm">
-                   <h3 className="text-[16px] font-semibold text-[#0F172A] mb-4">Project Details</h3>
+                 <Card extra="p-6 border border-[#E2E8F0] dark:border-navy-700 shadow-sm">
+                   <h3 className="text-[16px] font-semibold text-[#0F172A] dark:text-white mb-4">Project Details</h3>
                    <div className="space-y-4">
                      <div className="flex flex-col">
-                        <span className="text-[12px] font-medium text-[#64748B]">Current Status</span>
+                        <span className="text-[12px] font-medium text-[#64748B] dark:text-gray-400">Current Status</span>
                         <select 
                             value={projData?.status || 'Pending'}
                             onChange={handleStatusChange}
-                            className="text-[14px] font-bold text-[#2563EB] bg-transparent outline-none cursor-pointer hover:bg-gray-50 rounded-md p-1 -ml-1 w-max"
+                            className="text-[14px] font-bold text-[#2563EB] bg-transparent outline-none cursor-pointer hover:bg-gray-50 dark:hover:bg-navy-800 rounded-md p-1 -ml-1 w-max"
                         >
                             <option value="Pending">Pending</option>
                             <option value="In Progress">In Progress</option>
@@ -254,22 +254,22 @@ const ProjectDetail = ({ projData, onBack, onUpdate }) => {
                             <option value="Cancelled">Cancelled</option>
                         </select>
                       </div>
-                     <div className="flex flex-col"><span className="text-[12px] font-medium text-[#64748B]">Primary Requirement</span><span className="text-[14px] font-semibold text-[#0F172A]">{(projData?.name || projData?.title)}</span></div>
-                     <div className="flex flex-col"><span className="text-[12px] font-medium text-[#64748B]">Selected Requirements Count</span><span className="text-[14px] font-semibold text-[#0F172A]">{parsedMeta?.requirements?.length || 0} Modules</span></div>
-                     <div className="flex flex-col"><span className="text-[12px] font-medium text-[#64748B]">Project Progress</span><span className="text-[14px] font-semibold text-[#0F172A]">{parsedMeta?.steps ? Math.round((parsedMeta.steps.filter(s=>s.completed).length / parsedMeta.steps.length)*100) : 0}% Completed</span></div>
+                     <div className="flex flex-col"><span className="text-[12px] font-medium text-[#64748B] dark:text-gray-400">Primary Requirement</span><span className="text-[14px] font-semibold text-[#0F172A] dark:text-white">{(projData?.name || projData?.title)}</span></div>
+                     <div className="flex flex-col"><span className="text-[12px] font-medium text-[#64748B] dark:text-gray-400">Selected Requirements Count</span><span className="text-[14px] font-semibold text-[#0F172A] dark:text-white">{parsedMeta?.requirements?.length || 0} Modules</span></div>
+                     <div className="flex flex-col"><span className="text-[12px] font-medium text-[#64748B] dark:text-gray-400">Project Progress</span><span className="text-[14px] font-semibold text-[#0F172A] dark:text-white">{parsedMeta?.steps ? Math.round((parsedMeta.steps.filter(s=>s.completed).length / parsedMeta.steps.length)*100) : 0}% Completed</span></div>
                    </div>
                  </Card>
                  
                  {/* Commercial Summary */}
                  {isAdmin && (
-                   <Card extra="p-6 border border-[#E2E8F0] shadow-sm">
-                     <h3 className="text-[16px] font-semibold text-[#0F172A] mb-4">Commercial Summary</h3>
+                   <Card extra="p-6 border border-[#E2E8F0] dark:border-navy-700 shadow-sm">
+                     <h3 className="text-[16px] font-semibold text-[#0F172A] dark:text-white mb-4">Commercial Summary</h3>
                      <div className="space-y-4">
-                       <div className="flex justify-between items-center"><span className="text-[12px] font-medium text-[#64748B]">Project Value</span><span className="text-[14px] font-bold text-[#0F172A]">₹ {totalAmount.toLocaleString()}</span></div>
-                       <div className="flex justify-between items-center"><span className="text-[12px] font-medium text-[#64748B]">Paid Amount</span><span className="text-[14px] font-bold text-[#16A34A]">₹ {totalPaid.toLocaleString()}</span></div>
-                       <div className="flex justify-between items-center"><span className="text-[12px] font-medium text-[#64748B]">Outstanding</span><span className="text-[14px] font-bold text-[#DC2626]">₹ {balance.toLocaleString()}</span></div>
-                       <div className="mt-4 pt-4 border-t border-[#E2E8F0]">
-                          <p className="text-[11px] text-[#64748B] mb-2 font-bold uppercase">Payment Progress</p>
+                       <div className="flex justify-between items-center"><span className="text-[12px] font-medium text-[#64748B] dark:text-gray-400">Project Value</span><span className="text-[14px] font-bold text-[#0F172A] dark:text-white">₹ {totalAmount.toLocaleString()}</span></div>
+                       <div className="flex justify-between items-center"><span className="text-[12px] font-medium text-[#64748B] dark:text-gray-400">Paid Amount</span><span className="text-[14px] font-bold text-[#16A34A]">₹ {totalPaid.toLocaleString()}</span></div>
+                       <div className="flex justify-between items-center"><span className="text-[12px] font-medium text-[#64748B] dark:text-gray-400">Outstanding</span><span className="text-[14px] font-bold text-[#DC2626]">₹ {balance.toLocaleString()}</span></div>
+                       <div className="mt-4 pt-4 border-t border-[#E2E8F0] dark:border-navy-700">
+                          <p className="text-[11px] text-[#64748B] dark:text-gray-400 mb-2 font-bold uppercase">Payment Progress</p>
                           <div className="h-2 w-full rounded-full bg-[#E2E8F0]"><div className="h-2 rounded-full bg-[#16A34A] transition-all" style={{width: `${totalAmount ? Math.min(100, Math.round((totalPaid/totalAmount)*100)) : 0}%`}}></div></div>
                        </div>
                      </div>
@@ -296,7 +296,7 @@ const ProjectDetail = ({ projData, onBack, onUpdate }) => {
           <div className="sticky top-6 flex flex-col gap-6">
 
             <Card extra="p-6">
-              <h3 className="text-[16px] font-semibold text-[#0F172A] mb-1">Next Follow-up</h3>
+              <h3 className="text-[16px] font-semibold text-[#0F172A] dark:text-white mb-1">Next Follow-up</h3>
               {nextTask ? (
                 <>
                   <p className="text-[14px] font-bold text-[#DC2626] mb-1">{nextTask.due_date ? new Date(nextTask.due_date).toLocaleString() : "No Due Date"}</p>
@@ -307,7 +307,7 @@ const ProjectDetail = ({ projData, onBack, onUpdate }) => {
                     <button onClick={() => handleQuickAction('Call')} className="w-full rounded-[10px] bg-blue-600 py-2 text-[12px] font-bold text-white hover:bg-blue-700 transition">Follow up</button>
                     <div className="flex gap-2">
                       <button onClick={handleCompleteTask} className="flex-1 rounded-[10px] bg-[#16A34A] py-2 text-[12px] font-bold text-white hover:bg-green-700 transition">Mark Complete</button>
-                      <button onClick={() => setShowScheduleModal(true)} className="flex-1 rounded-[10px] border border-[#E2E8F0] py-2 text-[12px] font-bold text-[#0F172A] hover:bg-gray-50 transition">Reschedule</button>
+                      <button onClick={() => setShowScheduleModal(true)} className="flex-1 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 py-2 text-[12px] font-bold text-[#0F172A] dark:text-white hover:bg-gray-50 dark:hover:bg-navy-800 transition">Reschedule</button>
                     </div>
                   </div>
                 </>
@@ -320,7 +320,7 @@ const ProjectDetail = ({ projData, onBack, onUpdate }) => {
             </Card>
 
             <Card extra="p-6">
-              <h3 className="text-[16px] font-semibold text-[#0F172A] mb-4">Quick Actions</h3>
+              <h3 className="text-[16px] font-semibold text-[#0F172A] dark:text-white mb-4">Quick Actions</h3>
               <div className="grid grid-cols-2 gap-3">
                 {[
                   { label: "Call", icon: <MdPhone /> },
@@ -328,22 +328,22 @@ const ProjectDetail = ({ projData, onBack, onUpdate }) => {
                   { label: "Email", icon: <MdEmail /> },
                   { label: "Schedule", icon: <MdEvent /> }
                 ].map((act, i) => (
-                  <button key={i} onClick={() => handleQuickAction(act.label)} className="flex flex-col items-center justify-center rounded-[12px] border border-[#E2E8F0] p-3 hover:bg-[#F8FAFC] transition hover:border-[#2563EB] group">
-                    <span className="text-[#64748B] group-hover:text-[#2563EB] text-xl mb-1 transition-colors">{act.icon}</span>
-                    <span className="text-[11px] font-medium text-[#475569]">{act.label}</span>
+                  <button key={i} onClick={() => handleQuickAction(act.label)} className="flex flex-col items-center justify-center rounded-[12px] border border-[#E2E8F0] dark:border-navy-700 p-3 hover:bg-[#F8FAFC] dark:bg-navy-900 transition hover:border-[#2563EB] group">
+                    <span className="text-[#64748B] dark:text-gray-400 group-hover:text-[#2563EB] text-xl mb-1 transition-colors">{act.icon}</span>
+                    <span className="text-[11px] font-medium text-[#475569] dark:text-gray-200">{act.label}</span>
                   </button>
                 ))}
               </div>
             </Card>
 
             <Card extra="p-6">
-              <h3 className="text-[16px] font-semibold text-[#0F172A] mb-4">Assigned Team</h3>
+              <h3 className="text-[16px] font-semibold text-[#0F172A] dark:text-white mb-4">Assigned Team</h3>
               <div className="space-y-4">
                   <div className="max-h-[200px] overflow-y-auto border border-gray-100 rounded-lg p-2 space-y-2 custom-scrollbar">
                     {employees.map(emp => {
                       const isAssigned = (projData.assigned_to || '').split(',').includes(emp.id);
                       return (
-                        <div key={emp.id} className={`flex items-center gap-3 p-2 rounded-lg transition ${isAdmin ? "hover:bg-gray-50 cursor-pointer" : "opacity-70 cursor-not-allowed"}`} onClick={() => handleToggleAssignEmployee(emp.id)}>
+                        <div key={emp.id} className={`flex items-center gap-3 p-2 rounded-lg transition ${isAdmin ? "hover:bg-gray-50 dark:hover:bg-navy-800 cursor-pointer" : "opacity-70 cursor-not-allowed"}`} onClick={() => handleToggleAssignEmployee(emp.id)}>
                            <input type="checkbox" checked={isAssigned} readOnly className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500" />
                            <div className="h-8 w-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-xs">
                              {emp.name?.charAt(0) || 'U'}
@@ -367,10 +367,10 @@ const ProjectDetail = ({ projData, onBack, onUpdate }) => {
       {/* Schedule Task Modal */}
       {showScheduleModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl animate-fade-in">
+          <div className="w-full max-w-md rounded-2xl bg-white dark:bg-navy-800 p-6 shadow-2xl animate-fade-in">
             <div className="flex items-center justify-between mb-6">
-               <h2 className="text-xl font-bold text-[#0F172A]">Schedule Follow-up</h2>
-               <MdClose className="text-2xl text-[#64748B] cursor-pointer hover:text-red-500" onClick={() => setShowScheduleModal(false)} />
+               <h2 className="text-xl font-bold text-[#0F172A] dark:text-white">Schedule Follow-up</h2>
+               <MdClose className="text-2xl text-[#64748B] dark:text-gray-400 cursor-pointer hover:text-red-500" onClick={() => setShowScheduleModal(false)} />
             </div>
             <form onSubmit={async (e) => {
               e.preventDefault();
@@ -394,15 +394,15 @@ const ProjectDetail = ({ projData, onBack, onUpdate }) => {
               }
             }}>
               <div className="mb-4">
-                <label className="text-sm font-medium text-gray-700">Task Description</label>
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-200">Task Description</label>
                 <input type="text" name="name" required placeholder="e.g., Follow up call for drafts" className="w-full mt-1 p-2 border border-gray-300 rounded-lg outline-none focus:border-blue-500" />
               </div>
               <div className="mb-6">
-                <label className="text-sm font-medium text-gray-700">Date & Time</label>
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-200">Date & Time</label>
                 <input type="datetime-local" name="due_date" required className="w-full mt-1 p-2 border border-gray-300 rounded-lg outline-none focus:border-blue-500" />
               </div>
               <div className="flex justify-end gap-3">
-                <button type="button" onClick={() => setShowScheduleModal(false)} className="px-4 py-2 rounded-lg text-sm font-bold text-gray-600 hover:bg-gray-100">Cancel</button>
+                <button type="button" onClick={() => setShowScheduleModal(false)} className="px-4 py-2 rounded-lg text-sm font-bold text-gray-600 hover:bg-gray-100 dark:bg-navy-700">Cancel</button>
                 <button type="submit" className="px-4 py-2 rounded-lg bg-blue-600 text-sm font-bold text-white hover:bg-blue-700">Schedule Task</button>
               </div>
             </form>
