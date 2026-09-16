@@ -121,7 +121,7 @@ const ProjectDetail = ({ projData, onBack, onUpdate }) => {
   // Role Check
   const userStr = sessionStorage.getItem('dayal_user');
   const loggedInUser = userStr ? JSON.parse(userStr) : null;
-  const isAdmin = loggedInUser?.role === 'Admin' || loggedInUser?.role === 'CRO';
+  const isAdmin = loggedInUser?.role === 'Admin' || (loggedInUser?.role && loggedInUser.role.toUpperCase() === 'CRO') || (loggedInUser?.designation && loggedInUser.designation.toUpperCase().includes('CRO'));
 
   const tabs = [
     "Overview", "Scope", "Workspace", "Steps", "Payments", "Follow Ups", "Tasks", 
