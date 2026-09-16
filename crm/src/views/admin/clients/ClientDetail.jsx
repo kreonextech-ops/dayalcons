@@ -35,6 +35,20 @@ const ClientDetail = ({ client, onBack }) => {
   const [showScheduleModal, setShowScheduleModal] = useState(false);
   const [communicationAction, setCommunicationAction] = useState(null);
   const [comments, setComments] = useState([]);
+  const [activeProjectsCount, setActiveProjectsCount] = useState(0);
+  const [activeServicesCount, setActiveServicesCount] = useState(0);
+
+  useEffect(() => {
+    const fetchCounts = async () => {
+       if (!clientData?.id) return;
+       const { data: pData } = await supabase.from('projects').select('id').eq('client_id', clientData.id);
+       if (pData) setActiveProjectsCount(pData.length);
+       
+       const { data: sData } = await supabase.from('services').select('id').eq('client_id', clientData.id);
+       if (sData) setActiveServicesCount(sData.length);
+    };
+    fetchCounts();
+  }, [clientData.id]);
   const [newComment, setNewComment] = useState("");
     const [isUploadingComment, setIsUploadingComment] = useState(false);
     const commentFileInputRef = React.useRef(null);
@@ -314,9 +328,10 @@ const ClientDetail = ({ client, onBack }) => {
       </div>
 
       {/* 3. KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-6">
         {[
-          { title: "Active Projects", value: "0", icon: <MdBusinessCenter /> },
+          { title: "Active Projects", value: activeProjectsCount.toString(), icon: <MdBusinessCenter /> },
+            { title: "Active Services", value: activeServicesCount.toString(), icon: <MdBusinessCenter /> },
           ...(isAdmin ? [
             { title: "Total Invoiced", value: "₹0.00", icon: <MdAttachMoney /> },
             { title: "Total Received", value: "₹0.00", icon: <MdAttachMoney /> },

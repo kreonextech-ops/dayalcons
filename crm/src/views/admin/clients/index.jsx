@@ -335,7 +335,7 @@ const Clients = () => {
                     <th className="py-4 px-4 w-12 text-[12px] font-medium text-[#64748B] dark:text-gray-400 uppercase tracking-wider">Sl. No.</th>
                   <th className="py-4 px-4 text-[12px] font-medium text-[#64748B] dark:text-gray-400 uppercase tracking-wider">Client Entity</th>
                   <th className="py-4 px-4 text-[12px] font-medium text-[#64748B] dark:text-gray-400 uppercase tracking-wider">Contact Info</th>
-                  <th className="py-4 px-4 text-[12px] font-medium text-[#64748B] dark:text-gray-400 uppercase tracking-wider">Active Projects</th>
+                  <th className="py-4 px-4 text-[12px] font-medium text-[#64748B] dark:text-gray-400 uppercase tracking-wider">Services & Projects</th>
                   <th className="py-4 px-4 text-[12px] font-medium text-[#64748B] dark:text-gray-400 uppercase tracking-wider">Last Contacted</th>
                   <th className="py-4 px-6 text-[12px] font-medium text-[#64748B] dark:text-gray-400 uppercase tracking-wider text-right">Actions</th>
                 </tr>
@@ -379,9 +379,9 @@ const Clients = () => {
                               {client.email && <p className="text-sm text-gray-600">{client.email}</p>}
                               {client.phone && <p className="text-[12px] text-gray-500">{client.phone}</p>}
                            </td>
-                           <td className="py-4 px-4 text-sm text-gray-600 font-bold">
-                                {client.activeProjectsCount || 0}
-                             </td>
+                             <td className="py-4 px-4 text-[13px] font-medium text-brand-500">
+                                <div className="max-w-[150px] truncate" title={client.work_types || "-"}>{client.work_types || "-"}</div>
+                               </td>
                              <td className="py-4 px-4 text-[12px] text-gray-500">
                                 {client.lastContact ? new Date(client.lastContact).toLocaleDateString("en-GB", { day: '2-digit', month: 'short', year: 'numeric' }) : "-"}
                              </td>
