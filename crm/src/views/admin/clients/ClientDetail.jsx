@@ -35,20 +35,7 @@ const ClientDetail = ({ client, onBack }) => {
   const [showScheduleModal, setShowScheduleModal] = useState(false);
   const [communicationAction, setCommunicationAction] = useState(null);
   const [comments, setComments] = useState([]);
-  const [activeProjectsCount, setActiveProjectsCount] = useState(0);
-  const [activeServicesCount, setActiveServicesCount] = useState(0);
 
-  useEffect(() => {
-    const fetchCounts = async () => {
-       if (!clientData?.id) return;
-       const { data: pData } = await supabase.from('projects').select('id').eq('client_id', clientData.id);
-       if (pData) setActiveProjectsCount(pData.length);
-       
-       const { data: sData } = await supabase.from('services').select('id').eq('client_id', clientData.id);
-       if (sData) setActiveServicesCount(sData.length);
-    };
-    fetchCounts();
-  }, [clientData.id]);
   const [newComment, setNewComment] = useState("");
     const [isUploadingComment, setIsUploadingComment] = useState(false);
     const commentFileInputRef = React.useRef(null);
@@ -122,6 +109,21 @@ const ClientDetail = ({ client, onBack }) => {
     assigned_to: client?.assigned_to || null,
     leadData: client?.leadData || {},
   });
+
+  const [activeProjectsCount, setActiveProjectsCount] = useState(0);
+  const [activeServicesCount, setActiveServicesCount] = useState(0);
+
+  useEffect(() => {
+    const fetchCounts = async () => {
+       if (!clientData?.id) return;
+       const { data: pData } = await supabase.from('projects').select('id').eq('client_id', clientData.id);
+       if (pData) setActiveProjectsCount(pData.length);
+       
+       const { data: sData } = await supabase.from('services').select('id').eq('client_id', clientData.id);
+       if (sData) setActiveServicesCount(sData.length);
+    };
+    fetchCounts();
+  }, [clientData.id]);
 
   useEffect(() => {
     fetchEmployees();
