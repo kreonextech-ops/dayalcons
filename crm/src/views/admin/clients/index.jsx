@@ -1,7 +1,6 @@
+import { FiFileText, FiMap } from "react-icons/fi";
 import React, { useState, useEffect } from "react";
 
-import { MdFoundation, MdLocationCity, MdEngineering, MdOutlineArchitecture, MdBusinessCenter, MdCloudDownload, MdDomainVerification, MdLayers, MdHouse, MdWaterDrop, MdPhotoSizeSelectSmall } from "react-icons/md";
-import { FiFileText, FiMap } from "react-icons/fi";
 
 const DESIGN_SERVICES = [
   { id: "Land Registration & Mutation", icon: <FiFileText /> },
@@ -32,11 +31,7 @@ import { logAction } from "utils/auditLogger";
 import * as XLSX from "xlsx";
 import { useRef } from "react";
 import ClientDetail from "./ClientDetail";
-import { 
-  MdSearch, MdPerson, MdCheckCircle, MdCloudDownload, MdAdd, 
-  MdMoreVert, MdKeyboardArrowLeft, MdKeyboardArrowRight,
-  MdOutlineRefresh, MdDeleteOutline, MdEdit, MdBusinessCenter, MdAttachMoney
-} from "react-icons/md";
+import { MdAdd, MdAttachMoney, MdBusinessCenter, MdCheckCircle, MdCloudDownload, MdDeleteOutline, MdDomainVerification, MdEdit, MdEngineering, MdFoundation, MdHouse, MdKeyboardArrowLeft, MdKeyboardArrowRight, MdLayers, MdLocationCity, MdMoreVert, MdOutlineArchitecture, MdOutlineFoundation, MdOutlineRefresh, MdPerson, MdPhotoSizeSelectSmall, MdSearch, MdWaterDrop } from "react-icons/md";
 
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL || "https://gdzligxryodasaxnhdco.supabase.co";
 const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdkemxpZ3hyeW9kYXNheG5oZGNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcxNTg1MDUsImV4cCI6MjEwMjczNDUwNX0.AYTyAMf22g8au51ATReRQdQc2IzDLYQ2vtQH_Uyfrpg";
