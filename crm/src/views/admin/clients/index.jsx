@@ -19,7 +19,7 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 const Clients = () => {
   const userStr = sessionStorage.getItem('dayal_user');
   const loggedInUser = userStr ? JSON.parse(userStr) : null;
-  const isAdmin = loggedInUser?.role === 'Admin' || loggedInUser?.role === 'CRO';
+  const isAdmin = loggedInUser?.role === 'Admin' || loggedInUser?.role === 'CRO' || (loggedInUser?.designation && loggedInUser.designation.includes('OAS'));
 
   const [clients, setClients] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");

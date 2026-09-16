@@ -101,7 +101,7 @@ const Services = () => {
   const userStr = sessionStorage.getItem('dayal_user');
   const loggedInUser = userStr ? JSON.parse(userStr) : null;
   const isAdmin = loggedInUser?.role === 'Admin';
-  const canSeeAllData = isAdmin || loggedInUser?.role === 'CRO';
+  const canSeeAllData = isAdmin || loggedInUser?.role === 'CRO' || (loggedInUser?.designation && loggedInUser.designation.includes('OAS'));
   
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
