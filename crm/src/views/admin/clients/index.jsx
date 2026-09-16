@@ -172,13 +172,16 @@ const Clients = () => {
       
       let activitiesData = [];
       let projectsData = [];
+      let servicesData = [];
       if (clientIds.length > 0) {
-          const [actRes, projRes] = await Promise.all([
+          const [actRes, projRes, servRes] = await Promise.all([
              supabase.from('lead_activities').select('client_id, created_at').in('client_id', clientIds).order('created_at', { ascending: false }),
-             supabase.from('projects').select('client_id').in('client_id', clientIds)
+             supabase.from('projects').select('client_id, title, name').in('client_id', clientIds),
+             supabase.from('services').select('client_id, title').in('client_id', clientIds)
           ]);
           if (actRes.data) activitiesData = actRes.data;
           if (projRes.data) projectsData = projRes.data;
+          if (servRes.data) servicesData = servRes.data;
       }
 
       // Merge with localStorage to bypass Supabase schema limits
@@ -188,8 +191,17 @@ const Clients = () => {
          const lastContact = clientActivities.length > 0 ? clientActivities[0].created_at : null; 
          
          const clientProjects = projectsData.filter(p => p.client_id === client.id);
+         const clientServices = servicesData.filter(s => s.client_id === client.id);
          
-         return { ...client, ...localData, lastContact, activeProjectsCount: clientProjects.length };
+         // Dynamically generate work_types from actual projects and services
+         const activeWorks = [
+            ...clientServices.map(s => s.title),
+            ...clientProjects.map(p => p.title || p.name)
+         ].filter(Boolean);
+         
+         const finalWorkTypes = activeWorks.length > 0 ? activeWorks.join(', ') : (client.work_types || localData.work_types || "");
+         
+         return { ...client, ...localData, lastContact, activeProjectsCount: clientProjects.length, work_types: finalWorkTypes };
       });
       setClients(merged);
     }
