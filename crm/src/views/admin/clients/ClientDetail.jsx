@@ -112,15 +112,34 @@ const ClientDetail = ({ client, onBack }) => {
 
   const [activeProjectsCount, setActiveProjectsCount] = useState(0);
   const [activeServicesCount, setActiveServicesCount] = useState(0);
+  const [financialTotals, setFinancialTotals] = useState({ amount: 0, paid: 0, due: 0 });
 
   useEffect(() => {
     const fetchCounts = async () => {
        if (!clientData?.id) return;
-       const { data: pData } = await supabase.from('projects').select('id').eq('client_id', clientData.id);
+       const { data: pData } = await supabase.from('projects').select('*').eq('client_id', clientData.id);
        if (pData) setActiveProjectsCount(pData.length);
        
-       const { data: sData } = await supabase.from('services').select('id').eq('client_id', clientData.id);
+       const { data: sData } = await supabase.from('services').select('*').eq('client_id', clientData.id);
        if (sData) setActiveServicesCount(sData.length);
+       
+       let combined = [];
+       if (pData) combined = [...combined, ...pData];
+       if (sData) combined = [...combined, ...sData];
+       
+       let tAmount = 0; let tPaid = 0;
+       combined.forEach(item => {
+          try {
+             const meta = JSON.parse(item.description || "{}");
+             const total = parseFloat(meta.financials?.total) || 0;
+             const advance = parseFloat(meta.financials?.advance) || 0;
+             const payments = Array.isArray(meta.payments) ? meta.payments : [];
+             const paid = advance + payments.reduce((acc, p) => acc + (parseFloat(p.amount) || 0), 0);
+             tAmount += total;
+             tPaid += paid;
+          } catch(e) {}
+       });
+       setFinancialTotals({ amount: tAmount, paid: tPaid, due: tAmount - tPaid });
     };
     fetchCounts();
   }, [clientData.id]);
@@ -272,12 +291,12 @@ const ClientDetail = ({ client, onBack }) => {
 
   const userStr = sessionStorage.getItem('dayal_user');
   const loggedInUser = userStr ? JSON.parse(userStr) : null;
-  const isAdmin = loggedInUser?.role === 'Admin';
+  const isAdmin = loggedInUser?.role === 'Admin' || (loggedInUser?.role && loggedInUser.role.toUpperCase() === 'CRO') || (loggedInUser?.designation && loggedInUser.designation.toUpperCase().includes('CRO'));
   const isCRO = loggedInUser?.role === 'CRO';
 
   const tabs = [
     "Overview", "Communication", "Service Requirement", "Service Workspace", 
-    ...(isAdmin ? ["Amount"] : []), "Projects", "Follow Ups", "Tasks", "Timeline", "Visit", 
+    ...(isAdmin ? ["Financials & Billing"] : []), "Projects", "Follow Ups", "Tasks", "Timeline", "Visit", 
     "Documents", "Quotations"
     ];
 
@@ -544,8 +563,8 @@ const ClientDetail = ({ client, onBack }) => {
               <TabServiceWorkspace leadData={clientData.leadData} />
             )}
             
-            {activeTab === "Amount" && (
-              <TabEstimate leadData={clientData} isClient={true} />
+            {activeTab === "Financials & Billing" && (
+              <TabFinancials clientData={clientData} />
             )}
             
             {activeTab === "Tasks" && (
