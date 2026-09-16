@@ -261,7 +261,7 @@ const ClientDetail = ({ client, onBack }) => {
 
   const tabs = [
     "Overview", "Communication", "Service Requirement", "Service Workspace", 
-    ...(isAdmin ? ["Amount"] : []), "Projects", "Follow Ups", "Tasks", "Timeline", "Site Visit", 
+    ...(isAdmin ? ["Amount"] : []), "Projects", "Follow Ups", "Tasks", "Timeline", "Visit", 
     "Documents", "Quotations"
     ];
 
@@ -542,8 +542,8 @@ const ClientDetail = ({ client, onBack }) => {
               <TabTimeline leadData={clientData} isClient={true} />
             )}
 
-            {activeTab === "Site Visit" && (
-              <TabSiteVisit leadData={clientData} />
+            {activeTab === "Visit" && (
+              <TabSiteVisit leadData={clientData} isClient={true} />
             )}
 
             {activeTab === "Documents" && (

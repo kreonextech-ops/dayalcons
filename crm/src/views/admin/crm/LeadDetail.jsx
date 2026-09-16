@@ -142,7 +142,7 @@ const LeadDetail = ({ lead, onBack }) => {
     setLeadData({ ...leadData, status: newStatus });
     await supabase.from("leads").update({ status: newStatus }).eq("id", leadData.id);
     
-    if (newStatus === "Won") {
+    if (newStatus === "Success") {
        setShowConvertModal(true);
     }
   };
@@ -236,11 +236,11 @@ const LeadDetail = ({ lead, onBack }) => {
 
   const tabs = [
     "Overview", "Communication", "Service Requirement", "Service Workspace", 
-    ...(isAdmin ? ["Quotation"] : []), "Documents", "Follow Ups", "Tasks", "Timeline"
+    ...(isAdmin ? ["Quotation"] : []), "Documents", "Follow Ups", "Tasks", "Timeline", "Visit"
   ];
 
   // Pipeline logic
-  const stages = ["New", "Contacted", "Site Visit", "Quotation", "Negotiation", "Won"];
+  const stages = ["New", "Contacted", "Visit", "Quotation", "Negotiation", "Won"];
   let currentIndex = stages.indexOf(leadData.status);
   if (currentIndex === -1) {
     if (leadData.status === "Lost" || leadData.status === "Junk") currentIndex = -1;
@@ -308,7 +308,7 @@ const LeadDetail = ({ lead, onBack }) => {
     }
 
     // 3. Update local state to reflect it's won
-    setLeadData({ ...leadData, status: "Won" });
+    setLeadData({ ...leadData, status: "Success" });
     
     alert("Lead successfully converted to Client! It has been removed from Leads.");
     onBack(); // Go back to leads list
@@ -371,15 +371,11 @@ const LeadDetail = ({ lead, onBack }) => {
             <select 
               value={leadData.status} 
               onChange={handleDirectStatusChange}
-              className={`rounded-full px-4 py-1 text-xs font-bold tracking-wide outline-none cursor-pointer appearance-none ${leadData.status === 'Lost' ? 'bg-red-500 text-white' : leadData.status === 'Won' ? 'bg-green-600 text-white' : 'bg-[#16A34A] text-white'}`}
+              className={`rounded-full px-4 py-1 text-xs font-bold tracking-wide outline-none cursor-pointer appearance-none ${leadData.status === 'Closed' ? 'bg-red-500 text-white' : leadData.status === 'Success' ? 'bg-green-600 text-white' : 'bg-[#16A34A] text-white'}`}
             >
-              <option value="New">STATUS: NEW</option>
-              <option value="Contacted">STATUS: CONTACTED</option>
-              <option value="Site Visit">STATUS: SITE VISIT</option>
-              <option value="Quotation">STATUS: QUOTATION</option>
-              <option value="Negotiation">STATUS: NEGOTIATION</option>
-              <option value="Won">STATUS: WON</option>
-              <option value="Lost">STATUS: LOST</option>
+              <option value="Ongoing">STATUS: ONGOING</option>
+              <option value="Success">STATUS: SUCCESS</option>
+              <option value="Closed">STATUS: CLOSED</option>
             </select>
             <select 
               value={leadData.lead_temperature || 'Warm'} 
@@ -611,7 +607,7 @@ const LeadDetail = ({ lead, onBack }) => {
                           <select className="border rounded p-1 text-sm outline-none border-[#2563EB]" value={leadData.status} onChange={e => setLeadData({...leadData, status: e.target.value})}>
                             <option value="New">New</option>
                             <option value="Contacted">Contacted</option>
-                            <option value="Site Visit">Site Visit</option>
+                            <option value="Visit">Site Visit</option>
                             <option value="Quotation">Quotation</option>
                             <option value="Negotiation">Negotiation</option>
                             <option value="Won">Won (Client)</option>
@@ -685,6 +681,7 @@ const LeadDetail = ({ lead, onBack }) => {
             {activeTab === "Follow Ups" && <TabFollowUps moduleType="Lead" recordId={leadData.id} />}
             {activeTab === "Quotation" && <TabEstimate leadData={leadData} />}
             {activeTab === "Documents" && <TabDocuments leadData={leadData} />}
+            {activeTab === "Visit" && <TabSiteVisit leadData={leadData} />}
 
             {/* Other tabs omitted for brevity but can be expanded */}
             {!["Overview", "Timeline", "Service Requirement", "Service Workspace", "Tasks", "Quotation", "Documents", "Communication"].includes(activeTab) && (

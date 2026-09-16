@@ -1,4 +1,30 @@
 import React, { useState, useEffect } from "react";
+
+import { MdFoundation, MdLocationCity, MdEngineering, MdOutlineArchitecture, MdBusinessCenter, MdCloudDownload, MdDomainVerification, MdLayers, MdHouse, MdWaterDrop, MdPhotoSizeSelectSmall } from "react-icons/md";
+import { FiFileText, FiMap } from "react-icons/fi";
+
+const DESIGN_SERVICES = [
+  { id: "Land Registration & Mutation", icon: <FiFileText /> },
+  { id: "L.U.C.C", icon: <FiFileText /> },
+  { id: "Building Plan Approval", icon: <MdDomainVerification /> },
+  { id: "2D Floor Plan Design", icon: <MdLayers /> },
+  { id: "3D Floor Plan Design", icon: <MdLayers /> },
+  { id: "3D Elevation Design", icon: <MdHouse /> },
+  { id: "Soil Testing", icon: <MdWaterDrop /> },
+  { id: "Structural Design", icon: <MdOutlineFoundation /> },
+  { id: "Vastu Consultation", icon: <FiMap /> },
+  { id: "Interior Design", icon: <MdPhotoSizeSelectSmall /> }
+];
+
+const EXECUTION_PROJECTS = [
+  { id: "Turnkey Construction", icon: <MdFoundation /> },
+  { id: "Commercial Construction", icon: <MdLocationCity /> },
+  { id: "Industrial Setup", icon: <MdEngineering /> },
+  { id: "Renovation & Remodeling", icon: <MdOutlineArchitecture /> },
+  { id: "Interior Execution", icon: <MdBusinessCenter /> },
+  { id: "Landscaping", icon: <MdCloudDownload /> },
+];
+
 import Card from "components/card";
 import { createClient } from "@supabase/supabase-js";
 import { logAction } from "utils/auditLogger";
@@ -189,7 +215,7 @@ const CRMLeads = () => {
 
   // New Lead Form State
   const [newLead, setNewLead] = useState({
-    name: "", phone: "", whatsapp: "", email: "", service_type: "", source: "", address: "", notes: "", status: "New", lead_temperature: "Warm Lead"
+    name: "", phone: "", whatsapp: "", email: "", service_type: [], source: "", address: "", notes: "", status: "New", lead_temperature: "Warm Lead"
   });
 
   const fetchLeads = async () => {
@@ -219,7 +245,7 @@ const CRMLeads = () => {
       const { data: newLeadData, error } = await supabase.from("leads").insert([{
          name: newLead.name,
          phone: newLead.phone,
-         service_type: newLead.service_type,
+         service_type: Array.isArray(newLead.service_type) ? newLead.service_type.join(', ') : newLead.service_type,
          source: newLead.source === "Other" ? (newLead.source_custom || "Other") : newLead.source,
          status: newLead.status,
          ...(newLead.created_at ? { created_at: new Date(newLead.created_at).toISOString() } : {})
@@ -237,7 +263,7 @@ const CRMLeads = () => {
       }));
 
       setShowNewLeadModal(false);
-      setNewLead({ name: "", phone: "", whatsapp: "", email: "", service_type: "", source: "", address: "", notes: "", status: "New" });
+      setNewLead({ name: "", phone: "", whatsapp: "", email: "", service_type: [], source: "", address: "", notes: "", status: "New" });
       fetchLeads();
     } else {
       console.error("Error creating lead:", error);
@@ -275,7 +301,7 @@ const CRMLeads = () => {
     const { error } = await supabase.from("leads").update({ status: newStatus }).eq("id", leadId);
     if (error) alert("Error: " + error.message);
     else {
-      if (newStatus === "Won") {
+      if (newStatus === "Success") {
         const leadToConvert = leads.find(l => l.id === leadId);
         if (leadToConvert) {
            setConvertLeadData(leadToConvert);
@@ -660,13 +686,13 @@ const CRMLeads = () => {
                     onChange={e => setStatusUpdateData({...statusUpdateData, status: e.target.value})}
                     className="w-full h-11 px-3 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 text-[14px] text-[#0F172A] dark:text-white outline-none focus:border-[#2563EB]"
                   >
-                    <option>New</option>
-                    <option>Contacted</option>
-                    <option>Site Visit</option>
+                    <option>Ongoing</option>
+                    
+                    <option>Success</option>
                     <option>Estimate</option>
                     <option>Negotiation</option>
-                    <option>Won</option>
-                    <option>Lost</option>
+                    
+                    <option>Closed</option>
                   </select>
                 </div>
                 <div>

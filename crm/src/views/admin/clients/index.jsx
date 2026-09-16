@@ -1,4 +1,30 @@
 import React, { useState, useEffect } from "react";
+
+import { MdFoundation, MdLocationCity, MdEngineering, MdOutlineArchitecture, MdBusinessCenter, MdCloudDownload, MdDomainVerification, MdLayers, MdHouse, MdWaterDrop, MdPhotoSizeSelectSmall } from "react-icons/md";
+import { FiFileText, FiMap } from "react-icons/fi";
+
+const DESIGN_SERVICES = [
+  { id: "Land Registration & Mutation", icon: <FiFileText /> },
+  { id: "L.U.C.C", icon: <FiFileText /> },
+  { id: "Building Plan Approval", icon: <MdDomainVerification /> },
+  { id: "2D Floor Plan Design", icon: <MdLayers /> },
+  { id: "3D Floor Plan Design", icon: <MdLayers /> },
+  { id: "3D Elevation Design", icon: <MdHouse /> },
+  { id: "Soil Testing", icon: <MdWaterDrop /> },
+  { id: "Structural Design", icon: <MdOutlineFoundation /> },
+  { id: "Vastu Consultation", icon: <FiMap /> },
+  { id: "Interior Design", icon: <MdPhotoSizeSelectSmall /> }
+];
+
+const EXECUTION_PROJECTS = [
+  { id: "Turnkey Construction", icon: <MdFoundation /> },
+  { id: "Commercial Construction", icon: <MdLocationCity /> },
+  { id: "Industrial Setup", icon: <MdEngineering /> },
+  { id: "Renovation & Remodeling", icon: <MdOutlineArchitecture /> },
+  { id: "Interior Execution", icon: <MdBusinessCenter /> },
+  { id: "Landscaping", icon: <MdCloudDownload /> },
+];
+
 import Card from "components/card";
 import { createClient } from "@supabase/supabase-js";
 import { logAction } from "utils/auditLogger";
@@ -34,7 +60,7 @@ const Clients = () => {
 
   // New Client Form State
   const [newClient, setNewClient] = useState({
-    name: "", phone: "", email: "", address: "", company: "", gst: "", source: "", work_types: ""
+    name: "", phone: "", email: "", address: "", company: "", gst: "", source: "", work_types: []
   });
 
   const fileInputRef = useRef(null);
@@ -172,7 +198,7 @@ const Clients = () => {
     const { data: newClientData, error } = await supabase.from("clients").insert([{
       name: newClient.name,
         status: 'active',
-        work_types: newClient.work_types,
+        work_types: Array.isArray(newClient.work_types) ? newClient.work_types.join(', ') : newClient.work_types,
         ...(newClient.created_at ? { created_at: new Date(newClient.created_at).toISOString() } : {})
       }]).select();
     
@@ -188,7 +214,7 @@ const Clients = () => {
       }));
 
       setShowNewClientModal(false);
-      setNewClient({ name: "", phone: "", email: "", address: "", company: "", gst: "", source: "", work_types: "" });
+      setNewClient({ name: "", phone: "", email: "", address: "", company: "", gst: "", source: "", work_types: [] });
       fetchClients();
     } else {
       console.error(error);

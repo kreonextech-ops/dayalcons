@@ -1,4 +1,6 @@
-import React, { useState, useEffect, useRef } from "react";
+import sys
+
+new_content = """import React, { useState, useEffect, useRef } from "react";
 import Card from "components/card";
 import { MdAdd, MdClose, MdCheckCircle, MdSave, MdAttachFile } from "react-icons/md";
 import { createClient } from "@supabase/supabase-js";
@@ -50,7 +52,7 @@ const TabSiteVisit = ({ leadData, isClient=false }) => {
     if (!file) return;
     setIsUploading(true);
     try {
-       const url = await uploadFileToR2(file, `visits/${Date.now()}_${file.name}`);
+       const url = await uploadFileToR2(file, \isits/\_\\);
        if (url) {
           setNewVisit({ ...newVisit, attachment_url: url });
        }
@@ -120,7 +122,7 @@ const TabSiteVisit = ({ leadData, isClient=false }) => {
                       {v.attachment_url && <a href={v.attachment_url} target="_blank" rel="noreferrer" className="block text-blue-500 underline text-xs mt-1">View File</a>}
                     </td>
                     <td className="py-4 pr-4">
-                      <span className={\px-2 py-1 text-xs font-bold rounded-full \}>
+                      <span className={\px-2 py-1 text-xs font-bold rounded-full \\}>
                         {v.status}
                       </span>
                     </td>
@@ -188,3 +190,9 @@ const TabSiteVisit = ({ leadData, isClient=false }) => {
 };
 
 export default TabSiteVisit;
+"""
+
+with open('crm/src/views/admin/crm/components/TabSiteVisit.jsx', 'w') as f:
+    f.write(new_content)
+
+print("Patched TabSiteVisit.jsx")
