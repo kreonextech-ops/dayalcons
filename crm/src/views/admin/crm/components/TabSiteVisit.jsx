@@ -120,7 +120,7 @@ const TabSiteVisit = ({ leadData, isClient=false }) => {
                       {v.attachment_url && <a href={v.attachment_url} target="_blank" rel="noreferrer" className="block text-blue-500 underline text-xs mt-1">View File</a>}
                     </td>
                     <td className="py-4 pr-4">
-                      <span className={\px-2 py-1 text-xs font-bold rounded-full \}>
+                      <span className={`px-2 py-1 text-xs font-bold rounded-full ${v.status === 'Completed' ? 'bg-green-100 text-green-700' : 'bg-blue-100 text-blue-700'}`}>
                         {v.status}
                       </span>
                     </td>

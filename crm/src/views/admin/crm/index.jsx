@@ -1,4 +1,14 @@
 import React, { useState, useEffect } from "react";
+import Card from "components/card";
+import { createClient } from "@supabase/supabase-js";
+import { logAction } from "utils/auditLogger";
+import * as XLSX from "xlsx";
+import { useRef } from "react";
+import LeadDetail from "./LeadDetail";
+import { MdAdd, MdArchive, MdBusinessCenter, MdCheckCircle, MdClose, MdCloudDownload, MdContentCopy, MdDeleteOutline, MdDomainVerification, MdEdit, MdEngineering, MdFoundation, MdHouse, MdKeyboardArrowLeft, MdKeyboardArrowRight, MdLayers, MdLocalFireDepartment, MdLocationCity, MdMoreVert, MdOutlineArchitecture, MdOutlineFoundation, MdOutlineRefresh, MdPeople, MdPhotoSizeSelectSmall, MdSearch, MdToday, MdWaterDrop } from "react-icons/md";
+import { FiClock, FiFileText, FiMap } from "react-icons/fi";
+
+
 
 
 const DESIGN_SERVICES = [
@@ -23,15 +33,15 @@ const EXECUTION_PROJECTS = [
   { id: "Landscaping", icon: <MdCloudDownload /> },
 ];
 
-import Card from "components/card";
-import { createClient } from "@supabase/supabase-js";
-import { logAction } from "utils/auditLogger";
 
-import * as XLSX from "xlsx";
-import { useRef } from "react";
-import LeadDetail from "./LeadDetail";
-import { MdAdd, MdArchive, MdBusinessCenter, MdCheckCircle, MdClose, MdCloudDownload, MdContentCopy, MdDeleteOutline, MdDomainVerification, MdEdit, MdEngineering, MdFoundation, MdHouse, MdKeyboardArrowLeft, MdKeyboardArrowRight, MdLayers, MdLocalFireDepartment, MdLocationCity, MdMoreVert, MdOutlineArchitecture, MdOutlineFoundation, MdOutlineRefresh, MdPeople, MdPhotoSizeSelectSmall, MdSearch, MdToday, MdWaterDrop } from "react-icons/md";
-import { FiClock, FiFileText, FiMap } from "react-icons/fi";
+
+
+
+
+
+
+
+
 
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL || "https://gdzligxryodasaxnhdco.supabase.co";
 const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdkemxpZ3hyeW9kYXNheG5oZGNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcxNTg1MDUsImV4cCI6MjEwMjczNDUwNX0.AYTyAMf22g8au51ATReRQdQc2IzDLYQ2vtQH_Uyfrpg";
