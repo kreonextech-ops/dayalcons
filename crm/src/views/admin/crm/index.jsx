@@ -634,12 +634,30 @@ const CRMLeads = () => {
                 </div>
                 <div>
                   <label className="block text-[12px] font-bold text-[#475569] dark:text-gray-200 dark:text-white mb-1.5 uppercase tracking-wide">Service</label>
-                  <select value={newLead.service_type} onChange={e=>setNewLead({...newLead, service_type: e.target.value})} className="w-full h-11 px-3 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 text-[14px] text-[#0F172A] dark:text-white outline-none focus:border-[#2563EB] transition-colors cursor-pointer bg-white dark:bg-navy-800">
-                    <option value="">Select service</option>
-                    <option value="Residential">Residential</option>
-                    <option value="Commercial">Commercial</option>
-                    <option value="Interior Design">Interior Design</option>
-                  </select>
+                  <div className="flex flex-col gap-2 max-h-48 overflow-y-auto p-2 border rounded-[10px] dark:border-navy-700 custom-scrollbar">
+                        <div className="text-xs font-bold text-brand-500 mb-1">Services</div>
+                        {DESIGN_SERVICES.map(s => (
+                           <label key={s.id} className="flex items-center gap-2 text-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-navy-700 p-1 rounded">
+                              <input type="checkbox" checked={Array.isArray(newLead.service_type) && newLead.service_type.includes(s.id)} onChange={(e) => {
+                                 let st = Array.isArray(newLead.service_type) ? [...newLead.service_type] : [];
+                                 if (e.target.checked) st.push(s.id);
+                                 else st = st.filter(x => x !== s.id);
+                                 setNewLead({...newLead, service_type: st});
+                              }} /> {s.id}
+                           </label>
+                        ))}
+                        <div className="text-xs font-bold text-brand-500 mt-2 mb-1">Projects</div>
+                        {EXECUTION_PROJECTS.map(p => (
+                           <label key={p.id} className="flex items-center gap-2 text-sm cursor-pointer hover:bg-gray-50 dark:hover:bg-navy-700 p-1 rounded">
+                              <input type="checkbox" checked={Array.isArray(newLead.service_type) && newLead.service_type.includes(p.id)} onChange={(e) => {
+                                 let st = Array.isArray(newLead.service_type) ? [...newLead.service_type] : [];
+                                 if (e.target.checked) st.push(p.id);
+                                 else st = st.filter(x => x !== p.id);
+                                 setNewLead({...newLead, service_type: st});
+                              }} /> {p.id}
+                           </label>
+                        ))}
+                    </div>
                 </div>
                 <div>
                   <label className="block text-[12px] font-bold text-[#475569] dark:text-gray-200 dark:text-white mb-1.5 uppercase tracking-wide">Lead Source</label>
