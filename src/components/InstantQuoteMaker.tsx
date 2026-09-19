@@ -36,8 +36,10 @@ const CONSTRUCTION_RATES: Record<LocationType, Record<PackageType, number>> = {
 export default function InstantQuoteMaker() {
   // --- Common State ---
   const [quoteCategory, setQuoteCategory] = useState<QuoteCategory>("Construction");
+  const [name, setName] = useState<string>("");
   const [phone, setPhone] = useState<string>("");
   const [isQuoteGenerated, setIsQuoteGenerated] = useState<boolean>(false);
+  const [nameError, setNameError] = useState<string>("");
   const [phoneError, setPhoneError] = useState<string>("");
 
   // --- Services State ---
@@ -67,7 +69,8 @@ export default function InstantQuoteMaker() {
   useEffect(() => {
     setIsQuoteGenerated(false);
     setPhoneError("");
-  }, [quoteCategory, serviceType, serviceSize, constLocation, constPackage, constArea, phone]);
+    setNameError("");
+  }, [quoteCategory, serviceType, serviceSize, constLocation, constPackage, constArea, name, phone]);
 
   // Reset sizes when changing service type
   useEffect(() => {
@@ -79,6 +82,12 @@ export default function InstantQuoteMaker() {
   }, [serviceType]);
 
   const handleShowQuote = async () => {
+    if (!name) {
+      setNameError("Please enter your name.");
+      return;
+    }
+    setNameError("");
+    
     if (!phone) {
       setPhoneError("Please enter your mobile number.");
       return;
@@ -138,9 +147,9 @@ export default function InstantQuoteMaker() {
     let text = "";
     if (quoteCategory === "Service") {
       const sizeText = serviceType === "3D Front Elevation" ? "Flat Rate" : `${serviceSize} ${getServiceUnit(serviceType)}`;
-      text = `Hello Dayal Constructions & Co.! I used your Instant Quote Maker.\n\n*Quote Type:* Service\n*Service:* ${serviceType}\n*Size/Qty:* ${sizeText}\n*Estimated Cost:* ${formatCurrency(getEstimate())}\n*My Phone:* ${phone}\n\nI would like to discuss this further.`;
+      text = `Hello Dayal Constructions & Co.! I used your Instant Quote Maker.\n\n*Name:* ${name}\n*Quote Type:* Service\n*Service:* ${serviceType}\n*Size/Qty:* ${sizeText}\n*Estimated Cost:* ${formatCurrency(getEstimate())}\n*My Phone:* ${phone}\n\nI would like to discuss this further.`;
     } else {
-      text = `Hello Dayal Constructions & Co.! I used your Instant Quote Maker.\n\n*Quote Type:* Construction\n*Location:* ${constLocation}\n*Package:* ${constPackage}\n*Area:* ${constArea} sq.ft.\n*Estimated Cost:* ${formatCurrency(getEstimate())}\n*My Phone:* ${phone}\n\nI would like to discuss this further.`;
+      text = `Hello Dayal Constructions & Co.! I used your Instant Quote Maker.\n\n*Name:* ${name}\n*Quote Type:* Construction\n*Location:* ${constLocation}\n*Package:* ${constPackage}\n*Area:* ${constArea} sq.ft.\n*Estimated Cost:* ${formatCurrency(getEstimate())}\n*My Phone:* ${phone}\n\nI would like to discuss this further.`;
     }
     const url = `https://wa.me/${waPhone}?text=${encodeURIComponent(text)}`;
     window.open(url, "_blank");
@@ -317,6 +326,27 @@ export default function InstantQuoteMaker() {
                 </div>
               </>
             )}
+
+            {/* Name Input */}
+            <div className="col-span-1 md:col-span-2 lg:col-span-1">
+              <label className="block text-[11px] font-[700] text-[#062B55] mb-2 uppercase tracking-wide">
+                Your Name <span className="text-red-500">*</span>
+              </label>
+              <div className="relative">
+                <span className="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-[18px] text-[#062B55]/40">person</span>
+                <input 
+                  type="text"
+                  placeholder="Enter your name"
+                  value={name}
+                  onChange={(e) => {
+                    setName(e.target.value);
+                    setNameError("");
+                  }}
+                  className={w-full bg-[#F7FBFF] border rounded-[10px] pl-11 pr-4 py-3 text-[14px] font-[600] text-[#062B55] focus:outline-none transition-colors h-[45px] }
+                />
+              </div>
+              {nameError && <p className="text-red-500 text-[11px] font-semibold mt-1.5">{nameError}</p>}
+            </div>
 
             {/* Common Phone Input */}
             <div className="col-span-1 md:col-span-2 lg:col-span-1">
