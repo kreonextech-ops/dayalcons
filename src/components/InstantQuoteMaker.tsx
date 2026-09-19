@@ -342,7 +342,7 @@ export default function InstantQuoteMaker() {
                     setName(e.target.value);
                     setNameError("");
                   }}
-                  className={w-full bg-[#F7FBFF] border rounded-[10px] pl-11 pr-4 py-3 text-[14px] font-[600] text-[#062B55] focus:outline-none transition-colors h-[45px] }
+                  className={`w-full bg-[#F7FBFF] border rounded-[10px] pl-11 pr-4 py-3 text-[14px] font-[600] text-[#062B55] focus:outline-none transition-colors h-[45px] ${nameError ? 'border-red-400 focus:border-red-500' : 'border-[#062B55]/10 focus:border-[#18AFFF]'}`}
                 />
               </div>
               {nameError && <p className="text-red-500 text-[11px] font-semibold mt-1.5">{nameError}</p>}
