@@ -16,6 +16,24 @@ export default function SignIn() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  // ── Popup OAuth Callback Handler ──────────────────────────────────────────
+  // When Google OAuth redirects back to this page inside a popup window,
+  // we must NOT navigate or touch sessionStorage (those belong to the parent).
+  // Just let Supabase store the session in localStorage and close the popup.
+  React.useEffect(() => {
+    const isInPopup = window.opener && window.opener !== window;
+    const hasOAuthCallback = window.location.hash.includes("access_token") || 
+                             window.location.search.includes("code=");
+    if (isInPopup && hasOAuthCallback) {
+      // Give Supabase a moment to process the tokens from the URL hash,
+      // then close. The parent window's onAuthStateChange will do the rest.
+      const timer = setTimeout(() => {
+        try { window.close(); } catch (_) {}
+      }, 1500);
+      return () => clearTimeout(timer);
+    }
+  }, []);
+
   // Audit log - now blocking to ensure it completes before navigate
   const logLogin = async (employeeName, userId) => {
     try {
