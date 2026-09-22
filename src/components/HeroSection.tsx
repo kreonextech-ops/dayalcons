@@ -45,10 +45,10 @@ export default function HeroSection() {
           muted 
           playsInline
           webkit-playsinline="true"
-          poster="/images/saved.png"
+          poster="https://pub-00d1d73a43a643edb96c64ca062ab6df.r2.dev/website/backdrop.jpg"
           className="w-full h-full object-cover object-[center_bottom] opacity-80"
         >
-          <source src="https://pub-00d1d73a43a643edb96c64ca062ab6df.r2.dev/website/hero.mp4" type="video/mp4" />
+          <source src="https://pub-00d1d73a43a643edb96c64ca062ab6df.r2.dev/website/dayalhero.mp4" type="video/mp4" />
         </video>
         <div className="absolute inset-0 blueprint-grid opacity-10"></div>
       </div>
