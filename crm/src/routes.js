@@ -105,6 +105,13 @@ const routes = [
     component: <Tasks />,
   },
   {
+    name: "Assignment Hub",
+    layout: "/admin",
+    icon: <MdAssignment className="h-6 w-6" />,
+    path: "assignments",
+    component: <AssignmentHub />,
+  },
+  {
     name: "Follow Ups",
     layout: "/admin",
     icon: <MdAssignment className="h-6 w-6" />, // Will change icon to MdNotificationsActive or similar if imported, but MdAssignment is safe

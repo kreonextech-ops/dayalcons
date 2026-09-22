@@ -53,6 +53,7 @@ const CRMLeads = () => {
   const isAdmin = loggedInUser?.role === 'Admin';
 
   const [leads, setLeads] = useState([]);
+   const [employeesMap, setEmployeesMap] = useState({});
   const [searchTerm, setSearchTerm] = useState("");
   const [filterStatus, setFilterStatus] = useState("");
   const [sortOrder, setSortOrder] = useState("newest");
@@ -231,6 +232,11 @@ const CRMLeads = () => {
     
     const { data, error } = await query;
     if (!error && data) {
+         const { data: empDataFetch } = await supabase.from("employees").select("id, name");
+         const eMap = {};
+         if (empDataFetch) { empDataFetch.forEach(e => eMap[e.id] = e.name); }
+         setEmployeesMap(eMap);
+
        // Merge with localStorage
        const merged = data.map(lead => {
           const localData = JSON.parse(localStorage.getItem(`lead_${lead.id}`) || "{}");
