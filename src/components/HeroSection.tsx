@@ -46,7 +46,7 @@ export default function HeroSection() {
           playsInline
           webkit-playsinline="true"
           poster="https://pub-00d1d73a43a643edb96c64ca062ab6df.r2.dev/website/backdrop.png"
-          className="w-full h-full object-cover object-[center_top] opacity-80"
+          className="w-full h-full object-cover object-center opacity-80"
         >
           <source src="https://pub-00d1d73a43a643edb96c64ca062ab6df.r2.dev/website/dayalhero.mp4" type="video/mp4" />
         </video>
