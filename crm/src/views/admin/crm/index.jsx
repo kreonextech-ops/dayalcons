@@ -50,7 +50,7 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 const CRMLeads = () => {
   const userStr = sessionStorage.getItem('dayal_user');
   const loggedInUser = userStr ? JSON.parse(userStr) : null;
-  const isAdmin = loggedInUser?.role === 'Admin';
+  const isAdmin = loggedInUser?.role === 'Admin' || loggedInUser?.role === 'CRO';
 
   const [leads, setLeads] = useState([]);
    const [employeesMap, setEmployeesMap] = useState({});
@@ -242,7 +242,26 @@ const CRMLeads = () => {
           const localData = JSON.parse(localStorage.getItem(`lead_${lead.id}`) || "{}");
           return { ...lead, ...localData };
        });
-       setLeads(merged);
+         // Group duplicates by phone number
+         const groupedMap = {};
+         const finalLeads = [];
+         merged.forEach(lead => {
+            if (!lead.phone || lead.phone.trim() === "") {
+               finalLeads.push(lead);
+            } else {
+               const phoneStr = lead.phone.trim();
+               if (groupedMap[phoneStr]) {
+                  const primary = groupedMap[phoneStr];
+                  if (!primary.duplicate_history) primary.duplicate_history = [];
+                  primary.duplicate_history.push(lead);
+               } else {
+                  groupedMap[phoneStr] = lead;
+                  finalLeads.push(lead);
+               }
+            }
+         });
+         
+         setLeads(finalLeads);
     }
     setLoading(false);
   };

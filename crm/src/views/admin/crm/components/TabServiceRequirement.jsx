@@ -30,7 +30,7 @@ const CONSTRUCTION_SERVICES = [
   { id: "Electrical & Plumbing", icon: <MdElectricBolt /> }
 ];
 
-const TabServiceRequirement = ({ leadData, setLeadData }) => {
+const TabServiceRequirement = ({ leadData, setLeadData, handleSaveToDB }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [activeCategory, setActiveCategory] = useState("Design & Planning");
 

@@ -27,6 +27,16 @@ const supabaseUrl = process.env.REACT_APP_SUPABASE_URL || "https://gdzligxryodas
 const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdkemxpZ3hyeW9kYXNheG5oZGNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcxNTg1MDUsImV4cCI6MjEwMjczNDUwNX0.AYTyAMf22g8au51ATReRQdQc2IzDLYQ2vtQH_Uyfrpg";
 const supabase = createClient(supabaseUrl, supabaseKey);
 
+const DESIGN_SERVICES_LIST = [
+  "Land Registration & Mutation", "Building Plan Approval", "2D Floor Plan Design", 
+  "3D Floor Plan Design", "3D Elevation Design", "Soil Testing", "Structural Design", 
+  "Vastu Consultation", "Interior Design"
+];
+const CONSTRUCTION_SERVICES_LIST = [
+  "Residential Construction", "Commercial Construction", "Industrial Construction", 
+  "Painting & Epoxy Flooring", "Renovation & Remodeling", "Turnkey Projects", "Electrical & Plumbing"
+];
+
 const ClientDetail = ({ client, onBack }) => {
   const [activeTab, setActiveTab] = useState("Overview");
   const [isEditingClient, setIsEditingClient] = useState(false);
@@ -151,6 +161,40 @@ const ClientDetail = ({ client, onBack }) => {
        fetchComments();
     }
   }, [clientData.id]);
+
+  const handleSaveServiceRequirements = async () => {
+    try {
+      const selected = clientData.leadData?.selectedServices || [];
+      if (!selected.length) return;
+      
+      const toDesign = selected.filter(s => DESIGN_SERVICES_LIST.includes(s));
+      const toConstruct = selected.filter(s => CONSTRUCTION_SERVICES_LIST.includes(s));
+      
+      // We should check if they already exist to prevent dupes, but for now we just insert missing
+      
+      // Fetch existing
+      const { data: exServices } = await supabase.from("services").select("title").eq("client_id", clientData.id);
+      const { data: exProjects } = await supabase.from("projects").select("name").eq("client_id", clientData.id);
+      
+      const exServiceNames = exServices?.map(s => s.title) || [];
+      const exProjectNames = exProjects?.map(p => p.name) || [];
+      
+      const newServices = toDesign.filter(s => !exServiceNames.includes(s)).map(s => ({
+         title: s, client_id: clientData.id, status: "Active"
+      }));
+      const newProjects = toConstruct.filter(p => !exProjectNames.includes(p)).map(p => ({
+         name: p, client_id: clientData.id, status: "Active"
+      }));
+      
+      if (newServices.length > 0) await supabase.from("services").insert(newServices);
+        if (newProjects.length > 0) await supabase.from("projects").insert(newProjects);
+        await supabase.from("clients").update({ leadData: clientData.leadData }).eq("id", clientData.id);
+      
+      alert("Service requirements saved & created successfully!");
+    } catch (err) {
+      alert("Error saving service requirements: " + err.message);
+    }
+  };
 
   const fetchEmployees = async () => {
     const { data } = await supabase.from('employees').select('id, name, role');
@@ -556,7 +600,11 @@ const ClientDetail = ({ client, onBack }) => {
             )}
             
             {activeTab === "Service Requirement" && (
-              <TabServiceRequirement leadData={clientData.leadData} setLeadData={(newData) => setClientData({...clientData, leadData: newData})} />
+              <TabServiceRequirement 
+                leadData={clientData.leadData} 
+                setLeadData={(newData) => setClientData({...clientData, leadData: newData})} 
+                handleSaveToDB={handleSaveServiceRequirements}
+              />
             )}
             
             {activeTab === "Service Workspace" && (

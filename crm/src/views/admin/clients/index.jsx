@@ -403,10 +403,12 @@ const Clients = () => {
                                 {client.lastContact ? new Date(client.lastContact).toLocaleDateString("en-GB", { day: '2-digit', month: 'short', year: 'numeric' }) : "-"}
                              </td>
                            <td className="py-4 px-6 text-right">
-                              <button onClick={(e) => { e.stopPropagation(); handleDeleteClient(client.id); }} className="text-red-500 hover:bg-red-50 p-2 rounded-lg transition" title="Delete Client">
-                                 <MdDeleteOutline size={20} />
-                              </button>
-                           </td>
+                                {isAdmin && (
+                                   <button onClick={(e) => { e.stopPropagation(); handleDeleteClient(client.id); }} className="text-red-500 hover:bg-red-50 p-2 rounded-lg transition" title="Delete Client">
+                                      <MdDeleteOutline size={20} />
+                                   </button>
+                                )}
+                             </td>
                         </tr>
                      ));
                   })()}
