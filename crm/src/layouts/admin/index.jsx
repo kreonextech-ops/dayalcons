@@ -68,6 +68,7 @@ export default function Admin(props) {
             "Construction Projects",
             "Tasks",
             "Follow Ups",
+            "Assignment Workflow",
             "Profile Settings"
           ];
           if (allowedForCRO.includes(prop.name)) hasPermission = true;
@@ -80,6 +81,7 @@ export default function Admin(props) {
             "Construction Projects", 
             "Tasks",
             "Follow Ups",
+            "Assignment Workflow",
             "Profile Settings"
           ];
           if (allowedForEmployees.includes(prop.name)) {
