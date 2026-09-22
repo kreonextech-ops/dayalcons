@@ -16,7 +16,7 @@ import Vendors from "views/admin/vendors";
 
 import AuditLogs from "views/admin/auditlogs";
 import ProfileSettings from "views/admin/profile";
-import AssignmentHub from "views/admin/assignments";
+import AssignmentWorkflow from "views/admin/assignments";
 
 // Auth Imports
 import SignIn from "views/auth/SignIn";
@@ -105,11 +105,11 @@ const routes = [
     component: <Tasks />,
   },
   {
-    name: "Assignment Hub",
+    name: "Assignment Workflow",
     layout: "/admin",
     icon: <MdAssignment className="h-6 w-6" />,
     path: "assignments",
-    component: <AssignmentHub />,
+    component: <AssignmentWorkflow />,
   },
   {
     name: "Follow Ups",

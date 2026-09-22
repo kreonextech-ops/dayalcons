@@ -7,7 +7,7 @@ const supabaseUrl = process.env.REACT_APP_SUPABASE_URL || 'https://gdzligxryodas
 const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdkemxpZ3hyeW9kYXNheG5oZGNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcxNTg1MDUsImV4cCI6MjEwMjczNDUwNX0.AYTyAMf22g8au51ATReRQdQc2IzDLYQ2vtQH_Uyfrpg';
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-const AssignmentHub = () => {
+const AssignmentWorkflow = () => {
    const [user, setUser] = useState(null);
    const [isAdmin, setIsAdmin] = useState(false);
    const [employees, setEmployees] = useState([]);
@@ -116,7 +116,7 @@ const AssignmentHub = () => {
 
    return (
       <div className="mt-3">
-         <h1 className="text-[32px] font-bold text-[#0F172A] dark:text-white mb-6">Assignment Hub</h1>
+         <h1 className="text-[32px] font-bold text-[#0F172A] dark:text-white mb-6">Assignment Workflow</h1>
 
          <Card extra="w-full p-6 mb-8 border-2 border-brand-500 shadow-xl relative overflow-hidden">
             <div className="absolute top-0 left-0 w-2 h-full bg-brand-500"></div>
@@ -328,4 +328,4 @@ const EmployeeWorkload = ({ employeeId, employeeRole, tab }) => {
    );
 };
 
-export default AssignmentHub;
+export default AssignmentWorkflow;

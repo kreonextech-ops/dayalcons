@@ -38,8 +38,8 @@ export function SidebarLinks(props) {
           "Construction Projects",
           "Tasks",
           "Follow Ups",
-           "Assignment Hub",
-          "Assignment Hub",
+           "Assignment Workflow",
+          "Assignment Workflow",
           "Profile Settings"
         ];
         if (allowedForCRO.includes(route.name)) hasPermission = true;
@@ -52,8 +52,8 @@ export function SidebarLinks(props) {
            "Construction Projects", 
            "Tasks",
            "Follow Ups",
-           "Assignment Hub",
-          "Assignment Hub",
+           "Assignment Workflow",
+          "Assignment Workflow",
            "Profile Settings"
         ];
         if (allowedForEmployees.includes(route.name)) {
