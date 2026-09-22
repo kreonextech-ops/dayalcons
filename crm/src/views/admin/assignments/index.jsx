@@ -221,14 +221,14 @@ const AssignmentHub = () => {
                   )}
                </div>
 
-               <EmployeeWorkload employeeId={selectedEmployee.id} tab={activeTab} />
+               <EmployeeWorkload employeeId={selectedEmployee.id} employeeRole={selectedEmployee.role} tab={activeTab} />
             </div>
          )}
       </div>
    );
 };
 
-const EmployeeWorkload = ({ employeeId, tab }) => {
+const EmployeeWorkload = ({ employeeId, employeeRole, tab }) => {
    const [data, setData] = useState({ leads: [], clients: [], services: [], projects: [], tasks: [], followUps: [] });
    const [expanded, setExpanded] = useState(null);
 
@@ -251,11 +251,12 @@ const EmployeeWorkload = ({ employeeId, tab }) => {
          }
 
          if (!isDelegated) {
+            const orQuery = `assigned_to.ilike.%${employeeId}%${employeeRole ? `,assigned_to.ilike.%${employeeRole}%` : ''}`;
             const [lRes, cRes, sRes, pRes] = await Promise.all([
-               supabase.from('leads').select('*').like('assigned_to', `%${employeeId}%`),
-               supabase.from('clients').select('*').like('assigned_to', `%${employeeId}%`),
-               supabase.from('services').select('*').like('assigned_to', `%${employeeId}%`),
-               supabase.from('projects').select('*').like('assigned_to', `%${employeeId}%`)
+               supabase.from('leads').select('*').or(orQuery),
+               supabase.from('clients').select('*').or(orQuery),
+               supabase.from('services').select('*').or(orQuery),
+               supabase.from('projects').select('*').or(orQuery)
             ]);
             if (lRes.data) results.leads = lRes.data;
             if (cRes.data) results.clients = cRes.data;
