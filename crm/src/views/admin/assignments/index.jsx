@@ -54,12 +54,20 @@ const AssignmentHub = () => {
             return;
          }
          let table = 'leads';
-         if (assignType === 'Client') table = 'clients';
-         if (assignType === 'Consultancy Service') table = 'services';
-         if (assignType === 'Construction Project') table = 'projects';
+         let cols = 'id, name, phone';
+         if (assignType === 'Client') { table = 'clients'; cols = 'id, name'; }
+         if (assignType === 'Consultancy Service') { table = 'services'; cols = 'id, title'; }
+         if (assignType === 'Construction Project') { table = 'projects'; cols = 'id, title, name'; }
 
-         const { data } = await supabase.from(table).select('id, name, title');
-         if (data) setAvailableRecords(data.map(d => ({ id: d.id, name: d.title || d.name })));
+         const { data, error } = await supabase.from(table).select(cols);
+         if (data) {
+             setAvailableRecords(data.map(d => ({ 
+                 id: d.id, 
+                 name: (d.title || d.name || '') + (d.phone ?  -  : '') 
+             })));
+         } else {
+             console.error("Fetch error:", error);
+         }
       };
       fetchRecords();
    }, [assignType]);
