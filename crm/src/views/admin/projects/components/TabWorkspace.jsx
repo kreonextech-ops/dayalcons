@@ -165,7 +165,7 @@ const LandscapingWorkspace = () => (
 const TabWorkspace = ({ projData }) => {
   let selected = [];
   try {
-    const meta = JSON.parse(projData.description || "{}");
+    const meta = ( () => { try { return JSON.parse(projData.description || "{}"); } catch(e) { return { old_description: projData.description }; } } )();
     selected = meta.requirements || [];
   } catch (e) {
     selected = [];

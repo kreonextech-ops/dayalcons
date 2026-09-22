@@ -106,7 +106,7 @@ const ProjectDetail = ({ projData, onBack, onUpdate }) => {
 
   let parsedMeta = {};
   try {
-     parsedMeta = JSON.parse(projData?.description || "{}");
+     parsedMeta = ( () => { try { return JSON.parse(projData?.description || "{}"); } catch(e) { return { old_description: projData?.description }; } } )();
   } catch(e) {}
 
   const financials = parsedMeta.financials || { total: 0, advance: 0 };

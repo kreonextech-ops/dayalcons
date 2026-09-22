@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { 
   MdArrowBack, MdPhone, MdEmail, MdLocationOn, MdCheckCircle, MdEdit,
-  MdTimeline, MdAttachMoney, MdMap, MdEvent, MdFolder, MdAssignment,
+  MdTimeline, MdCurrencyRupee, MdMap, MdEvent, MdFolder, MdAssignment,
   MdMessage, MdPhoneInTalk, MdLocalPrintshop, MdPictureAsPdf, MdSave, MdClose, MdAttachFile, MdDelete
 } from "react-icons/md";
 import CommentRenderer from "components/chat/CommentRenderer";
@@ -400,27 +400,12 @@ const LeadDetail = ({ lead, onBack }) => {
       </div>
 
       {/* 3. Qualification Pipeline */}
-      <Card extra="w-full p-6 mb-6">
-        <div className="flex items-center justify-between relative">
-          <div className="absolute top-1/2 left-0 w-full h-[2px] bg-[#E2E8F0] -z-10 transform -translate-y-1/2"></div>
-          {stages.map((stage, idx) => {
-            const isActive = idx <= currentIndex; 
-            return (
-              <div key={stage} className="flex flex-col items-center gap-2 bg-white dark:bg-navy-800 px-2">
-                <div className={`h-8 w-8 rounded-full flex items-center justify-center border-4 border-white ${isActive ? 'bg-[#2563EB]' : 'bg-[#E2E8F0]'}`}>
-                  {isActive && <MdCheckCircle className="text-white w-5 h-5" />}
-                </div>
-                <span className={`text-[12px] font-semibold ${isActive ? 'text-[#0F172A] dark:text-white' : 'text-[#64748B] dark:text-gray-400'}`}>{stage}</span>
-              </div>
-            );
-          })}
-        </div>
-      </Card>
+      
 
       {/* 4. KPI Cards */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         {[
-          { title: "Budget", value: leadData.budget, icon: <MdAttachMoney /> },
+          { title: "Budget", value: leadData.budget, icon: <MdCurrencyRupee /> },
           { title: "Plot Size", value: leadData.plotSize, icon: <MdMap /> },
           { title: "Expected Start", value: leadData.timeline, icon: <MdEvent /> },
         ].map((kpi, i) => (

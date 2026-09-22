@@ -6,7 +6,7 @@ import { logAction } from "utils/auditLogger";
 import * as XLSX from "xlsx";
 import { useRef } from "react";
 import ClientDetail from "./ClientDetail";
-import { MdAdd, MdAttachMoney, MdBusinessCenter, MdCheckCircle, MdCloudDownload, MdDeleteOutline, MdDomainVerification, MdEdit, MdEngineering, MdFoundation, MdHouse, MdKeyboardArrowLeft, MdKeyboardArrowRight, MdLayers, MdLocationCity, MdMoreVert, MdOutlineArchitecture, MdOutlineFoundation, MdOutlineRefresh, MdPerson, MdPhotoSizeSelectSmall, MdSearch, MdWaterDrop } from "react-icons/md";
+import { MdAdd, MdCurrencyRupee, MdBusinessCenter, MdCheckCircle, MdCloudDownload, MdDeleteOutline, MdDomainVerification, MdEdit, MdEngineering, MdFoundation, MdHouse, MdKeyboardArrowLeft, MdKeyboardArrowRight, MdLayers, MdLocationCity, MdMoreVert, MdOutlineArchitecture, MdOutlineFoundation, MdOutlineRefresh, MdPerson, MdPhotoSizeSelectSmall, MdSearch, MdWaterDrop } from "react-icons/md";
 
 
 
@@ -209,6 +209,11 @@ const Clients = () => {
   };
 
   useEffect(() => { fetchClients(); }, []);
+  useEffect(() => {
+    const handleReset = () => setSelectedClient(null);
+    window.addEventListener("reset-view", handleReset);
+    return () => window.removeEventListener("reset-view", handleReset);
+  }, []);
 
   const handleCreateClient = async (e) => {
     e.preventDefault();
@@ -281,8 +286,8 @@ const Clients = () => {
           {[
              { title: "Total Clients", val: clients.length || "0", icon: <MdPerson className="text-[#2563EB]" />, bg: "bg-blue-50" },
              { title: "Active Projects", val: clients.reduce((acc, c) => acc + (c.activeProjectsCount || 0), 0), icon: <MdBusinessCenter className="text-[#06B6D4]" />, bg: "bg-cyan-50" },
-             { title: "Total Lifetime Value", val: "₹0", icon: <MdAttachMoney className="text-[#16A34A]" />, bg: "bg-green-50" },
-             { title: "Outstanding Dues", val: "₹0", icon: <MdAttachMoney className="text-[#DC2626]" />, bg: "bg-red-50" }
+             { title: "Total Lifetime Value", val: "₹0", icon: <MdCurrencyRupee className="text-[#16A34A]" />, bg: "bg-green-50" },
+             { title: "Outstanding Dues", val: "₹0", icon: <MdCurrencyRupee className="text-[#DC2626]" />, bg: "bg-red-50" }
           ].map((kpi, i) => (
             <Card key={i} extra="p-6 border border-[#E2E8F0] dark:border-navy-700 hover:-translate-y-1 hover:shadow-[0_8px_24px_rgba(15,23,42,0.08)] hover:border-blue-200 transition-all duration-300">
                <div className="flex justify-between items-start">

@@ -33,7 +33,7 @@ const TabSteps = ({ serviceCase, onUpdate }) => {
 
   useEffect(() => {
      try {
-       const metadata = JSON.parse(serviceCase.description || "{}");
+       const metadata = ( () => { try { return JSON.parse(serviceCase.description || "{}"); } catch(e) { return { old_description: serviceCase.description }; } } )();
        if (metadata.steps && Array.isArray(metadata.steps)) {
           const st = metadata.steps.map((s, i) => ({ 
              ...s, 
@@ -84,7 +84,7 @@ const TabSteps = ({ serviceCase, onUpdate }) => {
   const handleSave = async () => {
      setIsSaving(true);
      try {
-       const metadata = JSON.parse(serviceCase.description || "{}");
+       const metadata = ( () => { try { return JSON.parse(serviceCase.description || "{}"); } catch(e) { return { old_description: serviceCase.description }; } } )();
        metadata.steps = steps;
        
        await supabase.from("services").update({

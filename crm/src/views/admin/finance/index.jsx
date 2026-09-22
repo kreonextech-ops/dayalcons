@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Card from "components/card";
 import { createClient } from "@supabase/supabase-js";
-import { MdAttachMoney, MdAccountBalanceWallet, MdMoneyOff, MdDateRange, MdFileDownload } from "react-icons/md";
+import { MdCurrencyRupee, MdAccountBalanceWallet, MdMoneyOff, MdDateRange, MdFileDownload } from "react-icons/md";
 
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL || "https://gdzligxryodasaxnhdco.supabase.co";
 const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdkemxpZ3hyeW9kYXNheG5oZGNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcxNTg1MDUsImV4cCI6MjEwMjczNDUwNX0.AYTyAMf22g8au51ATReRQdQc2IzDLYQ2vtQH_Uyfrpg";
@@ -40,7 +40,7 @@ const Finance = () => {
           
           allItems.forEach(item => {
              try {
-                const meta = JSON.parse(item.description || "{}");
+                const meta = ( () => { try { return JSON.parse(item.description || "{}"); } catch(e) { return { old_description: item.description }; } } )();
                 const val = parseFloat(meta.financials?.total) || 0;
                 const adv = parseFloat(meta.financials?.advance) || 0;
                 const pay = Array.isArray(meta.payments) ? meta.payments : [];
@@ -192,7 +192,7 @@ const Finance = () => {
           </Card>
           
           <Card extra="p-6 relative overflow-hidden border border-[#E2E8F0] bg-gradient-to-br from-blue-50 to-white">
-             <div className="absolute right-0 top-0 p-4 opacity-[0.05] text-[#2563EB]"><MdAttachMoney size={80}/></div>
+             <div className="absolute right-0 top-0 p-4 opacity-[0.05] text-[#2563EB]"><MdCurrencyRupee size={80}/></div>
              <p className="text-[12px] font-bold text-blue-800 uppercase tracking-wide mb-1">
                 Received in {dateFilter === 'all' ? 'Total' : 'Period'}
              </p>
@@ -200,7 +200,7 @@ const Finance = () => {
           </Card>
 
           <Card extra="p-6 relative overflow-hidden border border-[#E2E8F0] bg-white">
-             <div className="absolute right-0 top-0 p-4 opacity-[0.03]"><MdAttachMoney size={80}/></div>
+             <div className="absolute right-0 top-0 p-4 opacity-[0.03]"><MdCurrencyRupee size={80}/></div>
              <p className="text-[12px] font-bold text-[#64748B] uppercase tracking-wide mb-1">Received (All-Time)</p>
              <p className="text-[26px] font-bold text-[#10B981]">₹ {globalReceivedAllTime.toLocaleString('en-IN')}</p>
           </Card>

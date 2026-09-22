@@ -27,7 +27,7 @@ const TabScope = ({ projData, onUpdate }) => {
 
   useEffect(() => {
      try {
-       const metadata = JSON.parse(projData.description || "{}");
+       const metadata = ( () => { try { return JSON.parse(projData.description || "{}"); } catch(e) { return { old_description: projData.description }; } } )();
        if (metadata.requirements && Array.isArray(metadata.requirements)) {
           setSelectedServices(metadata.requirements);
        }
@@ -44,7 +44,7 @@ const TabScope = ({ projData, onUpdate }) => {
   const handleSave = async () => {
      setIsSaving(true);
      try {
-       const metadata = JSON.parse(projData.description || "{}");
+       const metadata = ( () => { try { return JSON.parse(projData.description || "{}"); } catch(e) { return { old_description: projData.description }; } } )();
        metadata.requirements = selectedServices;
        
        await supabase.from("services").update({

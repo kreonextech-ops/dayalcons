@@ -19,7 +19,7 @@ const ClientSteps = ({ entityData, tableType }) => {
 
   useEffect(() => {
      try {
-       const metadata = JSON.parse(entityData.description || "{}");
+       const metadata = ( () => { try { return JSON.parse(entityData.description || "{}"); } catch(e) { return { old_description: entityData.description }; } } )();
        if (metadata.steps && Array.isArray(metadata.steps)) {
           setSteps(metadata.steps);
        }
@@ -31,7 +31,7 @@ const ClientSteps = ({ entityData, tableType }) => {
   const saveStepsToDb = async (updatedSteps) => {
      setIsSaving(true);
      try {
-       const metadata = JSON.parse(entityData.description || "{}");
+       const metadata = ( () => { try { return JSON.parse(entityData.description || "{}"); } catch(e) { return { old_description: entityData.description }; } } )();
        metadata.steps = updatedSteps;
        
        await supabase.from(tableType).update({

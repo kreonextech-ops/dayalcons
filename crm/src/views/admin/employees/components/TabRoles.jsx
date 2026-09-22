@@ -8,7 +8,7 @@ const TabRoles = () => {
     { 
        name: "Project Manager", empCount: 0, 
        permissions: {
-          "Execution Projects": { view: true, create: true, edit: true, delete: false },
+          "Construction Projects": { view: true, create: true, edit: true, delete: false },
           "Tasks": { view: true, create: true, edit: true, delete: true },
           "Employees": { view: true, create: false, edit: false, delete: false },
           "Clients": { view: true, create: false, edit: false, delete: false },
@@ -26,7 +26,7 @@ const TabRoles = () => {
     { 
        name: "Architect", empCount: 0, 
        permissions: {
-          "Design Services": { view: true, create: true, edit: true, delete: false },
+          "Consultancy Services": { view: true, create: true, edit: true, delete: false },
           "Tasks": { view: true, create: true, edit: true, delete: false },
           "Clients": { view: true, create: false, edit: false, delete: false }
        }
@@ -34,7 +34,7 @@ const TabRoles = () => {
     { 
        name: "Site Engineer", empCount: 0, 
        permissions: {
-          "Execution Projects": { view: true, create: false, edit: true, delete: false },
+          "Construction Projects": { view: true, create: false, edit: true, delete: false },
           "Tasks": { view: true, create: false, edit: true, delete: false }
        }
     },
@@ -43,7 +43,7 @@ const TabRoles = () => {
        permissions: {
           "Finance": { view: true, create: true, edit: true, delete: false },
           "Clients": { view: true, create: false, edit: false, delete: false },
-          "Execution Projects": { view: true, create: false, edit: false, delete: false }
+          "Construction Projects": { view: true, create: false, edit: false, delete: false }
        }
     },
   ];
@@ -55,7 +55,7 @@ const TabRoles = () => {
   const [isEditing, setIsEditing] = useState(false);
 
   const modulesForPermissions = [
-     "Dashboard", "Leads", "Clients", "Design Services", "Execution Projects", "Tasks", "Finance", "Documents", "Vendors", "Employees"
+     "Dashboard", "Leads", "Clients", "Consultancy Services", "Construction Projects", "Tasks", "Finance", "Documents", "Vendors", "Employees"
   ];
 
   useEffect(() => {

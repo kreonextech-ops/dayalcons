@@ -34,10 +34,12 @@ export function SidebarLinks(props) {
           "Dashboard",
           "Leads",
           "Clients",
-          "Design & Legal Services",
-          "Execution Projects",
+          "Consultancy Services",
+          "Construction Projects",
           "Tasks",
           "Follow Ups",
+           "Assignment Hub",
+          "Assignment Hub",
           "Profile Settings"
         ];
         if (allowedForCRO.includes(route.name)) hasPermission = true;
@@ -46,10 +48,12 @@ export function SidebarLinks(props) {
            "Dashboard", 
            "Leads", 
            "Clients", 
-           "Design & Legal Services", 
-           "Execution Projects", 
+           "Consultancy Services", 
+           "Construction Projects", 
            "Tasks",
            "Follow Ups",
+           "Assignment Hub",
+          "Assignment Hub",
            "Profile Settings"
         ];
         if (allowedForEmployees.includes(route.name)) {
@@ -67,7 +71,7 @@ export function SidebarLinks(props) {
         route.layout === "/rtl"
       ) {
         return (
-          <Link key={index} to={route.layout + "/" + route.path}>
+          <Link key={index} to={route.layout + "/" + route.path} onClick={() => { window.dispatchEvent(new CustomEvent("reset-view", { detail: route.layout + "/" + route.path })); }}>
             <div className="relative mb-3 flex hover:cursor-pointer">
               <li
                 className="my-[3px] flex cursor-pointer items-center px-8"

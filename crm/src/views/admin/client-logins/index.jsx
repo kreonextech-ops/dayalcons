@@ -133,7 +133,7 @@ export default function ClientLogins() {
            <div className="flex flex-col gap-6">
              {/* Projects */}
              <div className="bg-white rounded-[20px] shadow-sm border border-[#E2E8F0] p-6">
-               <h4 className="font-bold text-navy-700 mb-4 text-lg">Execution Projects</h4>
+               <h4 className="font-bold text-navy-700 mb-4 text-lg">Construction Projects</h4>
                {clientProjects.length === 0 ? (
                  <div className="text-center py-6 text-gray-400 border-2 border-dashed border-gray-200 rounded-xl">
                    No active projects.

@@ -2,7 +2,7 @@ import React, { useState, useRef } from "react";
 import Card from "components/card";
 import { 
   MdAdd, MdCheckCircle, MdEdit, MdUploadFile, MdFileDownload, 
-  MdClose, MdAttachMoney, MdPictureAsPdf, MdOutlineDescription
+  MdClose, MdCurrencyRupee, MdPictureAsPdf, MdOutlineDescription
 } from "react-icons/md";
 import { createClient } from "@supabase/supabase-js";
 import { uploadFileToR2, getR2FileUrl, deleteR2File } from "utils/r2Storage";
@@ -128,7 +128,7 @@ const TabEstimate = ({ leadData, isClient = false }) => {
          {/* Client Budget Card */}
          <Card extra="p-6 relative overflow-hidden group border border-[#E2E8F0]">
             <div className="absolute top-0 right-0 p-4 opacity-10">
-               <MdAttachMoney size={80} />
+               <MdCurrencyRupee size={80} />
             </div>
             <p className="text-[14px] font-bold text-[#64748B] uppercase mb-2 tracking-wide">Client Budget</p>
             <div className="flex items-center gap-2">

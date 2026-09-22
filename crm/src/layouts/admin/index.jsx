@@ -64,8 +64,8 @@ export default function Admin(props) {
             "Dashboard",
             "Leads",
             "Clients",
-            "Design & Legal Services",
-            "Execution Projects",
+            "Consultancy Services",
+            "Construction Projects",
             "Tasks",
             "Follow Ups",
             "Profile Settings"
@@ -76,8 +76,8 @@ export default function Admin(props) {
             "Dashboard", 
             "Leads", 
             "Clients", 
-            "Design & Legal Services", 
-            "Execution Projects", 
+            "Consultancy Services", 
+            "Construction Projects", 
             "Tasks",
             "Follow Ups",
             "Profile Settings"
@@ -140,7 +140,7 @@ export default function Admin(props) {
                        if (isAdmin) return "/admin/default";
                        if (isCRO) return "/admin/clients";
                        
-                       const allowed = ["Dashboard", "Leads", "Clients", "Design & Legal Services", "Execution Projects", "Tasks", "Follow Ups", "Profile Settings"];
+                       const allowed = ["Dashboard", "Leads", "Clients", "Consultancy Services", "Construction Projects", "Tasks", "Follow Ups", "Profile Settings"];
                        const firstMatch = routes.find(r => r.layout === "/admin" && allowed.includes(r.name));
                        return firstMatch ? `/admin/${firstMatch.path}` : "/admin/default";
                      })()

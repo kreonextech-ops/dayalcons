@@ -16,6 +16,7 @@ import Vendors from "views/admin/vendors";
 
 import AuditLogs from "views/admin/auditlogs";
 import ProfileSettings from "views/admin/profile";
+import AssignmentHub from "views/admin/assignments";
 
 // Auth Imports
 import SignIn from "views/auth/SignIn";
@@ -69,14 +70,14 @@ const routes = [
   },
   
   {
-    name: "Design & Legal Services",
+    name: "Consultancy Services",
     layout: "/admin",
     icon: <MdDesignServices className="h-6 w-6" />,
     path: "services",
     component: <Services />,
   },
   {
-    name: "Execution Projects",
+    name: "Construction Projects",
     layout: "/admin",
     icon: <MdLocationCity className="h-6 w-6" />,
     path: "projects",

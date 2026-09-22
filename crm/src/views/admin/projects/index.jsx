@@ -3,7 +3,7 @@ import Card from "components/card";
 import { createClient } from "@supabase/supabase-js";
 import { logAction } from "utils/auditLogger";
 
-import { MdSearch, MdDesignServices, MdGavel, MdOutlineArchitecture, MdBusinessCenter, MdAttachMoney, MdAdd, MdCloudDownload, MdCloudUpload, MdMoreVert, MdFolder, MdChevronRight, MdChevronLeft, MdClose, MdCheckCircle, MdDelete, MdFoundation, MdLocationCity, MdEngineering } from "react-icons/md";
+import { MdSearch, MdDesignServices, MdGavel, MdOutlineArchitecture, MdBusinessCenter, MdCurrencyRupee, MdAdd, MdCloudDownload, MdCloudUpload, MdMoreVert, MdFolder, MdChevronRight, MdChevronLeft, MdClose, MdCheckCircle, MdDelete, MdFoundation, MdLocationCity, MdEngineering } from "react-icons/md";
 import { FiFileText, FiMap } from "react-icons/fi";
 import { 
   MdDomainVerification, MdLayers, MdHouse, MdOutlineFoundation,
@@ -212,7 +212,7 @@ const Projects = () => {
         <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4 mt-8 md:mt-2">
           <div>
             <p className="text-[12px] font-medium text-[#64748B] dark:text-gray-400 mb-1">Pages / Execution</p>
-            <h1 className="text-[32px] font-bold text-[#0F172A] dark:text-white leading-tight">Execution Projects</h1>
+            <h1 className="text-[32px] font-bold text-[#0F172A] dark:text-white leading-tight">Construction Projects</h1>
             <p className="text-[14px] text-[#64748B] dark:text-gray-400 mt-1">Manage turnkey construction, interior execution, and remodeling projects.</p>
           </div>
           <div className="flex gap-3 z-10 relative">
@@ -298,7 +298,7 @@ const Projects = () => {
                      let mapped = filtered.map(proj => {
                         let prog = 0;
                         try {
-                           const meta = JSON.parse(proj.description || "{}");
+                           const meta = ( () => { try { return JSON.parse(proj.description || "{}"); } catch(e) { return { old_description: proj.description }; } } )();
                            if (meta.steps && meta.steps.length > 0) {
                               const comp = meta.steps.filter(st => st.completed).length;
                               prog = Math.round((comp / meta.steps.length) * 100);

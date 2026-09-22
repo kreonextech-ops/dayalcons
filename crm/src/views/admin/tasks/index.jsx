@@ -21,6 +21,11 @@ const Tasks = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [selectedTask, setSelectedTask] = useState(null);
+  React.useEffect(() => {
+    const handleReset = () => setSelectedTask(null);
+    window.addEventListener("reset-view", handleReset);
+    return () => window.removeEventListener("reset-view", handleReset);
+  }, []);
   
   useEffect(() => {
     const params = new URLSearchParams(location.search);

@@ -107,7 +107,7 @@ export default function InstantQuoteMaker() {
       const budgetVal = getEstimate();
       
       const { error } = await supabase.from('leads').insert([{
-        name: `Quote Lead - ${phone}`,
+        name: name,
         phone: phone,
         service_type: serviceTypeVal,
         plot_size: plotSizeVal,

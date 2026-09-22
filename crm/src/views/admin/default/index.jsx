@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Widget from "components/widget/Widget";
 import Card from "components/card";
-import { MdBusinessCenter, MdPeople, MdAssignment, MdAttachMoney, MdArrowForward, MdNotificationsActive, MdAccessTime } from "react-icons/md";
+import { MdBusinessCenter, MdPeople, MdAssignment, MdCurrencyRupee, MdArrowForward, MdNotificationsActive, MdAccessTime } from "react-icons/md";
 import { Link } from "react-router-dom";
 import { createClient } from "@supabase/supabase-js";
 import { logAction } from "utils/auditLogger";
@@ -407,7 +407,7 @@ const Dashboard = () => {
         <Link to="/admin/services" className="block hover:scale-[1.02] transition-transform duration-200"><Widget icon={<MdBusinessCenter className="h-7 w-7" />} title={"Services (Ongoing)"} subtitle={stats.servicesOngoing?.toString() || '0'} /></Link>
         <Link to="/admin/services" className="block hover:scale-[1.02] transition-transform duration-200"><Widget icon={<MdBusinessCenter className="h-7 w-7" />} title={"Services (Completed)"} subtitle={stats.servicesCompleted?.toString() || '0'} /></Link>
         <Link to="/admin/tasks" className="block hover:scale-[1.02] transition-transform duration-200"><Widget icon={<MdAssignment className="h-6 w-6" />} title={"Pending Tasks"} subtitle={stats.tasks?.toString() || '0'} /></Link>
-        <Link to="/admin/finance" className="block hover:scale-[1.02] transition-transform duration-200"><Widget icon={<MdAttachMoney className="h-7 w-7" />} title={"Approved Revenue"} subtitle={`₹${(stats.revenue || 0).toLocaleString()}`} /></Link>
+        <Link to="/admin/finance" className="block hover:scale-[1.02] transition-transform duration-200"><Widget icon={<MdCurrencyRupee className="h-7 w-7" />} title={"Approved Revenue"} subtitle={`₹${(stats.revenue || 0).toLocaleString()}`} /></Link>
       </div>
 
       <div className="mt-5 grid grid-cols-1 gap-5 xl:grid-cols-2">

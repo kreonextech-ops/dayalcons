@@ -30,7 +30,7 @@ export default function ClientDashboard() {
             const { data: clientData } = await supabase.from('clients').select('*').eq('id', clientId).single();
             if (clientData) setClientProfile(clientData);
 
-            // Fetch execution projects
+            // Fetch construction projects
             const { data: projectsData } = await supabase
                .from("projects")
                .select("*")

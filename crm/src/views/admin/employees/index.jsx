@@ -22,6 +22,11 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 
 const Employees = () => {
   const [selectedEmployee, setSelectedEmployee] = useState(null);
+  React.useEffect(() => {
+    const handleReset = () => setSelectedEmployee(null);
+    window.addEventListener("reset-view", handleReset);
+    return () => window.removeEventListener("reset-view", handleReset);
+  }, []);
   const [activeTab, setActiveTab] = useState("Employees");
   const [showNewModal, setShowNewModal] = useState(false);
   const [modalStep, setModalStep] = useState(1);
@@ -156,7 +161,7 @@ const Employees = () => {
   // but we still need the modal to be able to render on top of it.
   
   const modulesForPermissions = [
-     "Dashboard", "Leads", "Clients", "Design Services", "Execution Projects", "Tasks", "Finance", "Documents", "Vendors", "Employees"
+     "Dashboard", "Leads", "Clients", "Consultancy Services", "Construction Projects", "Tasks", "Finance", "Documents", "Vendors", "Employees"
   ];
 
   const renderContent = () => {

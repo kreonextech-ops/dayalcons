@@ -19,7 +19,7 @@ const TabPayments = ({ projData, onUpdate, isAdmin }) => {
 
   useEffect(() => {
     try {
-      const metadata = JSON.parse(projData.description || "{}");
+      const metadata = ( () => { try { return JSON.parse(projData.description || "{}"); } catch(e) { return { old_description: projData.description }; } } )();
       if (metadata.financials) setFinancials(metadata.financials);
       if (metadata.payments && Array.isArray(metadata.payments)) setPayments(metadata.payments);
     } catch (e) {}
@@ -55,7 +55,7 @@ const TabPayments = ({ projData, onUpdate, isAdmin }) => {
 
     // Auto-save
     try {
-      const metadata = JSON.parse(projData.description || "{}");
+      const metadata = ( () => { try { return JSON.parse(projData.description || "{}"); } catch(e) { return { old_description: projData.description }; } } )();
       metadata.financials = financials;
       metadata.payments = updatedPayments;
       await supabase.from("projects").update({ description: JSON.stringify(metadata) }).eq("id", projData.id);
@@ -66,7 +66,7 @@ const TabPayments = ({ projData, onUpdate, isAdmin }) => {
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      const metadata = JSON.parse(projData.description || "{}");
+      const metadata = ( () => { try { return JSON.parse(projData.description || "{}"); } catch(e) { return { old_description: projData.description }; } } )();
       metadata.financials = financials;
       metadata.payments = payments;
       await supabase.from("projects").update({ description: JSON.stringify(metadata) }).eq("id", projData.id);

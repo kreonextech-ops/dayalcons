@@ -19,7 +19,7 @@ const TabPayments = ({ serviceCase, onUpdate, isAdmin }) => {
 
   useEffect(() => {
     try {
-      const metadata = JSON.parse(serviceCase.description || "{}");
+      const metadata = ( () => { try { return JSON.parse(serviceCase.description || "{}"); } catch(e) { return { old_description: serviceCase.description }; } } )();
       if (metadata.financials) setFinancials(metadata.financials);
       if (metadata.payments && Array.isArray(metadata.payments)) setPayments(metadata.payments);
     } catch (e) {}
@@ -55,7 +55,7 @@ const TabPayments = ({ serviceCase, onUpdate, isAdmin }) => {
 
     // Auto-save
     try {
-      const metadata = JSON.parse(serviceCase.description || "{}");
+      const metadata = ( () => { try { return JSON.parse(serviceCase.description || "{}"); } catch(e) { return { old_description: serviceCase.description }; } } )();
       metadata.financials = financials;
       metadata.payments = updatedPayments;
       await supabase.from("services").update({ description: JSON.stringify(metadata) }).eq("id", serviceCase.id);
@@ -66,7 +66,7 @@ const TabPayments = ({ serviceCase, onUpdate, isAdmin }) => {
   const handleSave = async () => {
     setIsSaving(true);
     try {
-      const metadata = JSON.parse(serviceCase.description || "{}");
+      const metadata = ( () => { try { return JSON.parse(serviceCase.description || "{}"); } catch(e) { return { old_description: serviceCase.description }; } } )();
       metadata.financials = financials;
       metadata.payments = payments;
       await supabase.from("services").update({ description: JSON.stringify(metadata) }).eq("id", serviceCase.id);

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { 
   MdArrowBack, MdPhone, MdEmail, MdLocationOn, MdEdit,
-  MdBusinessCenter, MdAttachMoney, MdMap, MdFolder, MdAssignment,
+  MdBusinessCenter, MdCurrencyRupee, MdMap, MdFolder, MdAssignment,
   MdMessage, MdSave, MdDomain, MdCheckCircle, MdPerson, MdClose, MdDownload, MdDelete, MdAttachFile
 } from "react-icons/md";
 import Card from "components/card";
@@ -130,7 +130,7 @@ const ClientDetail = ({ client, onBack }) => {
        let tAmount = 0; let tPaid = 0;
        combined.forEach(item => {
           try {
-             const meta = JSON.parse(item.description || "{}");
+             const meta = ( () => { try { return JSON.parse(item.description || "{}"); } catch(e) { return { old_description: item.description }; } } )();
              const total = parseFloat(meta.financials?.total) || 0;
              const advance = parseFloat(meta.financials?.advance) || 0;
              const payments = Array.isArray(meta.payments) ? meta.payments : [];
@@ -354,9 +354,9 @@ const ClientDetail = ({ client, onBack }) => {
           { title: "Active Projects", value: activeProjectsCount.toString(), icon: <MdBusinessCenter /> },
             { title: "Active Services", value: activeServicesCount.toString(), icon: <MdBusinessCenter /> },
           ...(isAdmin ? [
-            { title: "Total Invoiced", value: "₹0.00", icon: <MdAttachMoney /> },
-            { title: "Total Received", value: "₹0.00", icon: <MdAttachMoney /> },
-            { title: "Outstanding", value: "₹0.00", icon: <MdAttachMoney /> }
+            { title: "Total Invoiced", value: "₹0.00", icon: <MdCurrencyRupee /> },
+            { title: "Total Received", value: "₹0.00", icon: <MdCurrencyRupee /> },
+            { title: "Outstanding", value: "₹0.00", icon: <MdCurrencyRupee /> }
           ] : [])
         ].map((kpi, i) => (
           <Card key={i} extra="p-6 hover:-translate-y-1 transition duration-200">
@@ -639,8 +639,8 @@ const ClientDetail = ({ client, onBack }) => {
               <div className="grid grid-cols-2 gap-3">
                 {activeTab === "Financials & Billing" ? (
                   [
-                    { label: "New Invoice", icon: <MdAttachMoney /> },
-                    { label: "Add Receipt", icon: <MdAttachMoney /> },
+                    { label: "New Invoice", icon: <MdCurrencyRupee /> },
+                    { label: "Add Receipt", icon: <MdCurrencyRupee /> },
                     { label: "Change Order", icon: <MdEdit /> },
                     { label: "Statement", icon: <FiFileText /> },
                   ].map((act, i) => (

@@ -30,7 +30,7 @@ const TabRequirements = ({ serviceCase, onUpdate }) => {
 
   useEffect(() => {
      try {
-       const metadata = JSON.parse(serviceCase.description || "{}");
+       const metadata = ( () => { try { return JSON.parse(serviceCase.description || "{}"); } catch(e) { return { old_description: serviceCase.description }; } } )();
        if (metadata.requirements && Array.isArray(metadata.requirements)) {
           setSelectedServices(metadata.requirements);
        }
@@ -47,7 +47,7 @@ const TabRequirements = ({ serviceCase, onUpdate }) => {
   const handleSave = async () => {
      setIsSaving(true);
      try {
-       const metadata = JSON.parse(serviceCase.description || "{}");
+       const metadata = ( () => { try { return JSON.parse(serviceCase.description || "{}"); } catch(e) { return { old_description: serviceCase.description }; } } )();
        metadata.requirements = selectedServices;
        
        await supabase.from("services").update({

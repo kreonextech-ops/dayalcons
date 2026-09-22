@@ -242,6 +242,11 @@ const CRMLeads = () => {
   };
 
   useEffect(() => { fetchLeads(); }, []);
+  useEffect(() => {
+    const handleReset = () => setSelectedLead(null);
+    window.addEventListener("reset-view", handleReset);
+    return () => window.removeEventListener("reset-view", handleReset);
+  }, []);
 
   const handleCreateLead = async (e) => {
     e.preventDefault();

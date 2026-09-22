@@ -91,7 +91,7 @@ const ServiceDetail = ({ serviceCase, onBack, onUpdate }) => {
 
   let parsedMeta = {};
   try {
-     parsedMeta = JSON.parse(serviceCase?.description || "{}");
+     parsedMeta = ( () => { try { return JSON.parse(serviceCase?.description || "{}"); } catch(e) { return { old_description: serviceCase?.description }; } } )();
   } catch(e) {}
 
   const financials = parsedMeta.financials || { total: 0, advance: 0 };

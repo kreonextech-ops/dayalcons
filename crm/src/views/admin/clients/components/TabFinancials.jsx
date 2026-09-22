@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import Card from "components/card";
 import { createClient } from "@supabase/supabase-js";
-import { MdAttachMoney, MdAccountBalanceWallet, MdMoneyOff, MdPayment, MdAdd, MdClose } from "react-icons/md";
+import { MdCurrencyRupee, MdAccountBalanceWallet, MdMoneyOff, MdPayment, MdAdd, MdClose } from "react-icons/md";
 
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL || "https://gdzligxryodasaxnhdco.supabase.co";
 const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdkemxpZ3hyeW9kYXNheG5oZGNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcxNTg1MDUsImV4cCI6MjEwMjczNDUwNX0.AYTyAMf22g8au51ATReRQdQc2IzDLYQ2vtQH_Uyfrpg";
@@ -38,7 +38,7 @@ const TabFinancials = ({ clientData }) => {
        const parsedItems = combined.map(item => {
           let total = 0, advance = 0, payments = [];
           try {
-             const meta = JSON.parse(item.description || "{}");
+             const meta = ( () => { try { return JSON.parse(item.description || "{}"); } catch(e) { return { old_description: item.description }; } } )();
              total = parseFloat(meta.financials?.total) || 0;
              advance = parseFloat(meta.financials?.advance) || 0;
              payments = Array.isArray(meta.payments) ? meta.payments : [];
@@ -73,7 +73,7 @@ const TabFinancials = ({ clientData }) => {
     if (!itemToUpdate) return;
 
     try {
-       const metadata = JSON.parse(itemToUpdate.description || "{}");
+       const metadata = ( () => { try { return JSON.parse(itemToUpdate.description || "{}"); } catch(e) { return { old_description: itemToUpdate.description }; } } )();
        if (!metadata.payments) metadata.payments = [];
        
        const paymentRecord = { id: Date.now(), ...newPayment };
@@ -119,7 +119,7 @@ const TabFinancials = ({ clientData }) => {
           </Card>
           
           <Card extra="p-6 relative overflow-hidden border border-[#E2E8F0]">
-             <div className="absolute right-0 top-0 p-4 opacity-[0.05]"><MdAttachMoney size={80}/></div>
+             <div className="absolute right-0 top-0 p-4 opacity-[0.05]"><MdCurrencyRupee size={80}/></div>
              <p className="text-[14px] font-bold text-[#64748B] uppercase tracking-wide mb-2">Total Received</p>
              <p className="text-[32px] font-bold text-[#10B981]">₹ {totals.paid.toLocaleString('en-IN')}</p>
              <p className="text-[13px] text-[#64748B] mt-2">Payments received to date.</p>
