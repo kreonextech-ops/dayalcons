@@ -226,9 +226,6 @@ const CRMLeads = () => {
   const fetchLeads = async () => {
     setLoading(true);
     let query = supabase.from("leads").select("*").order('created_at', { ascending: false });
-      if (!isAdmin && loggedInUser?.id) {
-          query = query.or(`assigned_to.ilike.%${loggedInUser.id}%${loggedInUser.role ? `,assigned_to.ilike.%${loggedInUser.role}%` : ''}`);
-      }
     
     // User requested: "lead section should visible to all employee(update the permission)"
     // So we no longer restrict leads based on assigned_to.

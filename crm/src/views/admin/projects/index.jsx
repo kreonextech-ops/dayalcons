@@ -101,7 +101,7 @@ const Projects = () => {
         setLoading(true);
         let query = supabase.from('projects').select('*').order('created_at', { ascending: false });
           if (!canSeeAllData && loggedInUser?.id) {
-             query = query.or(`assigned_to.ilike.%${loggedInUser.id}%${loggedInUser.role ? `,assigned_to.ilike.%${loggedInUser.role}%` : ''}`);
+             query = query.like('assigned_to', `%${loggedInUser.id}%`);
           }
           const { data, error } = await query;
         

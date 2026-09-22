@@ -47,10 +47,10 @@ const Dashboard = () => {
 
          const { data: clientsAllDataTmp } = await supabase.from('clients').select('id, name');
          
-         const { data: empClientsData } = await supabase.from('clients').select('*').or(`assigned_to.ilike.%${loggedInUser.id}%${loggedInUser.role ? `,assigned_to.ilike.%${loggedInUser.role}%` : ''}`);
+         const { data: empClientsData } = await supabase.from('clients').select('*').like('assigned_to', `%${loggedInUser.id}%`);
          if (empClientsData) setMyClients(empClientsData);
 
-         const { data: empServicesData } = await supabase.from('services').select('*').or(`assigned_to.ilike.%${loggedInUser.id}%${loggedInUser.role ? `,assigned_to.ilike.%${loggedInUser.role}%` : ''}`);
+         const { data: empServicesData } = await supabase.from('services').select('*').like('assigned_to', `%${loggedInUser.id}%`);
          if (empServicesData) {
             const mergedServices = empServicesData.map(srv => {
                const clientMatch = clientsAllDataTmp?.find(c => c.id === srv.client_id);
@@ -59,7 +59,7 @@ const Dashboard = () => {
             setMyServices(mergedServices);
          }
 
-         const { data: empProjectsData } = await supabase.from('projects').select('*').or(`assigned_to.ilike.%${loggedInUser.id}%${loggedInUser.role ? `,assigned_to.ilike.%${loggedInUser.role}%` : ''}`);
+         const { data: empProjectsData } = await supabase.from('projects').select('*').like('assigned_to', `%${loggedInUser.id}%`);
          if (empProjectsData) {
             const mergedProjects = empProjectsData.map(proj => {
                const clientMatch = clientsAllDataTmp?.find(c => c.id === proj.client_id);
