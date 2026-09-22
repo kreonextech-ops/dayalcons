@@ -251,12 +251,11 @@ const EmployeeWorkload = ({ employeeId, employeeRole, tab }) => {
          }
 
          if (!isDelegated) {
-            const orQuery = `assigned_to.ilike.%${employeeId}%${employeeRole ? `,assigned_to.ilike.%${employeeRole}%` : ''}`;
             const [lRes, cRes, sRes, pRes] = await Promise.all([
-               supabase.from('leads').select('*').or(orQuery),
-               supabase.from('clients').select('*').or(orQuery),
-               supabase.from('services').select('*').or(orQuery),
-               supabase.from('projects').select('*').or(orQuery)
+               supabase.from('leads').select('*').ilike('assigned_to', `%${employeeId}%`),
+               supabase.from('clients').select('*').ilike('assigned_to', `%${employeeId}%`),
+               supabase.from('services').select('*').ilike('assigned_to', `%${employeeId}%`),
+               supabase.from('projects').select('*').ilike('assigned_to', `%${employeeId}%`)
             ]);
             if (lRes.data) results.leads = lRes.data;
             if (cRes.data) results.clients = cRes.data;
