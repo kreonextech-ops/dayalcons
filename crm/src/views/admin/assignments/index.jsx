@@ -169,11 +169,9 @@ const AssignmentWorkflow = () => {
                   <label className="text-xs font-bold text-gray-700 uppercase mb-1 block">Assign To *</label>
                   <select value={assignEmployeeId} onChange={e => setAssignEmployeeId(e.target.value)} className="w-full h-11 px-3 border border-gray-300 rounded-lg outline-none">
                      <option value="">Select Employee</option>
-                     {isAdmin ? employees.map(emp => (
-                        <option key={emp.id} value={emp.id}>{emp.name}</option>
-                     )) : (
-                        <option value={user?.id}>Myself ({user?.name})</option>
-                     )}
+                     {employees.map(emp => (
+                          <option key={emp.id} value={emp.id}>{emp.name}</option>
+                       ))}
                   </select>
                   <button onClick={handleAssign} className="w-full mt-4 bg-brand-500 hover:bg-brand-600 text-white font-bold py-3 rounded-lg shadow-md transition-colors">
                      Assign Now
