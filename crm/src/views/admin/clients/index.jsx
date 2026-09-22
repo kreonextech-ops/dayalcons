@@ -164,7 +164,7 @@ const Clients = () => {
     setLoading(true);
     let query = supabase.from("clients").select("*").order('created_at', { ascending: false });
       if (!isAdmin && loggedInUser?.id) {
-         query = query.like('assigned_to', `%${loggedInUser.id}%`);
+         query = query.or(`assigned_to.ilike.%${loggedInUser.id}%${loggedInUser.role ? `,assigned_to.ilike.%${loggedInUser.role}%` : ''}`);
       }
       const { data, error } = await query;
     if (!error && data) {
