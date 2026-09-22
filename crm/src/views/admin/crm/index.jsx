@@ -588,7 +588,7 @@ const CRMLeads = () => {
                            </td>
                            <td className="py-4 px-4 text-sm text-gray-600">{lead.created_at ? new Date(lead.created_at).toLocaleDateString('en-GB') : "-"}</td>
                            <td className="py-4 px-4 text-sm font-medium text-gray-800">
-                              {lead.assigned_to ? (lead.assigned_to.includes("-") ? `EMP-${lead.assigned_to.substring(0, 5).toUpperCase()}` : lead.assigned_to) : "Unassigned"}
+                              {lead.assigned_to ? (employeesMap[lead.assigned_to] || (lead.assigned_to.includes("-") ? `EMP-${lead.assigned_to.substring(0, 5).toUpperCase()}` : lead.assigned_to)) : "Unassigned"}
                            </td>
                            <td className="py-4 px-6 text-right">
                                {isAdmin && (

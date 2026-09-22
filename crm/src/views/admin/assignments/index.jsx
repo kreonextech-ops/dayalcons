@@ -63,7 +63,7 @@ const AssignmentHub = () => {
          if (data) {
              setAvailableRecords(data.map(d => ({ 
                  id: d.id, 
-                 name: (d.title || d.name || '') + (d.phone ?  -  : '') 
+                 name: (d.title || d.name || '') + (d.phone ? ` - ${d.phone}` : '') 
              })));
          } else {
              console.error("Fetch error:", error);
