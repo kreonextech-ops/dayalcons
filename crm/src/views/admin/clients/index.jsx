@@ -344,7 +344,7 @@ const Clients = () => {
                   <th className="py-4 px-4 text-[12px] font-medium text-[#64748B] dark:text-gray-400 uppercase tracking-wider">Client Entity</th>
                   <th className="py-4 px-4 text-[12px] font-medium text-[#64748B] dark:text-gray-400 uppercase tracking-wider">Contact Info</th>
                   <th className="py-4 px-4 text-[12px] font-medium text-[#64748B] dark:text-gray-400 uppercase tracking-wider">Services & Projects</th>
-                  <th className="py-4 px-4 text-[12px] font-medium text-[#64748B] dark:text-gray-400 uppercase tracking-wider">Last Contacted</th>
+                  <th className="py-4 px-4 text-[12px] font-medium text-[#64748B] dark:text-gray-400 uppercase tracking-wider">Date Created</th>
                   <th className="py-4 px-6 text-[12px] font-medium text-[#64748B] dark:text-gray-400 uppercase tracking-wider text-right">Actions</th>
                 </tr>
               </thead>
@@ -388,7 +388,7 @@ const Clients = () => {
                                 <div className="max-w-[150px] truncate" title={client.work_types || "-"}>{client.work_types || "-"}</div>
                                </td>
                              <td className="py-4 px-4 text-[12px] text-gray-500">
-                                {client.lastContact ? new Date(client.lastContact).toLocaleDateString("en-GB", { day: '2-digit', month: 'short', year: 'numeric' }) : "-"}
+                                {client.created_at ? new Date(client.created_at).toLocaleDateString("en-GB", { day: '2-digit', month: 'short', year: 'numeric' }) : "-"}
                              </td>
                            <td className="py-4 px-6 text-right">
                                 {isAdmin && (
