@@ -66,8 +66,6 @@ const CRMLeads = () => {
   const [convertLeadData, setConvertLeadData] = useState(null);
   const [convertedCount, setConvertedCount] = useState(0);
   const [followupTodayCount, setFollowupTodayCount] = useState(0);
-  const [convertedCount, setConvertedCount] = useState(0);
-  const [followupTodayCount, setFollowupTodayCount] = useState(0);
   const fileInputRef = useRef(null);
   const [importing, setImporting] = useState(false);
 
@@ -235,6 +233,18 @@ const CRMLeads = () => {
     // So we no longer restrict leads based on assigned_to.
     
     const { data, error } = await query;
+    
+    const now = new Date();
+    const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+    const { count: cCount } = await supabase.from('clients').select('*', { count: 'exact', head: true }).gte('created_at', firstDayOfMonth);
+    if (cCount !== null) setConvertedCount(cCount);
+
+    const todayStr = now.toISOString().split('T')[0];
+    const { data: fuData } = await supabase.from('tasks').select('id, due_date, status').eq('custom_category', 'Follow Up').neq('status', 'Completed');
+    if (fuData) {
+       const dueToday = fuData.filter(f => f.due_date && f.due_date.split("T")[0] === todayStr).length;
+       setFollowupTodayCount(dueToday);
+    }
     if (!error && data) {
          const { data: empDataFetch } = await supabase.from("employees").select("id, name");
          const eMap = {};
