@@ -31,8 +31,7 @@ const CONSTRUCTION_SERVICES = [
 ];
 
 const TabServiceRequirement = ({ leadData, setLeadData, handleSaveToDB }) => {
-  const [isEditing, setIsEditing] = useState(false);
-  const [activeCategory, setActiveCategory] = useState("Design & Planning");
+    const [activeCategory, setActiveCategory] = useState("Design & Planning");
 
   const toggleService = (serviceId) => {
     const current = leadData.selectedServices || [];
@@ -57,15 +56,9 @@ const TabServiceRequirement = ({ leadData, setLeadData, handleSaveToDB }) => {
           </p>
         </div>
         <div className="mt-4 md:mt-0 flex gap-3">
-          {isEditing ? (
-             <button onClick={() => setIsEditing(false)} className="h-10 px-6 rounded-[12px] bg-[#16A34A] text-white text-[14px] font-bold flex items-center gap-2 hover:bg-[#15803D] transition shadow-md">
-               <MdSave /> Save
+             <button onClick={() => { if(handleSaveToDB) handleSaveToDB(); }} className="h-10 px-6 rounded-[12px] bg-[#2563EB] text-white text-[14px] font-bold flex items-center gap-2 hover:bg-[#1D4ED8] transition shadow-md">
+               <MdSave /> Save Requirements
              </button>
-          ) : (
-             <button onClick={() => setIsEditing(true)} className="h-10 px-6 rounded-[12px] border border-[#E2E8F0] bg-white text-[#0F172A] text-[14px] font-bold flex items-center gap-2 hover:bg-gray-50 transition">
-               <MdEdit /> Edit Form
-             </button>
-          )}
         </div>
       </div>
 
@@ -141,7 +134,7 @@ const TabServiceRequirement = ({ leadData, setLeadData, handleSaveToDB }) => {
       <Card extra="p-6">
         <div className="flex justify-between items-center mb-6">
           <h3 className="text-[18px] font-bold text-[#0F172A]">Client Requirement Summary</h3>
-          {isEditing && <span className="text-[12px] font-bold text-[#2563EB] bg-blue-50 px-3 py-1 rounded-full">Editing Mode</span>}
+          
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -168,7 +161,6 @@ const TabServiceRequirement = ({ leadData, setLeadData, handleSaveToDB }) => {
         
         <div className="mt-6">
           <label className="text-[12px] font-medium text-[#64748B] mb-2 block">General Notes</label>
-          {isEditing ? (
              <textarea 
                placeholder="Enter detailed client requirements..." 
                className="w-full rounded-[10px] border border-[#E2E8F0] p-4 text-[14px] outline-none focus:border-[#2563EB]"
@@ -176,11 +168,6 @@ const TabServiceRequirement = ({ leadData, setLeadData, handleSaveToDB }) => {
                value={leadData.serviceNotes || ''}
                onChange={e => setLeadData({...leadData, serviceNotes: e.target.value})}
              ></textarea>
-          ) : (
-             <div className="w-full rounded-[10px] bg-[#F8FAFC] p-4 text-[14px] text-[#475569] min-h-[100px] border border-[#E2E8F0]">
-               {leadData.serviceNotes || 'No notes provided.'}
-             </div>
-          )}
         </div>
       </Card>
 

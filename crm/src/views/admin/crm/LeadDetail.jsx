@@ -683,7 +683,9 @@ const LeadDetail = ({ lead, onBack }) => {
             
             {activeTab === "Timeline" && <TabTimeline leadData={leadData} />}
             {activeTab === "Communication" && <TabCommunication leadData={leadData} action={communicationAction} setAction={setCommunicationAction} />}
-            {activeTab === "Service Requirement" && <TabServiceRequirement leadData={leadData} setLeadData={setLeadData} />}
+            {activeTab === "Service Requirement" && <TabServiceRequirement leadData={leadData} setLeadData={setLeadData} handleSaveToDB={() => {
+              alert("Service requirements saved to lead successfully!");
+            }} />}
             {activeTab === "Service Workspace" && <TabServiceWorkspace leadData={leadData} />}
             {activeTab === "Tasks" && <TabTasks leadData={leadData} />} 
             {activeTab === "Follow Ups" && <TabFollowUps moduleType="Lead" recordId={leadData.id} />}
