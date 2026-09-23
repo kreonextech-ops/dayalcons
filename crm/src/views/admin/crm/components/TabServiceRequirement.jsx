@@ -138,7 +138,6 @@ const TabServiceRequirement = ({ leadData, setLeadData, handleSaveToDB }) => {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {isEditing ? (
              <>
                <div className="flex flex-col"><label className="text-[12px] font-medium text-[#64748B] mb-1">Project Priority</label><input type="text" placeholder="e.g. High" className="h-10 px-3 rounded-[10px] border border-[#E2E8F0] text-[14px] outline-none focus:border-[#2563EB]" value={leadData.priority || ''} onChange={e => setLeadData({...leadData, priority: e.target.value})} /></div>
                <div className="flex flex-col"><label className="text-[12px] font-medium text-[#64748B] mb-1">Expected Start</label><input type="text" placeholder="e.g. Within 1 month" className="h-10 px-3 rounded-[10px] border border-[#E2E8F0] text-[14px] outline-none focus:border-[#2563EB]" value={leadData.expectedStart || ''} onChange={e => setLeadData({...leadData, expectedStart: e.target.value})} /></div>
@@ -147,16 +146,6 @@ const TabServiceRequirement = ({ leadData, setLeadData, handleSaveToDB }) => {
                <div className="flex flex-col"><label className="text-[12px] font-medium text-[#64748B] mb-1">Preferred Communication</label><input type="text" placeholder="e.g. WhatsApp" className="h-10 px-3 rounded-[10px] border border-[#E2E8F0] text-[14px] outline-none focus:border-[#2563EB]" value={leadData.preferredComm || ''} onChange={e => setLeadData({...leadData, preferredComm: e.target.value})} /></div>
                <div className="flex flex-col"><label className="text-[12px] font-medium text-[#64748B] mb-1">Decision Maker</label><input type="text" placeholder="e.g. Self" className="h-10 px-3 rounded-[10px] border border-[#E2E8F0] text-[14px] outline-none focus:border-[#2563EB]" value={leadData.decisionMaker || ''} onChange={e => setLeadData({...leadData, decisionMaker: e.target.value})} /></div>
              </>
-          ) : (
-             <>
-               <div className="flex flex-col"><span className="text-[12px] font-medium text-[#64748B]">Project Priority</span><span className="text-[15px] font-bold text-[#0F172A]">{leadData.priority || '—'}</span></div>
-               <div className="flex flex-col"><span className="text-[12px] font-medium text-[#64748B]">Expected Start</span><span className="text-[15px] font-bold text-[#0F172A]">{leadData.expectedStart || '—'}</span></div>
-               <div className="flex flex-col"><span className="text-[12px] font-medium text-[#64748B]">Budget</span><span className="text-[15px] font-bold text-[#0F172A]">{leadData.budget || '—'}</span></div>
-               <div className="flex flex-col"><span className="text-[12px] font-medium text-[#64748B]">Timeline</span><span className="text-[15px] font-bold text-[#0F172A]">{leadData.timeline || '—'}</span></div>
-               <div className="flex flex-col"><span className="text-[12px] font-medium text-[#64748B]">Preferred Communication</span><span className="text-[15px] font-bold text-[#0F172A]">{leadData.preferredComm || '—'}</span></div>
-               <div className="flex flex-col"><span className="text-[12px] font-medium text-[#64748B]">Decision Maker</span><span className="text-[15px] font-bold text-[#0F172A]">{leadData.decisionMaker || '—'}</span></div>
-             </>
-          )}
         </div>
         
         <div className="mt-6">
