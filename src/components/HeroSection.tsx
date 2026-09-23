@@ -48,7 +48,7 @@ export default function HeroSection() {
           poster="https://pub-00d1d73a43a643edb96c64ca062ab6df.r2.dev/website/backdrop.png"
           className="w-full h-full object-cover object-center opacity-80"
         >
-          <source src="https://pub-00d1d73a43a643edb96c64ca062ab6df.r2.dev/website/dayalhero.mp4" type="video/mp4" />
+          <source src="https://pub-00d1d73a43a643edb96c64ca062ab6df.r2.dev/website/hero1.mp4" type="video/mp4" />
         </video>
         <div className="absolute inset-0 blueprint-grid opacity-10"></div>
       </div>
