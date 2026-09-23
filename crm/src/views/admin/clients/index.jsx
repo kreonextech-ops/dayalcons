@@ -6,7 +6,7 @@ import { logAction } from "utils/auditLogger";
 import * as XLSX from "xlsx";
 import { useRef } from "react";
 import ClientDetail from "./ClientDetail";
-import { MdAdd, MdCurrencyRupee, MdBusinessCenter, MdCheckCircle, MdCloudDownload, MdDeleteOutline, MdDomainVerification, MdEdit, MdEngineering, MdFoundation, MdHouse, MdKeyboardArrowLeft, MdKeyboardArrowRight, MdLayers, MdLocationCity, MdMoreVert, MdOutlineArchitecture, MdOutlineFoundation, MdOutlineRefresh, MdPerson, MdPhotoSizeSelectSmall, MdSearch, MdWaterDrop } from "react-icons/md";
+import { MdAdd, MdCurrencyRupee, MdBusinessCenter, MdCheckCircle, MdCloudDownload, MdDeleteOutline, MdDomainVerification, MdEdit, MdEngineering, MdFoundation, MdHouse, MdKeyboardArrowLeft, MdKeyboardArrowRight, MdLayers, MdLocationCity, MdMoreVert, MdOutlineArchitecture, MdOutlineFoundation, MdOutlineRefresh, MdPerson, MdPeople, MdLocalFireDepartment, MdPhotoSizeSelectSmall, MdSearch, MdWaterDrop } from "react-icons/md";
 
 
 
