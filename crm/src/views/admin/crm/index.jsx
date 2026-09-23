@@ -55,11 +55,8 @@ const CRMLeads = () => {
   const [leads, setLeads] = useState([]);
    const [employeesMap, setEmployeesMap] = useState({});
   const [searchTerm, setSearchTerm] = useState("");
-  const [filterStatus, setFilterStatus] = useState("");
-  const [sortOrder, setSortOrder] = useState("newest");
-  const [filterTemp, setFilterTemp] = useState("");
-  const [filterMonth, setFilterMonth] = useState("");
-  const [filterStartDate, setFilterStartDate] = useState("");
+    const [sortOrder, setSortOrder] = useState("newest");
+      const [filterStartDate, setFilterStartDate] = useState("");
   const [filterEndDate, setFilterEndDate] = useState("");
   const [loading, setLoading] = useState(true);
   const [selectedLead, setSelectedLead] = useState(null);
@@ -522,20 +519,6 @@ const CRMLeads = () => {
               <tbody>
                   {(() => {
                      let filtered = leads;
-                       if (filterStatus) {
-                          filtered = filtered.filter(x => x.status === filterStatus);
-                       }
-                       if (filterTemp) {
-                          filtered = filtered.filter(x => x.lead_temperature === filterTemp);
-                       }
-                       if (filterMonth) {
-                          const [y, m] = filterMonth.split("-");
-                          filtered = filtered.filter(x => {
-                             if (!x.created_at) return false;
-                             const date = new Date(x.created_at);
-                             return date.getFullYear() === parseInt(y) && (date.getMonth() + 1) === parseInt(m);
-                          });
-                       }
                        if (filterStartDate) {
                           const start = new Date(filterStartDate);
                           start.setHours(0,0,0,0);

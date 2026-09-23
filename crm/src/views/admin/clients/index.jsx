@@ -54,8 +54,7 @@ const Clients = () => {
 
   const [clients, setClients] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [filterStatus, setFilterStatus] = useState("");
-  const [sortOrder, setSortOrder] = useState("newest");
+    const [sortOrder, setSortOrder] = useState("newest");
   const [loading, setLoading] = useState(true);
   const [selectedClient, setSelectedClient] = useState(null);
 
@@ -352,9 +351,6 @@ const Clients = () => {
               <tbody>
                   {(() => {
                      let filtered = clients;
-                     if (filterStatus) {
-                        filtered = filtered.filter(x => x.status === filterStatus);
-                     }
                      if (sortOrder === "oldest") {
                         filtered.sort((a,b) => new Date(a.created_at) - new Date(b.created_at));
                      } else {
