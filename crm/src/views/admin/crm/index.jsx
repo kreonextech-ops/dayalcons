@@ -64,6 +64,8 @@ const CRMLeads = () => {
   const [loading, setLoading] = useState(true);
   const [selectedLead, setSelectedLead] = useState(null);
   const [convertLeadData, setConvertLeadData] = useState(null);
+  const [convertedCount, setConvertedCount] = useState(0);
+  const [followupTodayCount, setFollowupTodayCount] = useState(0);
   const fileInputRef = useRef(null);
   const [importing, setImporting] = useState(false);
 
@@ -390,7 +392,7 @@ const CRMLeads = () => {
   }
 
   return (
-    <div className="w-full max-w-full bg-[#F8FAFC] dark:bg-navy-900 min-h-screen pt-12 pb-24">
+    <div className="w-full max-w-full bg-[#F8FAFC] dark:bg-navy-900 min-h-screen pt-4 pb-24">
       {convertLeadData && (
         <div className="fixed inset-0 z-[99] flex items-center justify-center bg-black/50 backdrop-blur-sm">
           <div className="bg-white dark:bg-navy-800 rounded-[20px] p-6 w-full max-w-md shadow-2xl transform transition-all">
@@ -409,7 +411,7 @@ const CRMLeads = () => {
         <div className="max-w-[1180px] mx-auto px-4 sm:px-6 lg:px-8 font-sans text-[#475569] dark:text-gray-200 dark:text-white">
           <div className="pt-2 pb-4 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
           {/* 1. Breadcrumb & Header */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4 mt-8 md:mt-2">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-4 gap-4 mt-2 md:mt-0">
           <div>
             <p className="text-[12px] font-medium text-[#64748B] dark:text-gray-400 mb-1">Pages / Leads</p>
             <h1 className="text-[32px] font-bold text-[#0F172A] dark:text-white leading-tight">Leads Management</h1>
@@ -466,7 +468,7 @@ const CRMLeads = () => {
                   className="w-full pl-10 pr-4 h-10 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 text-[14px] outline-none focus:border-[#2563EB] transition-colors" 
                 />
               </div>
-                <div className="flex gap-3 w-full lg:w-auto flex-wrap">
+                <div className="flex gap-3 flex-nowrap items-center shrink-0">
                   <input type="month" value={filterMonth} onChange={(e) => setFilterMonth(e.target.value)} className="h-10 px-3 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 text-[14px] text-[#475569] dark:text-gray-200 dark:text-white outline-none focus:border-[#2563EB] bg-transparent dark:bg-navy-900 cursor-pointer" title="Filter by Month" />
                   <div className="flex items-center gap-1">
                      <input type="date" value={filterStartDate} onChange={(e) => setFilterStartDate(e.target.value)} className="h-10 px-2 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 text-[14px] text-[#475569] dark:text-gray-200 dark:text-white outline-none focus:border-[#2563EB] bg-transparent dark:bg-navy-900 cursor-pointer" title="Start Date" />
