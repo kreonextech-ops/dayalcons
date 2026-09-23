@@ -456,7 +456,7 @@ const CRMLeads = () => {
 
         </div> {/* Close Red Part */}
           {/* GREEN PART: STICKY WRAPPER */}
-          <div className="sticky top-[80px] z-30 bg-[#F8FAFC] dark:bg-navy-900 pt-1 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 h-[calc(100vh-80px)] flex flex-col pb-4">
+          <div className="sticky top-[80px] z-30 bg-[#F8FAFC] dark:bg-navy-900 pt-1 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 min-h-[500px] h-[75vh] flex flex-col pb-4">
           {/* 3. Search & Filter Toolbar */}
           <Card extra="shrink-0 p-3 border border-[#E2E8F0] dark:border-navy-700 mb-3 shadow-sm">
               <div className="flex flex-row justify-between items-center gap-4 w-full overflow-x-auto pb-1">
@@ -497,16 +497,16 @@ const CRMLeads = () => {
             <table className="w-full text-left border-collapse min-w-[900px]">
               <thead className="sticky top-0 z-20 bg-[#F8FAFC] dark:bg-navy-900 shadow-sm">
                 <tr className="bg-[#F8FAFC] dark:bg-navy-900 border-b border-[#E2E8F0] dark:border-navy-700">
-                  <th className="py-4 px-6 w-12"><input type="checkbox" className="w-4 h-4 rounded text-[#2563EB] border-[#E2E8F0] dark:border-navy-700 cursor-pointer" /></th>
-                  <th className="py-4 px-4 w-12 text-[12px] font-medium text-[#64748B] dark:text-gray-400 uppercase tracking-wider">Sl. No.</th>
-                  <th className="py-4 px-4 text-[12px] font-medium text-[#64748B] dark:text-gray-400 uppercase tracking-wider">Lead</th>
-                  <th className="py-4 px-4 text-[12px] font-medium text-[#64748B] dark:text-gray-400 uppercase tracking-wider">Source</th>
-                  <th className="py-4 px-4 text-[12px] font-medium text-[#64748B] dark:text-gray-400 uppercase tracking-wider">Service</th>
-                  <th className="py-4 px-4 text-[12px] font-medium text-[#64748B] dark:text-gray-400 uppercase tracking-wider">Status</th>
-                  <th className="py-4 px-4 text-[12px] font-medium text-[#64748B] dark:text-gray-400 uppercase tracking-wider">Temperature</th>
-                  <th className="py-4 px-4 text-[12px] font-medium text-[#64748B] dark:text-gray-400 uppercase tracking-wider">Arriving Date</th>
-                  <th className="py-4 px-4 text-[12px] font-medium text-[#64748B] dark:text-gray-400 uppercase tracking-wider">Assigned</th>
-                  <th className="py-4 px-6 text-[12px] font-medium text-[#64748B] dark:text-gray-400 uppercase tracking-wider text-right">Actions</th>
+                  <th className="py-2 px-6 w-12"><input type="checkbox" className="w-4 h-4 rounded text-[#2563EB] border-[#E2E8F0] dark:border-navy-700 cursor-pointer" /></th>
+                  <th className="py-2 px-4 w-12 text-[12px] font-medium text-[#64748B] dark:text-gray-400 uppercase tracking-wider">Sl. No.</th>
+                  <th className="py-2 px-4 text-[12px] font-medium text-[#64748B] dark:text-gray-400 uppercase tracking-wider">Lead</th>
+                  <th className="py-2 px-4 text-[12px] font-medium text-[#64748B] dark:text-gray-400 uppercase tracking-wider">Source</th>
+                  <th className="py-2 px-4 text-[12px] font-medium text-[#64748B] dark:text-gray-400 uppercase tracking-wider">Service</th>
+                  <th className="py-2 px-4 text-[12px] font-medium text-[#64748B] dark:text-gray-400 uppercase tracking-wider">Status</th>
+                  <th className="py-2 px-4 text-[12px] font-medium text-[#64748B] dark:text-gray-400 uppercase tracking-wider">Temperature</th>
+                  <th className="py-2 px-4 text-[12px] font-medium text-[#64748B] dark:text-gray-400 uppercase tracking-wider">Arriving Date</th>
+                  <th className="py-2 px-4 text-[12px] font-medium text-[#64748B] dark:text-gray-400 uppercase tracking-wider">Assigned</th>
+                  <th className="py-2 px-6 text-[12px] font-medium text-[#64748B] dark:text-gray-400 uppercase tracking-wider text-right">Actions</th>
                 </tr>
               </thead>
               <tbody>
@@ -562,33 +562,33 @@ const CRMLeads = () => {
                      if (filtered.length === 0) return <tr><td colSpan="7" className="py-12 text-center text-gray-500">No leads found.</td></tr>;
                      return filtered.map((lead, index) => (
                         <tr key={lead.id} className="border-b border-gray-100 hover:bg-gray-50 dark:hover:bg-navy-800 cursor-pointer" onClick={() => setSelectedLead(lead)}>
-                           <td className="py-4 px-6" onClick={(e) => e.stopPropagation()}>
+                           <td className="py-2 px-6" onClick={(e) => e.stopPropagation()}>
                               <input type="checkbox" className="w-4 h-4 rounded text-[#2563EB] border-[#E2E8F0] dark:border-navy-700 cursor-pointer" />
                            </td>
-                               <td className="py-4 px-4 text-sm text-gray-800 font-bold">
+                               <td className="py-2 px-4 text-sm text-gray-800 font-bold">
                                   {filtered.length - index}
                                </td>
-                           <td className="py-4 px-4">
+                           <td className="py-2 px-4">
                               <p className="text-sm text-gray-800 font-bold">{lead.name}</p>
                               {lead.email && <p className="text-[12px] text-gray-500">{lead.email}</p>}
                            </td>
-                           <td className="py-4 px-4 text-sm text-gray-600">{lead.source || lead.phone || "-"}</td>
-                           <td className="py-4 px-4 text-sm text-gray-600">{lead.service_type || "-"}</td>
-                           <td className="py-4 px-4 text-sm">
+                           <td className="py-2 px-4 text-sm text-gray-600">{lead.source || lead.phone || "-"}</td>
+                           <td className="py-2 px-4 text-sm text-gray-600">{lead.service_type || "-"}</td>
+                           <td className="py-2 px-4 text-sm">
                               <span className={`px-3 py-1 rounded-full text-xs font-bold ${lead.status === 'New' ? 'bg-blue-100 text-blue-700' : lead.status === 'Contacted' ? 'bg-yellow-100 text-yellow-700' : lead.status === 'Converted' ? 'bg-green-100 text-green-700' : 'bg-gray-100 dark:bg-navy-700 text-gray-600'}`}>
                                  {lead.status}
                               </span>
                            </td>
-                           <td className="py-4 px-4 text-sm text-gray-600 font-medium">
+                           <td className="py-2 px-4 text-sm text-gray-600 font-medium">
                               {lead.lead_temperature === 'Hot' ? <span className="text-red-500 flex items-center gap-1"><MdLocalFireDepartment /> Hot</span> : 
                                lead.lead_temperature === 'Warm' ? <span className="text-orange-500">Warm</span> : 
                                lead.lead_temperature === 'Cold' ? <span className="text-blue-500">Cold</span> : "-"}
                            </td>
-                           <td className="py-4 px-4 text-sm text-gray-600">{lead.created_at ? new Date(lead.created_at).toLocaleDateString('en-GB') : "-"}</td>
-                           <td className="py-4 px-4 text-sm font-medium text-gray-800">
+                           <td className="py-2 px-4 text-sm text-gray-600">{lead.created_at ? new Date(lead.created_at).toLocaleDateString('en-GB') : "-"}</td>
+                           <td className="py-2 px-4 text-sm font-medium text-gray-800">
                               {lead.assigned_to ? (employeesMap[lead.assigned_to] || (lead.assigned_to.includes("-") ? `EMP-${lead.assigned_to.substring(0, 5).toUpperCase()}` : lead.assigned_to)) : "Unassigned"}
                            </td>
-                           <td className="py-4 px-6 text-right">
+                           <td className="py-2 px-6 text-right">
                                {isAdmin && (
                                  <button onClick={(e) => { e.stopPropagation(); handleDeleteLead(lead.id); }} className="text-red-500 hover:bg-red-50 p-2 rounded-lg transition" title="Delete Lead">
                                     <MdDeleteOutline size={20} />
@@ -612,7 +612,7 @@ const CRMLeads = () => {
           </div>
         </Card>
         </div> {/* Close Green Sticky Wrapper */}
-        <div className="h-[25vh] shrink-0" />
+        
 
         </div>
 

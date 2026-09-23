@@ -257,12 +257,12 @@ const Clients = () => {
   }
 
   return (
-    <div className="w-full max-w-full bg-[#F8FAFC] dark:bg-navy-900 min-h-screen pt-12 pb-24">
+    <div className="w-full max-w-full bg-[#F8FAFC] dark:bg-navy-900 min-h-screen pt-4 pb-24">
       <div className="max-w-[1180px] mx-auto px-4 sm:px-6 lg:px-8 font-sans text-[#475569] dark:text-gray-200 dark:text-white">
         
         <div className="pt-2 pb-4 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
           {/* 1. Breadcrumb & Header */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4 mt-8 md:mt-2">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-4 gap-4 mt-2 md:mt-0">
           <div>
             <p className="text-[12px] font-medium text-[#64748B] dark:text-gray-400 mb-1">Pages / Clients</p>
             <h1 className="text-[32px] font-bold text-[#0F172A] dark:text-white leading-tight">Clients & Entities</h1>
@@ -282,14 +282,14 @@ const Clients = () => {
         </div>
 
         {/* 2. KPI Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-          {[
-             { title: "Total Clients", val: clients.length || "0", icon: <MdPerson className="text-[#2563EB]" />, bg: "bg-blue-50" },
-             { title: "Active Projects", val: clients.reduce((acc, c) => acc + (c.activeProjectsCount || 0), 0), icon: <MdBusinessCenter className="text-[#06B6D4]" />, bg: "bg-cyan-50" },
-             { title: "Total Lifetime Value", val: "₹0", icon: <MdCurrencyRupee className="text-[#16A34A]" />, bg: "bg-green-50" },
-             { title: "Outstanding Dues", val: "₹0", icon: <MdCurrencyRupee className="text-[#DC2626]" />, bg: "bg-red-50" }
-          ].map((kpi, i) => (
-            <Card key={i} extra="p-6 border border-[#E2E8F0] dark:border-navy-700 hover:-translate-y-1 hover:shadow-[0_8px_24px_rgba(15,23,42,0.08)] hover:border-blue-200 transition-all duration-300">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+            {[
+               { title: "Total Clients", val: clients.length || "0", icon: <MdPeople className="text-[#2563EB]" />, bg: "bg-blue-50" },
+               { title: "Active Clients", val: clients.filter(c => c.status === 'Active').length || "0", icon: <MdLocalFireDepartment className="text-[#DC2626]" />, bg: "bg-red-50" },
+               { title: "Inactive Clients", val: clients.filter(c => c.status === 'Inactive').length || "0", icon: <MdCloudDownload className="text-[#64748B]" />, bg: "bg-gray-100" },
+               { title: "High Value", val: clients.filter(c => c.lead_score === 'High').length || "0", icon: <MdCheckCircle className="text-[#16A34A]" />, bg: "bg-green-50" }
+            ].map((kpi, i) => (
+            <Card key={i} extra="py-3 px-4 border border-[#E2E8F0] dark:border-navy-700 hover:-translate-y-1 hover:shadow-[0_8px_24px_rgba(15,23,42,0.08)] hover:border-blue-200 transition-all duration-300">
                <div className="flex justify-between items-start">
                   <div>
                     <p className="text-[12px] font-medium text-[#64748B] dark:text-gray-400 mb-1">{kpi.title}</p>
@@ -305,42 +305,34 @@ const Clients = () => {
 
         </div> {/* Close Red Part */}
           {/* GREEN PART: STICKY WRAPPER */}
-          <div className="sticky top-[80px] z-30 bg-[#F8FAFC] dark:bg-navy-900 pt-4 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 h-[calc(100vh-80px)] flex flex-col pb-4">
+          <div className="relative z-30 bg-[#F8FAFC] dark:bg-navy-900 pt-4 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 min-h-[500px] flex flex-col pb-4">
           {/* 3. Search & Filter Toolbar */}
-        <Card extra="shrink-0 p-4 border border-[#E2E8F0] dark:border-navy-700 mb-4 shadow-sm">
-            <div className="flex flex-col lg:flex-row justify-between items-center gap-4">
-              <div className="relative w-full lg:w-[350px]">
-                <MdSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#64748B] dark:text-gray-400 text-xl" />
-                <input 
-                  type="text" 
-                  value={searchTerm} 
-                  onChange={(e) => setSearchTerm(e.target.value)} 
-                  placeholder="Search name, phone, address..." 
-                  className="w-full pl-10 pr-4 h-10 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 text-[14px] outline-none focus:border-[#2563EB] transition-colors" 
-                />
+          <Card extra="shrink-0 p-3 border border-[#E2E8F0] dark:border-navy-700 mb-3 shadow-sm">
+              <div className="flex flex-row justify-between items-center gap-4 w-full overflow-x-auto pb-1">
+                <div className="relative flex-1 min-w-[200px] max-w-[400px]">
+                  <MdSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#64748B] dark:text-gray-400 text-xl" />
+                  <input 
+                    type="text" 
+                    value={searchTerm} 
+                    onChange={(e) => setSearchTerm(e.target.value)} 
+                    placeholder="Search name, phone, address..." 
+                    className="w-full pl-10 pr-4 h-10 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 text-[14px] outline-none focus:border-[#2563EB] transition-colors" 
+                  />
+                </div>
+                  <div className="flex gap-3 flex-nowrap items-center shrink-0">
+                      <select 
+                        value={sortOrder}
+                      onChange={(e) => setSortOrder(e.target.value)}
+                      className="h-10 px-4 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 text-[14px] text-[#475569] dark:text-gray-200 dark:text-white outline-none focus:border-[#2563EB] bg-transparent dark:bg-navy-900 cursor-pointer"
+                    >
+                      <option value="newest">Sort: Newest First</option>
+                      <option value="oldest">Sort: Oldest First</option>
+                      <option value="name_asc">Sort: Name (A-Z)</option>
+                      <option value="name_desc">Sort: Name (Z-A)</option>
+                    </select>
+                </div>
               </div>
-              <div className="flex gap-3 w-full lg:w-auto">
-                <select 
-                  value={filterStatus}
-                  onChange={(e) => setFilterStatus(e.target.value)}
-                  className="h-10 px-4 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 text-[14px] text-[#475569] dark:text-gray-200 dark:text-white outline-none focus:border-[#2563EB] bg-transparent dark:bg-navy-900 cursor-pointer"
-                >
-                  <option value="">All Statuses</option>
-                  <option value="Active">Active</option>
-                  <option value="Inactive">Inactive</option>
-                  <option value="Converted">Converted</option>
-                </select>
-                <select 
-                  value={sortOrder}
-                  onChange={(e) => setSortOrder(e.target.value)}
-                  className="h-10 px-4 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 text-[14px] text-[#475569] dark:text-gray-200 dark:text-white outline-none focus:border-[#2563EB] bg-transparent dark:bg-navy-900 cursor-pointer"
-                >
-                  <option value="newest">Sort: Newest First</option>
-                  <option value="oldest">Sort: Oldest First</option>
-                </select>
-              </div>
-            </div>
-            </Card>
+              </Card>
 
           {/* 4. Clients Data Table */}
         <Card extra="flex-1 flex flex-col min-h-0 border border-[#E2E8F0] dark:border-navy-700 overflow-hidden shadow-sm">
@@ -382,17 +374,17 @@ const Clients = () => {
                      if (filtered.length === 0) return <tr><td colSpan="6" className="py-12 text-center text-gray-500">No clients found.</td></tr>;
                      return filtered.map((client, index) => (
                         <tr key={client.id} className="border-b border-gray-100 hover:bg-gray-50 dark:hover:bg-navy-800 cursor-pointer" onClick={() => setSelectedClient(client)}>
-                           <td className="py-4 px-6" onClick={(e) => e.stopPropagation()}>
+                           <td className="py-2 px-6" onClick={(e) => e.stopPropagation()}>
                               <input type="checkbox" className="w-4 h-4 rounded text-[#2563EB] border-[#E2E8F0] dark:border-navy-700 cursor-pointer" />
                            </td>
                              <td className="py-4 px-4 text-sm text-gray-800 font-bold">
                                 {filtered.length - index}
                              </td>
-                           <td className="py-4 px-4">
+                           <td className="py-2 px-4">
                               <p className="text-sm text-gray-800 font-bold">{client.name}</p>
                               {client.company && <p className="text-[12px] text-gray-500">{client.company}</p>}
                            </td>
-                           <td className="py-4 px-4">
+                           <td className="py-2 px-4">
                               {client.email && <p className="text-sm text-gray-600">{client.email}</p>}
                               {client.phone && <p className="text-[12px] text-gray-500">{client.phone}</p>}
                            </td>
@@ -426,7 +418,7 @@ const Clients = () => {
           </div>
         </Card>
         </div> {/* Close Green Sticky Wrapper */}
-        <div className="h-[25vh] shrink-0" />
+        
 
         </div>
 
