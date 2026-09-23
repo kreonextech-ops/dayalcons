@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import Card from "components/card";
 import { 
-  MdArchitecture, MdBusiness, MdCheck, MdSave, MdEdit,
+  MdArchitecture, MdBusiness, MdCheck, MdSave,
   MdCheckCircle, MdLayers, MdPhotoSizeSelectSmall, MdFormatPaint,
   MdElectricBolt, MdHouse, MdCorporateFare, MdFactory, MdOutlineFoundation,
   MdDomainVerification, MdWaterDrop
