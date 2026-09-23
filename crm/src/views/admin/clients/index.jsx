@@ -343,6 +343,7 @@ const Clients = () => {
                     <th className="py-4 px-4 w-12 text-[12px] font-medium text-[#64748B] dark:text-gray-400 uppercase tracking-wider">Sl. No.</th>
                   <th className="py-4 px-4 text-[12px] font-medium text-[#64748B] dark:text-gray-400 uppercase tracking-wider">Client Entity</th>
                   <th className="py-4 px-4 text-[12px] font-medium text-[#64748B] dark:text-gray-400 uppercase tracking-wider">Contact Info</th>
+                  <th className="py-4 px-4 text-[12px] font-medium text-[#64748B] dark:text-gray-400 uppercase tracking-wider">Address</th>
                   <th className="py-4 px-4 text-[12px] font-medium text-[#64748B] dark:text-gray-400 uppercase tracking-wider">Services & Projects</th>
                   <th className="py-4 px-4 text-[12px] font-medium text-[#64748B] dark:text-gray-400 uppercase tracking-wider">Date Created</th>
                   <th className="py-4 px-6 text-[12px] font-medium text-[#64748B] dark:text-gray-400 uppercase tracking-wider text-right">Actions</th>
@@ -366,8 +367,8 @@ const Clients = () => {
                            (c.address && c.address.toLowerCase().includes(lower))
                         );
                      }
-                     if (loading) return <tr><td colSpan="6" className="py-12 text-center text-gray-500">Loading clients...</td></tr>;
-                     if (filtered.length === 0) return <tr><td colSpan="6" className="py-12 text-center text-gray-500">No clients found.</td></tr>;
+                     if (loading) return <tr><td colSpan="7" className="py-12 text-center text-gray-500">Loading clients...</td></tr>;
+                     if (filtered.length === 0) return <tr><td colSpan="7" className="py-12 text-center text-gray-500">No clients found.</td></tr>;
                      return filtered.map((client, index) => (
                         <tr key={client.id} className="border-b border-gray-100 hover:bg-gray-50 dark:hover:bg-navy-800 cursor-pointer" onClick={() => setSelectedClient(client)}>
                            <td className="py-2 px-6" onClick={(e) => e.stopPropagation()}>
@@ -384,6 +385,9 @@ const Clients = () => {
                               {client.email && <p className="text-sm text-gray-600">{client.email}</p>}
                               {client.phone && <p className="text-[12px] text-gray-500">{client.phone}</p>}
                            </td>
+                             <td className="py-2 px-4 text-[12px] text-gray-500 truncate max-w-[180px]" title={client.address || ""}>
+                                {client.address || "-"}
+                             </td>
                              <td className="py-4 px-4 text-[13px] font-medium text-brand-500">
                                 <div className="max-w-[150px] truncate" title={client.work_types || "-"}>{client.work_types || "-"}</div>
                                </td>

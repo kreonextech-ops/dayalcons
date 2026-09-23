@@ -508,6 +508,7 @@ const CRMLeads = () => {
                   <th className="py-2 px-4 w-12 text-[12px] font-medium text-[#64748B] dark:text-gray-400 uppercase tracking-wider">Sl. No.</th>
                   <th className="py-2 px-4 text-[12px] font-medium text-[#64748B] dark:text-gray-400 uppercase tracking-wider">Lead</th>
                   <th className="py-2 px-4 text-[12px] font-medium text-[#64748B] dark:text-gray-400 uppercase tracking-wider">Source</th>
+                  <th className="py-2 px-4 text-[12px] font-medium text-[#64748B] dark:text-gray-400 uppercase tracking-wider">Address</th>
                   <th className="py-2 px-4 text-[12px] font-medium text-[#64748B] dark:text-gray-400 uppercase tracking-wider">Service</th>
                   <th className="py-2 px-4 text-[12px] font-medium text-[#64748B] dark:text-gray-400 uppercase tracking-wider">Status</th>
                   <th className="py-2 px-4 text-[12px] font-medium text-[#64748B] dark:text-gray-400 uppercase tracking-wider">Temperature</th>
@@ -551,8 +552,8 @@ const CRMLeads = () => {
                            (l.source && l.source.toLowerCase().includes(lower))
                         );
                      }
-                     if (loading) return <tr><td colSpan="7" className="py-12 text-center text-gray-500">Loading leads...</td></tr>;
-                     if (filtered.length === 0) return <tr><td colSpan="7" className="py-12 text-center text-gray-500">No leads found.</td></tr>;
+                     if (loading) return <tr><td colSpan="11" className="py-12 text-center text-gray-500">Loading leads...</td></tr>;
+                     if (filtered.length === 0) return <tr><td colSpan="11" className="py-12 text-center text-gray-500">No leads found.</td></tr>;
                      return filtered.map((lead, index) => (
                         <tr key={lead.id} className="border-b border-gray-100 hover:bg-gray-50 dark:hover:bg-navy-800 cursor-pointer" onClick={() => setSelectedLead(lead)}>
                            <td className="py-2 px-6" onClick={(e) => e.stopPropagation()}>
@@ -566,6 +567,7 @@ const CRMLeads = () => {
                               {lead.email && <p className="text-[12px] text-gray-500">{lead.email}</p>}
                            </td>
                            <td className="py-2 px-4 text-sm text-gray-600">{lead.source || lead.phone || "-"}</td>
+                            <td className="py-2 px-4 text-sm text-gray-600 truncate max-w-[150px]" title={lead.address || ""}>{lead.address || "-"}</td>
                            <td className="py-2 px-4 text-sm text-gray-600">{lead.service_type || "-"}</td>
                            <td className="py-2 px-4 text-sm">
                               <span className={`px-3 py-1 rounded-full text-xs font-bold ${lead.status === 'New' ? 'bg-blue-100 text-blue-700' : lead.status === 'Contacted' ? 'bg-yellow-100 text-yellow-700' : lead.status === 'Converted' ? 'bg-green-100 text-green-700' : 'bg-gray-100 dark:bg-navy-700 text-gray-600'}`}>
