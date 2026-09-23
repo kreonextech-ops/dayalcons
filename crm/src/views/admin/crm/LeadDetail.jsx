@@ -541,6 +541,7 @@ const LeadDetail = ({ lead, onBack }) => {
                         <div className="flex flex-col"><label className="text-xs text-gray-500">Phone</label><input type="text" className="border rounded p-1 text-sm outline-none border-[#2563EB]" value={leadData.phone} onChange={e => setLeadData({...leadData, phone: e.target.value})} /></div>
                         <div className="flex flex-col"><label className="text-xs text-gray-500">Email</label><input type="email" className="border rounded p-1 text-sm outline-none border-[#2563EB]" value={leadData.email} onChange={e => setLeadData({...leadData, email: e.target.value})} /></div>
                         <div className="flex flex-col"><label className="text-xs text-gray-500">Address</label><input type="text" className="border rounded p-1 text-sm outline-none border-[#2563EB]" value={leadData.address} onChange={e => setLeadData({...leadData, address: e.target.value})} /></div>
+                          <div className="flex flex-col"><label className="text-xs text-gray-500">Arriving Date</label><input type="date" className="border rounded p-1 text-sm outline-none border-[#2563EB]" value={leadData.created_at ? new Date(leadData.created_at).toISOString().split('T')[0] : ""} onChange={e => setLeadData({...leadData, created_at: e.target.value})} /></div>
                         <div className="flex flex-col"><label className="text-xs text-gray-500">Source</label>
                           <select 
                             className="border rounded p-1 text-sm outline-none border-[#2563EB] mb-2" 
