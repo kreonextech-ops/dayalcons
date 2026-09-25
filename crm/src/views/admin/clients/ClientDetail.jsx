@@ -534,7 +534,33 @@ const ClientDetail = ({ client, onBack }) => {
                         <div className="flex flex-col"><label className="text-xs text-gray-500">GST / PAN</label><input type="text" className="border rounded p-2 text-sm outline-none border-[#16A34A]" value={clientData.gst} onChange={e => setClientData({...clientData, gst: e.target.value})} /></div>
                         <div className="flex flex-col"><label className="text-xs text-gray-500">Billing Address</label><input type="text" className="border rounded p-2 text-sm outline-none border-[#16A34A]" value={clientData.address} onChange={e => setClientData({...clientData, address: e.target.value})} /></div>
                         <div className="flex flex-col"><label className="text-xs text-gray-500">Work Types</label><input type="text" className="border rounded p-2 text-sm outline-none border-[#16A34A]" value={clientData.work_types || ""} onChange={e => setClientData({...clientData, work_types: e.target.value})} /></div>
-                        <div className="flex flex-col"><label className="text-xs text-gray-500">Arriving Date</label><input type="date" className="border rounded p-2 text-sm outline-none border-[#16A34A]" value={clientData.created_at ? new Date(clientData.created_at).toISOString().split('T')[0] : ""} onChange={e => setClientData({...clientData, created_at: e.target.value})} /></div>
+                        <div className="flex flex-col"><label className="text-xs text-gray-500">Source</label>
+                            <select className="border rounded p-2 text-sm outline-none border-[#16A34A] custom-scrollbar max-h-[150px]" value={clientData.source || ""} onChange={e => setClientData({...clientData, source: e.target.value})}>
+                    <option value="">Select source...</option>
+                    <option value="Website">Website</option>
+                    <option value="Referral">Referral</option>
+                    <option value="Walk-in">Walk-in</option>
+                    <option value="Phone Call">Phone Call</option>
+                    <option value="WhatsApp">WhatsApp</option>
+                    <option value="JustDial">JustDial</option>
+                    <option value="Sulekha">Sulekha</option>
+                    <option value="IndiaMart">IndiaMart</option>
+                    <option value="Google Ads">Google Ads</option>
+                    <option value="Google Maps (GMB)">Google Maps (GMB)</option>
+                    <option value="Instagram">Instagram</option>
+                    <option value="Facebook">Facebook</option>
+                    <option value="LinkedIn">LinkedIn</option>
+                    <option value="YouTube">YouTube</option>
+                    <option value="BNI">BNI</option>
+                    <option value="Real Estate Brokers">Real Estate Brokers</option>
+                    <option value="Site Signage / Hoardings">Site Signage / Hoardings</option>
+                    <option value="Print Ads / Newspaper">Print Ads / Newspaper</option>
+                    <option value="Repeat Client">Repeat Client</option>
+                    <option value="Cold Calling">Cold Calling</option>
+                    <option value="Other">Other</option>
+                            </select>
+                          </div>
+                          <div className="flex flex-col"><label className="text-xs text-gray-500">Arriving Date</label><input type="date" className="border rounded p-2 text-sm outline-none border-[#16A34A]" value={clientData.created_at ? new Date(clientData.created_at).toISOString().split('T')[0] : ""} onChange={e => setClientData({...clientData, created_at: e.target.value})} /></div>
                       </>
                     ) : (
                       <>

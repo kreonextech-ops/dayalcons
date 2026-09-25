@@ -552,11 +552,28 @@ const LeadDetail = ({ lead, onBack }) => {
                                else setLeadData({...leadData, source: "Other"}); // Temporarily set to Other, they'll type it
                             }}
                           >
-                            <option value="">Select source...</option>
-                            <option value="Website">Website</option>
-                            <option value="Referral">Referral</option>
-                            <option value="Walk-in">Walk-in</option>
-                            <option value="Other">Other</option>
+                                                <option value="">Select source...</option>
+                    <option value="Website">Website</option>
+                    <option value="Referral">Referral</option>
+                    <option value="Walk-in">Walk-in</option>
+                    <option value="Phone Call">Phone Call</option>
+                    <option value="WhatsApp">WhatsApp</option>
+                    <option value="JustDial">JustDial</option>
+                    <option value="Sulekha">Sulekha</option>
+                    <option value="IndiaMart">IndiaMart</option>
+                    <option value="Google Ads">Google Ads</option>
+                    <option value="Google Maps (GMB)">Google Maps (GMB)</option>
+                    <option value="Instagram">Instagram</option>
+                    <option value="Facebook">Facebook</option>
+                    <option value="LinkedIn">LinkedIn</option>
+                    <option value="YouTube">YouTube</option>
+                    <option value="BNI">BNI</option>
+                    <option value="Real Estate Brokers">Real Estate Brokers</option>
+                    <option value="Site Signage / Hoardings">Site Signage / Hoardings</option>
+                    <option value="Print Ads / Newspaper">Print Ads / Newspaper</option>
+                    <option value="Repeat Client">Repeat Client</option>
+                    <option value="Cold Calling">Cold Calling</option>
+                    <option value="Other">Other</option>
                           </select>
                           {!["Website", "Referral", "Walk-in"].includes(leadData.source) && (
                             <input type="text" className="border rounded p-1 text-sm outline-none border-[#2563EB]" placeholder="Specify source" value={leadData.source === "Other" ? "" : leadData.source} onChange={e => setLeadData({...leadData, source: e.target.value})} />
