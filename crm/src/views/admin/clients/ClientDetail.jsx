@@ -118,6 +118,8 @@ const ClientDetail = ({ client, onBack }) => {
     status: client?.status || "Active",
     assigned_to: client?.assigned_to || null,
     leadData: client?.leadData || {},
+    created_at: client?.created_at || "",
+    work_types: client?.work_types || "",
   });
 
   const [activeProjectsCount, setActiveProjectsCount] = useState(0);

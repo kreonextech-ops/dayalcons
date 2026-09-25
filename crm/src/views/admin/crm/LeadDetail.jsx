@@ -199,6 +199,7 @@ const LeadDetail = ({ lead, onBack }) => {
   // Local state to simulate saving edits
   const [leadData, setLeadData] = useState({
     id: lead?.id,
+    created_at: lead?.created_at || "",
     name: lead?.name || "",
     phone: lead?.phone || "",
     email: lead?.email || "",
