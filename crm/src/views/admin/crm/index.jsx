@@ -60,6 +60,16 @@ const CRMLeads = () => {
   const [filterEndDate, setFilterEndDate] = useState("");
   const [loading, setLoading] = useState(true);
   const [selectedLead, setSelectedLead] = useState(null);
+  const scrollPosRef = useRef(0);
+
+  useEffect(() => {
+    if (!selectedLead && !loading && scrollPosRef.current > 0) {
+      setTimeout(() => {
+        window.scrollTo({ top: scrollPosRef.current, behavior: "auto" });
+        scrollPosRef.current = 0;
+      }, 50);
+    }
+  }, [selectedLead, loading]);
   const [convertLeadData, setConvertLeadData] = useState(null);
   const [convertedCount, setConvertedCount] = useState(0);
   const [followupTodayCount, setFollowupTodayCount] = useState(0);
@@ -555,7 +565,7 @@ const CRMLeads = () => {
                      if (loading) return <tr><td colSpan="11" className="py-12 text-center text-gray-500">Loading leads...</td></tr>;
                      if (filtered.length === 0) return <tr><td colSpan="11" className="py-12 text-center text-gray-500">No leads found.</td></tr>;
                      return filtered.map((lead, index) => (
-                        <tr key={lead.id} className="border-b border-gray-100 hover:bg-gray-50 dark:hover:bg-navy-800 cursor-pointer" onClick={() => setSelectedLead(lead)}>
+                        <tr key={lead.id} className="border-b border-gray-100 hover:bg-gray-50 dark:hover:bg-navy-800 cursor-pointer" onClick={() => { scrollPosRef.current = window.scrollY; setSelectedLead(lead); }}>
                            <td className="py-2 px-6" onClick={(e) => e.stopPropagation()}>
                               <input type="checkbox" className="w-4 h-4 rounded text-[#2563EB] border-[#E2E8F0] dark:border-navy-700 cursor-pointer" />
                            </td>

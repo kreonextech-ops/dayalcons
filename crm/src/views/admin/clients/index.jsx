@@ -57,6 +57,16 @@ const Clients = () => {
     const [sortOrder, setSortOrder] = useState("newest");
   const [loading, setLoading] = useState(true);
   const [selectedClient, setSelectedClient] = useState(null);
+  const scrollPosRef = useRef(0);
+
+  useEffect(() => {
+    if (!selectedClient && !loading && scrollPosRef.current > 0) {
+      setTimeout(() => {
+        window.scrollTo({ top: scrollPosRef.current, behavior: "auto" });
+        scrollPosRef.current = 0;
+      }, 50);
+    }
+  }, [selectedClient, loading]);
 
   // Modals
   const [showNewClientModal, setShowNewClientModal] = useState(false);
@@ -370,7 +380,7 @@ const Clients = () => {
                      if (loading) return <tr><td colSpan="7" className="py-12 text-center text-gray-500">Loading clients...</td></tr>;
                      if (filtered.length === 0) return <tr><td colSpan="7" className="py-12 text-center text-gray-500">No clients found.</td></tr>;
                      return filtered.map((client, index) => (
-                        <tr key={client.id} className="border-b border-gray-100 hover:bg-gray-50 dark:hover:bg-navy-800 cursor-pointer" onClick={() => setSelectedClient(client)}>
+                        <tr key={client.id} className="border-b border-gray-100 hover:bg-gray-50 dark:hover:bg-navy-800 cursor-pointer" onClick={() => { scrollPosRef.current = window.scrollY; setSelectedClient(client); }}>
                            <td className="py-2 px-6" onClick={(e) => e.stopPropagation()}>
                               <input type="checkbox" className="w-4 h-4 rounded text-[#2563EB] border-[#E2E8F0] dark:border-navy-700 cursor-pointer" />
                            </td>
