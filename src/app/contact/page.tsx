@@ -3,6 +3,7 @@
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useRef, useState } from "react";
 import Link from "next/link";
+import { supabase } from "@/lib/supabase";
 
 // ==========================================
 // ANIMATION VARIANTS
