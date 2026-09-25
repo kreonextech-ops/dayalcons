@@ -26,6 +26,7 @@ const staggerContainer = {
 
 export default function ContactPage() {
   const [formStatus, setFormStatus] = useState<"idle" | "submitting" | "success">("idle");
+  const [formState, setFormState] = useState({ name: "", phone: "", email: "", projectType: "" });
   const heroRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: heroRef,
@@ -38,13 +39,27 @@ export default function ContactPage() {
 
   const headingWords = "Let’s Build Something Extraordinary.".split(" ");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormStatus("submitting");
-    setTimeout(() => {
-      setFormStatus("success");
-      setTimeout(() => setFormStatus("idle"), 3000);
-    }, 1500);
+    
+    try {
+      await supabase.from('leads').insert([{
+        name: formState.name,
+        phone: formState.phone || null,
+        email: formState.email || null,
+        service_type: formState.projectType || null,
+        source: 'Website Contact Page',
+        status: 'New',
+        lead_temperature: 'Warm'
+      }]);
+    } catch (err) {
+      console.error(err);
+    }
+
+    setFormStatus("success");
+    setFormState({ name: "", phone: "", email: "", projectType: "" });
+    setTimeout(() => setFormStatus("idle"), 3000);
   };
 
   return (
@@ -261,23 +276,23 @@ export default function ContactPage() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="relative group">
                         <label className="text-[13px] font-bold text-[#062B55] mb-2 block">Full Name</label>
-                        <input type="text" required className="w-full bg-white border border-[#E2E8F0] rounded-[16px] px-5 py-4 outline-none transition-all focus:border-[#18AFFF] focus:ring-4 focus:ring-[#18AFFF]/10 hover:border-[#CBD5E1]" placeholder="John Doe" />
+                        <input type="text" required className="w-full bg-white border border-[#E2E8F0] rounded-[16px] px-5 py-4 outline-none transition-all focus:border-[#18AFFF] focus:ring-4 focus:ring-[#18AFFF]/10 hover:border-[#CBD5E1]" placeholder="John Doe" value={formState.name} onChange={e => setFormState({...formState, name: e.target.value})} />
                       </div>
                       <div className="relative group">
                         <label className="text-[13px] font-bold text-[#062B55] mb-2 block">Phone Number *</label>
-                        <input type="tel" required className="w-full bg-white border border-[#E2E8F0] rounded-[16px] px-5 py-4 outline-none transition-all focus:border-[#18AFFF] focus:ring-4 focus:ring-[#18AFFF]/10 hover:border-[#CBD5E1]" placeholder="+91 00000 00000" />
+                        <input type="tel" required className="w-full bg-white border border-[#E2E8F0] rounded-[16px] px-5 py-4 outline-none transition-all focus:border-[#18AFFF] focus:ring-4 focus:ring-[#18AFFF]/10 hover:border-[#CBD5E1]" placeholder="+91 00000 00000" value={formState.phone} onChange={e => setFormState({...formState, phone: e.target.value})} />
                       </div>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       <div className="relative group">
                         <label className="text-[13px] font-bold text-[#062B55] mb-2 block">Email Address</label>
-                        <input type="email" className="w-full bg-white border border-[#E2E8F0] rounded-[16px] px-5 py-4 outline-none transition-all focus:border-[#18AFFF] focus:ring-4 focus:ring-[#18AFFF]/10 hover:border-[#CBD5E1]" placeholder="john@example.com" />
+                        <input type="email" className="w-full bg-white border border-[#E2E8F0] rounded-[16px] px-5 py-4 outline-none transition-all focus:border-[#18AFFF] focus:ring-4 focus:ring-[#18AFFF]/10 hover:border-[#CBD5E1]" placeholder="john@example.com" value={formState.email} onChange={e => setFormState({...formState, email: e.target.value})} />
                       </div>
                       <div className="relative group">
                         <label className="text-[13px] font-bold text-[#062B55] mb-2 block">Project Type</label>
                         <div className="relative">
-                          <select className="w-full bg-white border border-[#E2E8F0] rounded-[16px] px-5 py-4 appearance-none outline-none transition-all focus:border-[#18AFFF] focus:ring-4 focus:ring-[#18AFFF]/10 hover:border-[#CBD5E1] text-[#475569]">
+                          <select value={formState.projectType} onChange={e => setFormState({...formState, projectType: e.target.value})} className="w-full bg-white border border-[#E2E8F0] rounded-[16px] px-5 py-4 appearance-none outline-none transition-all focus:border-[#18AFFF] focus:ring-4 focus:ring-[#18AFFF]/10 hover:border-[#CBD5E1] text-[#475569]">
                             <option value="">Select project type</option>
                             <option value="Residential">Residential</option>
                             <option value="Commercial">Commercial</option>
