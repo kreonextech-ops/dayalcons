@@ -244,15 +244,15 @@ const Services = () => {
         </div>
 
         {/* GREEN PART: STICKY WRAPPER */}
-          <div className="sticky top-[80px] z-30 bg-[#F8FAFC] dark:bg-navy-900 pt-4 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 h-[calc(100vh-80px)] flex flex-col pb-4">
+          <div className="sticky top-[80px] z-30 bg-[#F8FAFC] dark:bg-navy-900 pt-2 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 h-[calc(100vh-130px)] flex flex-col pb-2">
           {/* Search & Filters */}
         <Card extra="shrink-0 p-4 border border-[#E2E8F0] dark:border-navy-700 mb-4 shadow-sm">
-          <div className="flex flex-col lg:flex-row justify-between items-center gap-4">
-            <div className="relative w-full lg:w-[350px]">
+          <div className="flex flex-row justify-between items-center gap-4 w-full overflow-x-auto pb-1">
+            <div className="relative flex-1 min-w-[200px] max-w-[400px]">
               <MdSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#64748B] dark:text-gray-400 text-xl" />
               <input type="text" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} placeholder="Search client, case ID, service..." className="w-full pl-10 pr-4 h-10 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 text-[14px] outline-none focus:border-[#2563EB] transition-colors" />
             </div>
-            <div className="flex flex-wrap gap-2 w-full lg:w-auto">
+            <div className="flex gap-3 flex-nowrap items-center shrink-0">
               <select value={filterType} onChange={(e) => setFilterType(e.target.value)} className="h-10 px-4 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 text-[13px] font-medium text-[#475569] dark:text-gray-200 dark:text-white bg-white dark:bg-navy-800 outline-none hover:border-[#2563EB] cursor-pointer">
                 <option value="">All Services</option>
                 {DESIGN_SERVICES.map(ds => <option key={ds.id} value={ds.id}>{ds.id}</option>)}
