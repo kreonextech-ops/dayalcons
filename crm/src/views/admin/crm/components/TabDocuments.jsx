@@ -58,7 +58,7 @@ const TabDocuments = ({ leadData }) => {
        
        if (s.includes("Interior Design")) dynamicFolders.push({ id: 101, name: "Mood Boards", color: "text-pink-500", bg: "bg-pink-50", type: "dynamic" });
        if (s.includes("Structural Design")) dynamicFolders.push({ id: 102, name: "RCC Drawings", color: "text-gray-600", bg: "bg-gray-100", type: "dynamic" });
-       if (s.includes("Building Plan Approval") || s.includes("Land Registration & Mutation")) dynamicFolders.push({ id: 103, name: "Legal Documents", color: "text-red-700", bg: "bg-red-50", type: "dynamic" });
+       if (s.includes("Building Plan Approval") || s.includes("Land Registration & Mutation") || s.includes("L.U.C.C") || s.includes("Land Registration") || s.includes("Mutation / Conversion")) dynamicFolders.push({ id: 103, name: "Legal Documents", color: "text-red-700", bg: "bg-red-50", type: "dynamic" });
        if (s.includes("2D Floor Plan Design") || s.includes("3D Elevation Design") || s.includes("3D Floor Plan Design")) dynamicFolders.push({ id: 104, name: "Architectural Drawings", color: "text-cyan-500", bg: "bg-cyan-50", type: "dynamic" });
        
        setFolders(prev => {

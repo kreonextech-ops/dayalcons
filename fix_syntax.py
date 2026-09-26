@@ -1,13 +1,16 @@
-with open('crm/src/views/admin/assignments/index.jsx', 'r', encoding='utf-8') as f:
-    content = f.read()
+import re
 
-bad_str = "name: (d.title || d.name || '') + (d.phone ?  -  : '')"
-good_str = "name: (d.title || d.name || '') + (d.phone ? ` - ${d.phone}` : '')"
+def fix(filepath):
+    with open(filepath, "r", encoding="utf-8") as f:
+        c = f.read()
+    
+    # Fix inline onChanges
+    c = re.sub(r'onChange=\{\(e\) => set([a-zA-Z0-9_]+)\(e\.target\.value\); setCurrentPage\(1\)\}', r'onChange={(e) => { set\1(e.target.value); setCurrentPage(1); }}', c)
+    
+    # Also I need to check the IIFE map replacement for any bracket errors.
+    
+    with open(filepath, "w", encoding="utf-8") as f:
+        f.write(c)
 
-if bad_str in content:
-    content = content.replace(bad_str, good_str)
-    with open('crm/src/views/admin/assignments/index.jsx', 'w', encoding='utf-8') as f:
-        f.write(content)
-    print("Fixed syntax error")
-else:
-    print("Could not find bad string")
+fix('crm/src/views/admin/crm/index.jsx')
+fix('crm/src/views/admin/clients/index.jsx')

@@ -11,6 +11,7 @@ import { FiFileText, FiMap } from "react-icons/fi";
 const DESIGN_SERVICES = [
   { id: "Land Registration", icon: <FiFileText /> },
   { id: "Mutation / Conversion", icon: <FiFileText /> },
+  { id: "L.U.C.C", icon: <FiFileText /> },
   { id: "Building Plan Approval", icon: <MdDomainVerification /> },
   { id: "2D Floor Plan Design", icon: <MdLayers /> },
   { id: "3D Floor Plan Design", icon: <MdLayers /> },

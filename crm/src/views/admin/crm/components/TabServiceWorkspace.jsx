@@ -360,7 +360,7 @@ const TabServiceWorkspace = ({ leadData, customRequirements }) => {
       {selected.includes("Painting & Epoxy Flooring") && <PaintingWorkspace />}
       {selected.includes("Electrical & Plumbing") && <MEPWorkspace />}
       
-      {selected.includes("Land Registration & Mutation") && <LegalWorkspace />}
+      {(selected.includes("Land Registration & Mutation") || selected.includes("L.U.C.C") || selected.includes("Land Registration") || selected.includes("Mutation / Conversion")) && <LegalWorkspace />}
       {selected.includes("Building Plan Approval") && <ApprovalWorkspace />}
       
       {(selected.includes("2D Floor Plan Design") || selected.includes("3D Floor Plan Design")) && <ArchitecturalWorkspace />}

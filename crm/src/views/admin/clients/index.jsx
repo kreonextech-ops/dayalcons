@@ -55,7 +55,8 @@ const Clients = () => {
 
   const [clients, setClients] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
-    const [sortOrder, setSortOrder] = useState("newest");
+    const [currentPage, setCurrentPage] = useState(1);
+  const [sortOrder, setSortOrder] = useState("newest");
   const [filterStatus, setFilterStatus] = useState("");
   const [filterEmployee, setFilterEmployee] = useState("");
   const [filterService, setFilterService] = useState("");
@@ -341,7 +342,7 @@ const Clients = () => {
                   <input 
                     type="text" 
                     value={searchTerm} 
-                    onChange={(e) => setSearchTerm(e.target.value)} 
+                    onChange={(e) => { setSearchTerm(e.target.value); setCurrentPage(1); }} 
                     placeholder="Search name, phone, address..." 
                     className="w-full pl-10 pr-4 h-10 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 text-[14px] outline-none focus:border-[#2563EB] transition-colors" 
                   />
@@ -349,7 +350,7 @@ const Clients = () => {
                   <div className="flex gap-3 flex-nowrap items-center shrink-0">
                       <select 
                         value={filterStatus}
-                        onChange={(e) => setFilterStatus(e.target.value)}
+                        onChange={(e) => { setFilterStatus(e.target.value); setCurrentPage(1); }}
                         className="h-10 px-4 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 text-[14px] text-[#475569] dark:text-gray-200 dark:text-white outline-none focus:border-[#2563EB] bg-transparent dark:bg-navy-900 cursor-pointer w-[160px] truncate"
                         title="Filter by Status"
                       >
@@ -360,7 +361,7 @@ const Clients = () => {
                       </select>
                       <select 
                         value={filterEmployee}
-                        onChange={(e) => setFilterEmployee(e.target.value)}
+                        onChange={(e) => { setFilterEmployee(e.target.value); setCurrentPage(1); }}
                         className="h-10 px-4 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 text-[14px] text-[#475569] dark:text-gray-200 dark:text-white outline-none focus:border-[#2563EB] bg-transparent dark:bg-navy-900 cursor-pointer w-[160px] truncate"
                         title="Filter by Employee"
                       >
@@ -377,7 +378,7 @@ const Clients = () => {
 
                       <select 
                         value={filterService}
-                        onChange={(e) => setFilterService(e.target.value)}
+                        onChange={(e) => { setFilterService(e.target.value); setCurrentPage(1); }}
                         className="h-10 px-4 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 text-[14px] text-[#475569] dark:text-gray-200 dark:text-white outline-none focus:border-[#2563EB] bg-transparent dark:bg-navy-900 cursor-pointer w-[160px] truncate"
                         title="Filter by Service"
                       >
@@ -392,7 +393,7 @@ const Clients = () => {
 
                       <select 
                         value={sortOrder}
-                        onChange={(e) => setSortOrder(e.target.value)}
+                        onChange={(e) => { setSortOrder(e.target.value); setCurrentPage(1); }}
                         className="h-10 px-4 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 text-[14px] text-[#475569] dark:text-gray-200 dark:text-white outline-none focus:border-[#2563EB] bg-transparent dark:bg-navy-900 cursor-pointer min-w-[140px]"
                       >
                         <optgroup label="Sort By">
@@ -457,13 +458,14 @@ const Clients = () => {
                      }
                      if (loading) return <tr><td colSpan="7" className="py-12 text-center text-gray-500">Loading clients...</td></tr>;
                      if (filtered.length === 0) return <tr><td colSpan="7" className="py-12 text-center text-gray-500">No clients found.</td></tr>;
-                     return filtered.map((client, index) => (
+                     const paginated = filtered.slice((currentPage - 1) * 10, currentPage * 10);
+                     return paginated.map((client, index) => (
                         <tr key={client.id} className="border-b border-gray-100 hover:bg-gray-50 dark:hover:bg-navy-800 cursor-pointer" onClick={() => setSelectedClient(client)}>
                            <td className="py-2 px-6" onClick={(e) => e.stopPropagation()}>
                               <input type="checkbox" className="w-4 h-4 rounded text-[#2563EB] border-[#E2E8F0] dark:border-navy-700 cursor-pointer" />
                            </td>
                              <td className="py-4 px-4 text-sm text-gray-800 font-bold">
-                                {filtered.length - index}
+                                {filtered.length - ((currentPage - 1) * 10 + index)}
                              </td>
                            <td className="py-2 px-4">
                               <p className="text-sm text-gray-800 font-bold">{client.name}</p>
@@ -497,11 +499,11 @@ const Clients = () => {
           </div>
           {/* Pagination */}
           <div className="p-4 border-t border-[#E2E8F0] dark:border-navy-700 flex justify-between items-center bg-white dark:bg-navy-800">
-             <span className="text-[13px] font-medium text-[#64748B] dark:text-gray-400">Showing {clients.length > 0 ? `1 - ${clients.length}` : '—'} of {clients.length > 0 ? clients.length : '—'} clients</span>
+             <span className="text-[13px] font-medium text-[#64748B] dark:text-gray-400">Showing {finalFiltered.length > 0 ? ((currentPage - 1) * 10 + 1) : 0} - {Math.min(currentPage * 10, finalFiltered.length)} of {finalFiltered.length} clients</span>
              <div className="flex gap-1">
-               <button className="h-8 px-3 rounded border border-[#E2E8F0] dark:border-navy-700 text-[13px] font-medium text-[#64748B] dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-navy-800 flex items-center transition"><MdKeyboardArrowLeft /> Prev</button>
-               <button className="h-8 px-3 rounded bg-[#2563EB] text-white text-[13px] font-medium shadow-sm">1</button>
-               <button className="h-8 px-3 rounded border border-[#E2E8F0] dark:border-navy-700 text-[13px] font-medium text-[#64748B] dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-navy-800 flex items-center transition">Next <MdKeyboardArrowRight /></button>
+               <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1} className="h-8 px-3 rounded border border-[#E2E8F0] dark:border-navy-700 text-[13px] font-medium text-[#64748B] dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-navy-800 flex items-center transition disabled:opacity-50"><MdKeyboardArrowLeft /> Prev</button>
+               <button className="h-8 px-3 rounded bg-[#2563EB] text-white text-[13px] font-medium shadow-sm">{currentPage}</button>
+               <button onClick={() => setCurrentPage(p => p + 1)} disabled={currentPage * 10 >= finalFiltered.length} className="h-8 px-3 rounded border border-[#E2E8F0] dark:border-navy-700 text-[13px] font-medium text-[#64748B] dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-navy-800 flex items-center transition disabled:opacity-50">Next <MdKeyboardArrowRight /></button>
              </div>
           </div>
         </Card>
