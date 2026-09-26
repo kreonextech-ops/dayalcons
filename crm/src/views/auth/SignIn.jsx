@@ -55,7 +55,9 @@ export default function SignIn() {
   };
 
   const enterDashboard = async (data) => {
-    await logLogin(data.name, data.id);
+    // Fire-and-forget logLogin so it doesn't block the user from entering the dashboard
+    logLogin(data.name, data.id).catch(console.error);
+    
     sessionStorage.setItem("dayal_user", JSON.stringify(data));
     if (data.role === "Client") navigate("/client/default");
     else navigate("/admin/default");
