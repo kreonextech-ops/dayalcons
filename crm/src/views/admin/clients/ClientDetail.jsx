@@ -435,13 +435,15 @@ const ClientDetail = ({ client, onBack }) => {
     
     
 
-    await supabase.from('clients').delete().eq('id', clientData.id);
+    const { error: delErr2 } = await supabase.from('clients').delete().eq('id', clientData.id);
+    if (delErr2) { alert("Cannot convert: Client has active projects or services attached to them. Delete those first."); return; }
     onBack({ id: clientData.id, deleted: true });
   };
 
   const handleDeleteClientFromDetail = async () => {
     if (!window.confirm("Are you sure you want to permanently delete this Client? This action cannot be undone.")) return;
-    await supabase.from("clients").delete().eq("id", clientData.id);
+    const { error: delErr } = await supabase.from("clients").delete().eq("id", clientData.id);
+    if (delErr) { alert("Cannot delete: Client has active projects, tasks, or services attached to them. Delete those first."); return; }
     onBack({ id: clientData.id, deleted: true });
   };
 
