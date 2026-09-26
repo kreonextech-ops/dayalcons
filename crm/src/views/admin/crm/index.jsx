@@ -223,10 +223,6 @@ ${finalNotes}`;
     }]).select();
 
     if (!insertError && newClientData && newClientData.length > 0) {
-       const clientId = newClientData[0].id;
-       localStorage.setItem(`client_${clientId}`, JSON.stringify({
-          phone: convertLeadData.phone, email: convertLeadData.email, address: convertLeadData.address, company: convertLeadData.name, leadData: convertLeadData
-       }));
        await supabase.from('leads').delete().eq('id', convertLeadData.id);
        setConvertLeadData(null);
        fetchLeads();
@@ -290,7 +286,7 @@ ${finalNotes}`;
 
        // Merge with localStorage
        const merged = data.map(lead => {
-          const localData = JSON.parse(localStorage.getItem(`lead_${lead.id}`) || "{}");
+          
           return { ...lead, ...localData };
        });
          // Group duplicates by phone number
@@ -387,7 +383,7 @@ ${finalNotes}`;
     const { error } = await supabase.from("leads").update({ status: statusUpdateData.status }).eq("id", leadId);
     if (!error) {
        // Also update localStorage with the temperature
-       const localData = JSON.parse(localStorage.getItem(`lead_${leadId}`) || "{}");
+       
        localData.lead_temperature = statusUpdateData.lead_temperature;
        localStorage.setItem(`lead_${leadId}`, JSON.stringify(localData));
        
@@ -420,7 +416,7 @@ ${finalNotes}`;
   };
 
   const handleDirectTempChange = async (leadId, newTemp) => {
-    const localData = JSON.parse(localStorage.getItem(`lead_${leadId}`) || "{}");
+    
     localData.lead_temperature = newTemp;
     localStorage.setItem(`lead_${leadId}`, JSON.stringify(localData));
     

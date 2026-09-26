@@ -173,9 +173,7 @@ ${finalNotes}`;
 
     if (!insertError && newClientData && newClientData.length > 0) {
        const clientId = newClientData[0].id;
-       localStorage.setItem(`client_${clientId}`, JSON.stringify({
-          phone: leadData.phone, email: leadData.email, address: leadData.address, company: leadData.name, leadData: leadData
-       }));
+       
        await supabase.from('leads').delete().eq('id', leadData.id);
        setShowConvertModal(false);
        onBack();
@@ -210,7 +208,7 @@ ${finalNotes}`;
     const newTemp = e.target.value;
     setLeadData({ ...leadData, lead_temperature: newTemp });
     
-    const localData = JSON.parse(localStorage.getItem(`lead_${leadData.id}`) || "{}");
+    
     localData.lead_temperature = newTemp;
     localStorage.setItem(`lead_${leadData.id}`, JSON.stringify(localData));
     
@@ -334,13 +332,7 @@ ${finalNotes}`;
     // 1b. Save advanced lead fields to localStorage to bypass Supabase schema limits
     if (newClientData && newClientData.length > 0) {
        const clientId = newClientData[0].id;
-       localStorage.setItem(`client_${clientId}`, JSON.stringify({
-          phone: leadData.phone,
-          email: leadData.email,
-          address: leadData.address,
-          company: leadData.name,
-          leadData: leadData
-       }));
+       
     }
 
     // 2. Remove from leads table

@@ -170,10 +170,6 @@ const ClientDetail = ({ client, onBack }) => {
       const finalWorkTypes = selected.join(', ');
 
       // Optimistic update for UI speed
-      const local = JSON.parse(localStorage.getItem(`client_${clientData.id}`) || "{}");
-      local.work_types = finalWorkTypes;
-      local.leadData = clientData.leadData;
-      localStorage.setItem(`client_${clientData.id}`, JSON.stringify(local));
 
       // Separate into types
       const toDesign = selected.filter(s => DESIGN_SERVICES_LIST.includes(s));

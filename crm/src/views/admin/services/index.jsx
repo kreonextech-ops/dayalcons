@@ -78,16 +78,7 @@ const Services = () => {
     const fetchClients = async () => {
       const { data, error } = await supabase.from("clients").select("*");
       if (!error && data) {
-        const merged = data.map(client => {
-           const localData = JSON.parse(localStorage.getItem(`client_${client.id}`) || "{}");
-           const mergedClient = { ...client };
-           if (localData.phone && !mergedClient.phone) mergedClient.phone = localData.phone;
-           if (localData.email && !mergedClient.email) mergedClient.email = localData.email;
-           if (localData.address && !mergedClient.address) mergedClient.address = localData.address;
-           if (localData.company && !mergedClient.company) mergedClient.company = localData.company;
-           return mergedClient;
-        });
-        setAllClients(merged);
+        setAllClients(data);
       }
     };
     fetchClients();
@@ -158,12 +149,6 @@ const Services = () => {
        
        if (!error && newClientData && newClientData.length > 0) {
          finalClientId = newClientData[0].id;
-         localStorage.setItem(`client_${finalClientId}`, JSON.stringify({
-            phone: newCase.phone,
-            whatsapp: newCase.whatsapp,
-            email: newCase.email,
-            address: newCase.address
-         }));
        } else {
          alert("Failed to create new client. Please try again.");
          return;

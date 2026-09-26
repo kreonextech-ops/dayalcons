@@ -207,31 +207,21 @@ const Clients = () => {
           if (servRes.data) servicesData = servRes.data;
       }
 
-      // Merge with localStorage to bypass Supabase schema limits
       const merged = data.map(client => {
-         const localData = JSON.parse(localStorage.getItem(`client_${client.id}`) || "{}");
          const clientActivities = activitiesData.filter(a => a.client_id === client.id);
          const lastContact = clientActivities.length > 0 ? clientActivities[0].created_at : null; 
          
          const clientProjects = projectsData.filter(p => p.client_id === client.id);
          const clientServices = servicesData.filter(s => s.client_id === client.id);
          
-         // Dynamically generate work_types from actual projects and services
          const activeWorks = [
             ...clientServices.map(s => s.title),
             ...clientProjects.map(p => p.title || p.name)
          ].filter(Boolean);
          
-         const finalWorkTypes = activeWorks.length > 0 ? activeWorks.join(', ') : (client.work_types || localData.work_types || "");
+         const finalWorkTypes = activeWorks.length > 0 ? activeWorks.join(', ') : (client.work_types || "");
          
-         const mergedClient = { ...client };
-         if (localData.phone && !mergedClient.phone) mergedClient.phone = localData.phone;
-         if (localData.email && !mergedClient.email) mergedClient.email = localData.email;
-         if (localData.address && !mergedClient.address) mergedClient.address = localData.address;
-         if (localData.company && !mergedClient.company) mergedClient.company = localData.company;
-         if (localData.gst && !mergedClient.gst) mergedClient.gst = localData.gst;
-         
-         return { ...mergedClient, lastContact, activeProjectsCount: clientProjects.length, work_types: finalWorkTypes };
+         return { ...client, lastContact, activeProjectsCount: clientProjects.length, work_types: finalWorkTypes };
       });
       setClients(merged);
     }
@@ -262,13 +252,7 @@ const Clients = () => {
     if (!error && newClientData && newClientData.length > 0) {
       // Save extra fields to local storage
       const clientId = newClientData[0].id;
-      localStorage.setItem(`client_${clientId}`, JSON.stringify({
-         phone: newClient.phone,
-         email: newClient.email,
-         address: newClient.address,
-         company: newClient.company,
-         gst: newClient.gst
-      }));
+      
 
       setShowNewClientModal(false);
       setNewClient({ name: "", phone: "", email: "", address: "", company: "", gst: "", source: "", work_types: [] });
