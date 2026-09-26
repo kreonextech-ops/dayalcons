@@ -21,7 +21,8 @@ const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 const DESIGN_SERVICES = [
-  { id: "Land Registration & Mutation", icon: <FiFileText /> },
+  { id: "Land Registration", icon: <FiFileText /> },
+  { id: "Mutation / Conversion", icon: <FiFileText /> },
   { id: "L.U.C.C", icon: <FiFileText /> },
   { id: "Building Plan Approval", icon: <MdDomainVerification /> },
   { id: "2D Floor Plan Design", icon: <MdLayers /> },
@@ -295,7 +296,7 @@ const Services = () => {
                   {(() => {
                      let filtered = services;
                      if (searchTerm) {
-                        const lower = searchTerm.toLowerCase();
+                        const lower = String(searchTerm).toLowerCase();
                         filtered = filtered.filter(s => (s.id && s.id.toLowerCase().includes(lower)) || (s.client?.name && s.client.name.toLowerCase().includes(lower)) || (s.client?.phone && s.client.phone.toLowerCase().includes(lower)) || (s.client?.address && s.client.address.toLowerCase().includes(lower)) || (s.title && s.title.toLowerCase().includes(lower)));
                      }
                      if (filterType) {

@@ -12,7 +12,8 @@ import { FiClock, FiFileText, FiMap } from "react-icons/fi";
 
 
 const DESIGN_SERVICES = [
-  { id: "Land Registration & Mutation", icon: <FiFileText /> },
+  { id: "Land Registration", icon: <FiFileText /> },
+  { id: "Mutation / Conversion", icon: <FiFileText /> },
   { id: "L.U.C.C", icon: <FiFileText /> },
   { id: "Building Plan Approval", icon: <MdDomainVerification /> },
   { id: "2D Floor Plan Design", icon: <MdLayers /> },
@@ -56,6 +57,8 @@ const CRMLeads = () => {
    const [employeesMap, setEmployeesMap] = useState({});
   const [searchTerm, setSearchTerm] = useState("");
     const [sortOrder, setSortOrder] = useState("newest");
+  const [filterEmployee, setFilterEmployee] = useState("");
+  const [filterService, setFilterService] = useState("");
       const [filterStartDate, setFilterStartDate] = useState("");
   const [filterEndDate, setFilterEndDate] = useState("");
   const [loading, setLoading] = useState(true);
@@ -195,7 +198,28 @@ const CRMLeads = () => {
 
   const confirmConvert = async () => {
     if (!convertLeadData) return;
-    const { data: newClientData, error: insertError } = await supabase.from('clients').insert([{ name: convertLeadData.name, status: 'active', email: convertLeadData.email, phone: convertLeadData.phone, address: convertLeadData.address, company: convertLeadData.company || convertLeadData.name , source: convertLeadData.source, service_type: convertLeadData.service_type, lead_score: convertLeadData.lead_score, budget: convertLeadData.budget, plot_size: convertLeadData.plot_size, timeline: convertLeadData.timeline, lead_temperature: convertLeadData.lead_temperature, notes: convertLeadData.notes }]).select();
+    
+    let finalNotes = convertLeadData.notes || "";
+    if (convertLeadData.whatsapp) finalNotes = `WhatsApp: ${convertLeadData.whatsapp}
+${finalNotes}`;
+    
+    const { data: newClientData, error: insertError } = await supabase.from('clients').insert([{ 
+       name: convertLeadData.name, 
+       status: 'active', 
+       email: convertLeadData.email, 
+       phone: convertLeadData.phone, 
+       address: convertLeadData.address, 
+       company: convertLeadData.company || convertLeadData.name, 
+       source: convertLeadData.source, 
+       service_type: convertLeadData.service_type, 
+       work_types: convertLeadData.service_type,
+       lead_score: convertLeadData.lead_score, 
+       budget: convertLeadData.budget, 
+       plot_size: convertLeadData.plot_size, 
+       timeline: convertLeadData.timeline, 
+       lead_temperature: convertLeadData.lead_temperature, 
+       notes: finalNotes 
+    }]).select();
 
     if (!insertError && newClientData && newClientData.length > 0) {
        const clientId = newClientData[0].id;
@@ -288,33 +312,56 @@ const CRMLeads = () => {
 
   const handleCreateLead = async (e) => {
     e.preventDefault();
-    // Only insert schema-supported columns
-      const { data: newLeadData, error } = await supabase.from("leads").insert([{
-         name: newLead.name,
-         phone: newLead.phone,
-         service_type: Array.isArray(newLead.service_type) ? newLead.service_type.join(', ') : newLead.service_type,
-         source: newLead.source === "Other" ? (newLead.source_custom || "Other") : newLead.source,
-         status: newLead.status,
-         ...(newLead.created_at ? { created_at: new Date(newLead.created_at).toISOString() } : {})
-      }]).select();
+    
+    // OPTIMISTIC UI
+    const tempId = `temp-${Date.now()}`;
+    const mappedService = Array.isArray(newLead.service_type) ? newLead.service_type.join(', ') : newLead.service_type;
+    const mappedSource = newLead.source === "Other" ? (newLead.source_custom || "Other") : newLead.source;
+    
+    const optimisticLead = {
+       id: tempId,
+       name: newLead.name,
+       phone: newLead.phone,
+       service_type: mappedService,
+       source: mappedSource,
+       status: newLead.status || "New",
+       created_at: newLead.created_at ? new Date(newLead.created_at).toISOString() : new Date().toISOString()
+    };
+    
+    localStorage.setItem(`lead_${tempId}`, JSON.stringify({
+       whatsapp: newLead.whatsapp,
+       email: newLead.email,
+       address: newLead.address,
+       notes: newLead.notes,
+       lead_temperature: newLead.lead_temperature
+    }));
+
+    setLeads([optimisticLead, ...leads]);
+    setShowNewLeadModal(false);
+    setNewLead({ name: "", phone: "", whatsapp: "", email: "", service_type: [], source: "", address: "", notes: "", status: "New" });
+
+    // BACKGROUND SYNC
+    const { data: newLeadData, error } = await supabase.from("leads").insert([{
+       name: optimisticLead.name,
+       phone: optimisticLead.phone,
+       service_type: optimisticLead.service_type,
+       source: optimisticLead.source,
+       status: optimisticLead.status,
+       created_at: optimisticLead.created_at
+    }]).select();
 
     if (!error && newLeadData && newLeadData.length > 0) {
-      // Save unmapped fields to localStorage
-      const leadId = newLeadData[0].id;
-      localStorage.setItem(`lead_${leadId}`, JSON.stringify({
-         whatsapp: newLead.whatsapp,
-         email: newLead.email,
-         address: newLead.address,
-         notes: newLead.notes,
-         lead_temperature: newLead.lead_temperature
-      }));
-
-      setShowNewLeadModal(false);
-      setNewLead({ name: "", phone: "", whatsapp: "", email: "", service_type: [], source: "", address: "", notes: "", status: "New" });
-      fetchLeads();
+      const realId = newLeadData[0].id;
+      const savedData = localStorage.getItem(`lead_${tempId}`);
+      if (savedData) {
+         localStorage.setItem(`lead_${realId}`, savedData);
+         localStorage.removeItem(`lead_${tempId}`);
+      }
+      fetchLeads(false);
     } else {
       console.error("Error creating lead:", error);
       alert("Failed to create lead. Check console.");
+      fetchLeads(false);
     }
   };
 
@@ -368,12 +415,14 @@ const CRMLeads = () => {
   };
 
   const handleDeleteLead = async (id) => {
-    const { error } = await supabase.from("leads").delete().eq("id", id);
-    if (!error) {
-      setShowDeleteModal(null);
-      localStorage.removeItem(`lead_${id}`);
-      fetchLeads();
-    }
+    // Optimistic UI
+    setShowDeleteModal(null);
+    setLeads(leads.filter(l => l.id !== id));
+    localStorage.removeItem(`lead_${id}`);
+    
+    // Background Sync
+    await supabase.from("leads").delete().eq("id", id);
+    fetchLeads(false);
   };
 
   const getStatusColor = (status) => {
@@ -400,7 +449,7 @@ const CRMLeads = () => {
 
   return (
     <>
-    {selectedLead && <LeadDetail lead={selectedLead} onBack={() => { setSelectedLead(null); fetchLeads(false); }} />}
+    {selectedLead && <LeadDetail lead={selectedLead} onBack={(updated) => { if(updated && updated.id){ setLeads(leads.map(l => l.id === updated.id ? updated : l)); } setSelectedLead(null); fetchLeads(false); }} />}
     <div className={`w-full max-w-full bg-[#F8FAFC] dark:bg-navy-900 min-h-screen pt-4 pb-24 ${selectedLead ? 'hidden' : 'block'}`}>
       {convertLeadData && (
         <div className="fixed inset-0 z-[99] flex items-center justify-center bg-black/50 backdrop-blur-sm">
@@ -484,16 +533,54 @@ const CRMLeads = () => {
                        <input type="date" value={filterEndDate} onChange={(e) => setFilterEndDate(e.target.value)} className="h-10 px-2 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 text-[14px] text-[#475569] dark:text-gray-200 dark:text-white outline-none focus:border-[#2563EB] bg-transparent dark:bg-navy-900 cursor-pointer" title="End Date" />
                     </div>
                       <select 
+                        value={filterEmployee}
+                        onChange={(e) => setFilterEmployee(e.target.value)}
+                        className="h-10 px-4 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 text-[14px] text-[#475569] dark:text-gray-200 dark:text-white outline-none focus:border-[#2563EB] bg-transparent dark:bg-navy-900 cursor-pointer w-[160px] truncate"
+                        title="Filter by Employee"
+                      >
+                        <option value="">All Employees</option>
+                        {Object.entries(employeesMap).map(([id, name]) => (
+                           <option key={id} value={id}>{name}</option>
+                        ))}
+                      </select>
+
+                      <select 
+                        value={filterService}
+                        onChange={(e) => setFilterService(e.target.value)}
+                        className="h-10 px-4 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 text-[14px] text-[#475569] dark:text-gray-200 dark:text-white outline-none focus:border-[#2563EB] bg-transparent dark:bg-navy-900 cursor-pointer w-[160px] truncate"
+                        title="Filter by Service"
+                      >
+                        <option value="">All Services</option>
+                        <optgroup label="Design Services">
+                           {DESIGN_SERVICES.map(s => <option key={s.id} value={s.id}>{s.id}</option>)}
+                        </optgroup>
+                        <optgroup label="Execution Projects">
+                           {EXECUTION_PROJECTS.map(s => <option key={s.id} value={s.id}>{s.id}</option>)}
+                        </optgroup>
+                      </select>
+
+                      <select 
                         value={sortOrder}
-                      onChange={(e) => setSortOrder(e.target.value)}
-                      className="h-10 px-4 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 text-[14px] text-[#475569] dark:text-gray-200 dark:text-white outline-none focus:border-[#2563EB] bg-transparent dark:bg-navy-900 cursor-pointer"
-                    >
-                      <option value="newest">Sort: Newest First</option>
-                      <option value="oldest">Sort: Oldest First</option>
-                      <option value="name_asc">Sort: Name (A-Z)</option>
-                      <option value="name_desc">Sort: Name (Z-A)</option>
-                      <option value="status">Sort: Status</option>
-                    </select>
+                        onChange={(e) => setSortOrder(e.target.value)}
+                        className="h-10 px-4 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 text-[14px] text-[#475569] dark:text-gray-200 dark:text-white outline-none focus:border-[#2563EB] bg-transparent dark:bg-navy-900 cursor-pointer min-w-[140px]"
+                      >
+                        <optgroup label="Sort By">
+                           <option value="newest">Newest First</option>
+                           <option value="oldest">Oldest First</option>
+                           <option value="name_asc">Name (A-Z)</option>
+                           <option value="name_desc">Name (Z-A)</option>
+                           <option value="status">Status (A-Z)</option>
+                        </optgroup>
+                        <optgroup label="Filter Status">
+                           <option value="status_ongoing">Ongoing Leads</option>
+                           <option value="status_success">Success Closed (Won)</option>
+                        </optgroup>
+                        <optgroup label="Filter Temp">
+                           <option value="temp_hot">Hot Leads</option>
+                           <option value="temp_warm">Warm Leads</option>
+                           <option value="temp_cold">Cold Leads</option>
+                        </optgroup>
+                      </select>
                 </div>
               </div>
               </Card>
@@ -530,6 +617,26 @@ const CRMLeads = () => {
                           end.setHours(23,59,59,999);
                           filtered = filtered.filter(x => x.created_at && new Date(x.created_at) <= end);
                        }
+
+                     if (filterEmployee) {
+                        filtered = filtered.filter(x => x.assigned_to && x.assigned_to.includes(filterEmployee));
+                     }
+                     if (filterService) {
+                        filtered = filtered.filter(x => x.service_type && x.service_type.includes(filterService));
+                     }
+
+                     if (sortOrder === "status_ongoing") {
+                        filtered = filtered.filter(x => x.status !== "Won" && x.status !== "Lost");
+                     } else if (sortOrder === "status_success") {
+                        filtered = filtered.filter(x => x.status === "Won");
+                     } else if (sortOrder === "temp_hot") {
+                        filtered = filtered.filter(x => x.lead_temperature === "Hot");
+                     } else if (sortOrder === "temp_warm") {
+                        filtered = filtered.filter(x => x.lead_temperature === "Warm");
+                     } else if (sortOrder === "temp_cold") {
+                        filtered = filtered.filter(x => x.lead_temperature === "Cold");
+                     }
+                     
                      if (sortOrder === "oldest") {
                         filtered.sort((a,b) => new Date(a.created_at) - new Date(b.created_at));
                      } else if (sortOrder === "name_asc") {
@@ -542,14 +649,16 @@ const CRMLeads = () => {
                         filtered.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
                      }
                      if (searchTerm) {
-                        const lower = searchTerm.toLowerCase();
+                        const lower = String(searchTerm).toLowerCase();
                         filtered = filtered.filter(l => 
-                           (l.name && l.name.toLowerCase().includes(lower)) || 
-                           (l.email && l.email.toLowerCase().includes(lower)) || 
-                           (l.phone && l.phone.toLowerCase().includes(lower)) || 
-                           (l.company && l.company.toLowerCase().includes(lower)) ||
-                           (l.address && l.address.toLowerCase().includes(lower)) ||
-                           (l.source && l.source.toLowerCase().includes(lower))
+                           (l.name && String(l.name).toLowerCase().includes(lower)) || 
+                           (l.email && String(l.email).toLowerCase().includes(lower)) || 
+                           (l.phone && String(l.phone).toLowerCase().includes(lower)) || 
+                           (l.whatsapp && String(l.whatsapp).toLowerCase().includes(lower)) || 
+                           (l.company && String(l.company).toLowerCase().includes(lower)) ||
+                           (l.address && String(l.address).toLowerCase().includes(lower)) ||
+                           (l.source && String(l.source).toLowerCase().includes(lower)) ||
+                           (l.notes && String(l.notes).toLowerCase().includes(lower))
                         );
                      }
                      if (loading) return <tr><td colSpan="11" className="py-12 text-center text-gray-500">Loading leads...</td></tr>;

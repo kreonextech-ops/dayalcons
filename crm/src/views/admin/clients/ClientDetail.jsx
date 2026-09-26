@@ -366,11 +366,65 @@ const ClientDetail = ({ client, onBack }) => {
     "Documents", "Quotations"
     ];
 
+
+  const handleConvertToLead = async () => {
+    if (!window.confirm("Are you sure you want to convert this Client back into a Lead?")) return;
+    
+    // 1. Insert into leads
+    const { data: newLeadData, error: insertError } = await supabase.from('leads').insert([{ 
+       name: clientData.name, 
+       status: 'New', 
+       email: clientData.email, 
+       phone: clientData.phone, 
+       address: clientData.address, 
+       company: clientData.company, 
+       source: clientData.source, 
+       service_type: clientData.work_types, 
+       lead_score: clientData.lead_score, 
+       budget: clientData.budget, 
+       plot_size: clientData.plot_size, 
+       timeline: clientData.timeline, 
+       lead_temperature: clientData.lead_temperature, 
+       notes: clientData.notes, 
+       created_at: clientData.created_at || new Date().toISOString()
+    }]).select();
+
+    if (insertError) {
+      console.error(insertError);
+      alert("Failed to convert back to lead.");
+      return;
+    }
+    
+    const newId = newLeadData[0].id;
+    let whatsapp = clientData.phone;
+    if (clientData.notes) {
+        let match = clientData.notes.match(/WhatsApp:\s*([0-9]+)/i);
+        if (match) whatsapp = match[1];
+    }
+    
+    localStorage.setItem(`lead_${newId}`, JSON.stringify({
+       whatsapp: whatsapp,
+       email: clientData.email,
+       address: clientData.address,
+       notes: clientData.notes,
+       lead_temperature: clientData.lead_temperature
+    }));
+
+    await supabase.from('clients').delete().eq('id', clientData.id);
+    onBack({ id: clientData.id, deleted: true });
+  };
+
+  const handleDeleteClientFromDetail = async () => {
+    if (!window.confirm("Are you sure you want to permanently delete this Client? This action cannot be undone.")) return;
+    await supabase.from("clients").delete().eq("id", clientData.id);
+    onBack({ id: clientData.id, deleted: true });
+  };
+
   return (
     <div className="relative min-h-screen bg-[#F8FAFC] dark:bg-navy-900 p-4 sm:p-8 font-sans pb-24">
       {/* 1. Back Navigation */}
       <div className="mb-6 flex items-center gap-2 text-sm text-[#64748B] dark:text-gray-400">
-        <button onClick={onBack} className="flex items-center gap-2 hover:text-brand-500 transition">
+        <button onClick={() => onBack(clientData)} className="flex items-center gap-2 hover:text-brand-500 transition">
           <MdArrowBack className="h-5 w-5" />
           <span className="font-semibold">Back to Clients</span>
         </button>
@@ -409,6 +463,12 @@ const ClientDetail = ({ client, onBack }) => {
           <span className={`rounded-full px-4 py-1 text-xs font-bold tracking-wide ${clientData.status === 'Active' ? 'bg-[#16A34A] text-white' : 'bg-gray-500 text-white'}`}>
             STATUS: {clientData.status.toUpperCase()}
           </span>
+          {isAdmin && (
+            <div className="flex gap-2 mt-3">
+              <button onClick={handleConvertToLead} className="px-3 py-1.5 bg-yellow-500 text-white rounded-[8px] text-[12px] font-bold shadow hover:bg-yellow-600 transition">Convert back to Lead</button>
+              <button onClick={handleDeleteClientFromDetail} className="px-3 py-1.5 bg-red-600 text-white rounded-[8px] text-[12px] font-bold shadow hover:bg-red-700 transition">Delete Client</button>
+            </div>
+          )}
           <p className="mt-3 text-sm font-semibold text-[#64748B] dark:text-gray-400">Total Lifetime Value</p>
           <p className="text-[28px] font-bold text-[#16A34A]">₹0.00</p>
         </div>

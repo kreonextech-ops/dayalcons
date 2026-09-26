@@ -309,7 +309,7 @@ const FollowUps = () => {
                          {showDropdown && recordOptions.length > 0 && (
                             <div className="absolute z-10 w-full mt-1 bg-white border border-[#E2E8F0] rounded-lg shadow-xl max-h-48 overflow-y-auto">
                                {recordOptions
-                                  .filter(r => r.name.toLowerCase().includes(searchTerm.toLowerCase()) || (r.phone && r.phone.includes(searchTerm)))
+                                  .filter(r => r.name.toLowerCase().includes(String(searchTerm).toLowerCase()) || (r.phone && String(r.phone).includes(searchTerm)))
                                   .map(r => (
                                   <div 
                                      key={r.id} 
@@ -324,7 +324,7 @@ const FollowUps = () => {
                                      {r.phone && <span className="ml-2 text-gray-500 text-[11px]">{r.phone}</span>}
                                   </div>
                                ))}
-                               {recordOptions.filter(r => r.name.toLowerCase().includes(searchTerm.toLowerCase()) || (r.phone && r.phone.includes(searchTerm))).length === 0 && (
+                               {recordOptions.filter(r => r.name.toLowerCase().includes(String(searchTerm).toLowerCase()) || (r.phone && String(r.phone).includes(searchTerm))).length === 0 && (
                                   <div className="px-3 py-2 text-[13px] text-gray-400">No matches found.</div>
                                )}
                             </div>

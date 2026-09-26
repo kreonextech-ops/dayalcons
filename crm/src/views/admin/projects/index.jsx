@@ -285,7 +285,7 @@ const Projects = () => {
                   {(() => {
                      let filtered = projects;
                      if (searchTerm) {
-                        const lower = searchTerm.toLowerCase();
+                        const lower = String(searchTerm).toLowerCase();
                         filtered = filtered.filter(p => (p.id && p.id.toLowerCase().includes(lower)) || (p.client?.name && p.client.name.toLowerCase().includes(lower)) || (p.client?.phone && p.client.phone.toLowerCase().includes(lower)) || (p.client?.address && p.client.address.toLowerCase().includes(lower)) || (p.name && p.name.toLowerCase().includes(lower)));
                      }
                      if (filterType) {

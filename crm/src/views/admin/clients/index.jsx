@@ -13,7 +13,8 @@ import { MdAdd, MdCurrencyRupee, MdBusinessCenter, MdCheckCircle, MdCloudDownloa
 
 
 const DESIGN_SERVICES = [
-  { id: "Land Registration & Mutation", icon: <FiFileText /> },
+  { id: "Land Registration", icon: <FiFileText /> },
+  { id: "Mutation / Conversion", icon: <FiFileText /> },
   { id: "L.U.C.C", icon: <FiFileText /> },
   { id: "Building Plan Approval", icon: <MdDomainVerification /> },
   { id: "2D Floor Plan Design", icon: <MdLayers /> },
@@ -55,6 +56,9 @@ const Clients = () => {
   const [clients, setClients] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
     const [sortOrder, setSortOrder] = useState("newest");
+  const [filterEmployee, setFilterEmployee] = useState("");
+  const [filterService, setFilterService] = useState("");
+  const [employeesMap, setEmployeesMap] = useState({});
   const [loading, setLoading] = useState(true);
   const [selectedClient, setSelectedClient] = useState(null);
   const scrollPosRef = useRef(0);
@@ -168,6 +172,10 @@ const Clients = () => {
          query = query.like('assigned_to', `%${loggedInUser.id}%`);
       }
       const { data, error } = await query;
+      const { data: empDataFetch } = await supabase.from("employees").select("id, name");
+      const eMap = {};
+      if (empDataFetch) { empDataFetch.forEach(e => eMap[e.id] = e.name); }
+      setEmployeesMap(eMap);
     if (!error && data) {
       const clientIds = data.map(c => c.id);
       
@@ -246,16 +254,16 @@ const Clients = () => {
   };
 
   const handleDeleteClient = async (id) => {
-    const { error } = await supabase.from("clients").delete().eq("id", id);
-    if (!error) {
-      setShowDeleteModal(null);
-      fetchClients();
-    }
+    setShowDeleteModal(null);
+    setClients(clients.filter(c => c.id !== id));
+    
+    await supabase.from("clients").delete().eq("id", id);
+    fetchClients(false);
   };
 
   return (
     <>
-    {selectedClient && <ClientDetail client={selectedClient} onBack={() => { setSelectedClient(null); fetchClients(false); }} />}
+    {selectedClient && <ClientDetail client={selectedClient} onBack={(updated) => { if(updated && updated.id){ if (updated.deleted) { setClients(clients.filter(c => c.id !== updated.id)); } else { setClients(clients.map(c => c.id === updated.id ? updated : c)); } } setSelectedClient(null); fetchClients(false); }} />}
     <div className={`w-full max-w-full bg-[#F8FAFC] dark:bg-navy-900 min-h-screen pt-4 pb-24 ${selectedClient ? 'hidden' : 'block'}`}>
       <div className="max-w-[1180px] mx-auto px-4 sm:px-6 lg:px-8 font-sans text-[#475569] dark:text-gray-200 dark:text-white">
         
@@ -320,15 +328,44 @@ const Clients = () => {
                 </div>
                   <div className="flex gap-3 flex-nowrap items-center shrink-0">
                       <select 
+                        value={filterEmployee}
+                        onChange={(e) => setFilterEmployee(e.target.value)}
+                        className="h-10 px-4 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 text-[14px] text-[#475569] dark:text-gray-200 dark:text-white outline-none focus:border-[#2563EB] bg-transparent dark:bg-navy-900 cursor-pointer w-[160px] truncate"
+                        title="Filter by Employee"
+                      >
+                        <option value="">All Employees</option>
+                        {Object.entries(employeesMap).map(([id, name]) => (
+                           <option key={id} value={id}>{name}</option>
+                        ))}
+                      </select>
+
+                      <select 
+                        value={filterService}
+                        onChange={(e) => setFilterService(e.target.value)}
+                        className="h-10 px-4 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 text-[14px] text-[#475569] dark:text-gray-200 dark:text-white outline-none focus:border-[#2563EB] bg-transparent dark:bg-navy-900 cursor-pointer w-[160px] truncate"
+                        title="Filter by Service"
+                      >
+                        <option value="">All Services</option>
+                        <optgroup label="Design Services">
+                           {DESIGN_SERVICES.map(s => <option key={s.id} value={s.id}>{s.id}</option>)}
+                        </optgroup>
+                        <optgroup label="Execution Projects">
+                           {EXECUTION_PROJECTS.map(s => <option key={s.id} value={s.id}>{s.id}</option>)}
+                        </optgroup>
+                      </select>
+
+                      <select 
                         value={sortOrder}
-                      onChange={(e) => setSortOrder(e.target.value)}
-                      className="h-10 px-4 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 text-[14px] text-[#475569] dark:text-gray-200 dark:text-white outline-none focus:border-[#2563EB] bg-transparent dark:bg-navy-900 cursor-pointer"
-                    >
-                      <option value="newest">Sort: Newest First</option>
-                      <option value="oldest">Sort: Oldest First</option>
-                      <option value="name_asc">Sort: Name (A-Z)</option>
-                      <option value="name_desc">Sort: Name (Z-A)</option>
-                    </select>
+                        onChange={(e) => setSortOrder(e.target.value)}
+                        className="h-10 px-4 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 text-[14px] text-[#475569] dark:text-gray-200 dark:text-white outline-none focus:border-[#2563EB] bg-transparent dark:bg-navy-900 cursor-pointer min-w-[140px]"
+                      >
+                        <optgroup label="Sort By">
+                           <option value="newest">Newest First</option>
+                           <option value="oldest">Oldest First</option>
+                           <option value="name_asc">Name (A-Z)</option>
+                           <option value="name_desc">Name (Z-A)</option>
+                        </optgroup>
+                      </select>
                 </div>
               </div>
               </Card>
@@ -358,13 +395,15 @@ const Clients = () => {
                         filtered.sort((a,b) => new Date(b.created_at) - new Date(a.created_at));
                      }
                      if (searchTerm) {
-                        const lower = searchTerm.toLowerCase();
+                        const lower = String(searchTerm).toLowerCase();
                         filtered = filtered.filter(c => 
-                           (c.name && c.name.toLowerCase().includes(lower)) || 
-                           (c.email && c.email.toLowerCase().includes(lower)) || 
-                           (c.phone && c.phone.toLowerCase().includes(lower)) || 
-                           (c.company && c.company.toLowerCase().includes(lower)) ||
-                           (c.address && c.address.toLowerCase().includes(lower))
+                           (c.name && String(c.name).toLowerCase().includes(lower)) || 
+                           (c.email && String(c.email).toLowerCase().includes(lower)) || 
+                           (c.phone && String(c.phone).toLowerCase().includes(lower)) || 
+                           (c.whatsapp && String(c.whatsapp).toLowerCase().includes(lower)) || 
+                           (c.company && String(c.company).toLowerCase().includes(lower)) ||
+                           (c.address && String(c.address).toLowerCase().includes(lower)) ||
+                           (c.notes && String(c.notes).toLowerCase().includes(lower))
                         );
                      }
                      if (loading) return <tr><td colSpan="7" className="py-12 text-center text-gray-500">Loading clients...</td></tr>;

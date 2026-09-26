@@ -46,10 +46,10 @@ export default function AuditLogs() {
   };
 
   const filteredLogs = logs.filter(log => 
-    (log.employee_name && log.employee_name.toLowerCase().includes(searchTerm.toLowerCase())) ||
-    (log.action_type && log.action_type.toLowerCase().includes(searchTerm.toLowerCase())) ||
-    (log.description && log.description.toLowerCase().includes(searchTerm.toLowerCase())) ||
-    (log.module && log.module.toLowerCase().includes(searchTerm.toLowerCase()))
+    (log.employee_name && log.employee_name.toLowerCase().includes(String(searchTerm).toLowerCase())) ||
+    (log.action_type && log.action_type.toLowerCase().includes(String(searchTerm).toLowerCase())) ||
+    (log.description && log.description.toLowerCase().includes(String(searchTerm).toLowerCase())) ||
+    (log.module && log.module.toLowerCase().includes(String(searchTerm).toLowerCase()))
   );
 
   // Group logs by employee name
