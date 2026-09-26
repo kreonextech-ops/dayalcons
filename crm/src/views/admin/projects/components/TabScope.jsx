@@ -13,7 +13,7 @@ const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 const EXECUTION_PROJECTS = [
-  { id: "Turnkey Construction", icon: <MdFoundation size={24} /> },
+  { id: "Construction", icon: <MdFoundation size={24} /> },
   { id: "Commercial Construction", icon: <MdLocationCity size={24} /> },
   { id: "Industrial Setup", icon: <MdEngineering size={24} /> },
   { id: "Renovation & Remodeling", icon: <MdOutlineArchitecture size={24} /> },

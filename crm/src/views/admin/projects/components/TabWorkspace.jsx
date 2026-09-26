@@ -192,7 +192,7 @@ const TabWorkspace = ({ projData }) => {
         <span className="px-3 py-1 bg-green-100 text-green-700 text-xs font-bold rounded-full">Intelligent Layout</span>
       </div>
 
-      {selected.includes("Turnkey Construction") && <TurnkeyWorkspace />}
+      {selected.includes("Construction") && <TurnkeyWorkspace />}
       {selected.includes("Commercial Construction") && <CommercialWorkspace />}
       {selected.includes("Industrial Setup") && <IndustrialWorkspace />}
       {selected.includes("Renovation & Remodeling") && <RenovationWorkspace />}

@@ -27,7 +27,7 @@ const DESIGN_SERVICES = [
 ];
 
 const EXECUTION_PROJECTS = [
-  { id: "Turnkey Construction", icon: <MdFoundation /> },
+  { id: "Construction", icon: <MdFoundation /> },
   { id: "Commercial Construction", icon: <MdLocationCity /> },
   { id: "Industrial Setup", icon: <MdEngineering /> },
   { id: "Renovation & Remodeling", icon: <MdOutlineArchitecture /> },
@@ -59,6 +59,7 @@ const Clients = () => {
   const [filterEmployee, setFilterEmployee] = useState("");
   const [filterService, setFilterService] = useState("");
   const [employeesMap, setEmployeesMap] = useState({});
+  const [employeesGrouped, setEmployeesGrouped] = useState({});
   const [loading, setLoading] = useState(true);
   const [selectedClient, setSelectedClient] = useState(null);
   const scrollPosRef = useRef(0);
@@ -172,7 +173,20 @@ const Clients = () => {
          query = query.like('assigned_to', `%${loggedInUser.id}%`);
       }
       const { data, error } = await query;
-      const { data: empDataFetch } = await supabase.from("employees").select("id, name");
+      const { data: empDataFetch } = await supabase.from("employees").select("id, name, designation, role");
+         const eGrouped = { Admin: [], CRO: [], OAS: [], Engineers: [], Others: [] };
+         if (empDataFetch) {
+            empDataFetch.forEach(e => {
+               const desig = (e.designation || "").toLowerCase();
+               const role = (e.role || "").toLowerCase();
+               if (role === "admin" || desig.includes("admin")) eGrouped.Admin.push(e);
+               else if (role === "cro" || desig.includes("relationship")) eGrouped.CRO.push(e);
+               else if (role === "oas" || desig.includes("oas")) eGrouped.OAS.push(e);
+               else if (desig.includes("engineer")) eGrouped.Engineers.push(e);
+               else eGrouped.Others.push(e);
+            });
+         }
+         setEmployeesGrouped(eGrouped);
       const eMap = {};
       if (empDataFetch) { empDataFetch.forEach(e => eMap[e.id] = e.name); }
       setEmployeesMap(eMap);
@@ -334,9 +348,14 @@ const Clients = () => {
                         title="Filter by Employee"
                       >
                         <option value="">All Employees</option>
-                        {Object.entries(employeesMap).map(([id, name]) => (
-                           <option key={id} value={id}>{name}</option>
-                        ))}
+                        {Object.entries(employeesGrouped).map(([groupName, emps]) => {
+                           if (!emps || emps.length === 0) return null;
+                           return (
+                              <optgroup key={groupName} label={groupName}>
+                                 {emps.map(e => <option key={e.id} value={e.id}>{e.name}</option>)}
+                              </optgroup>
+                           );
+                        })}
                       </select>
 
                       <select 
@@ -389,6 +408,19 @@ const Clients = () => {
               <tbody>
                   {(() => {
                      let filtered = clients;
+
+                     if (filterEmployee) {
+                        filtered = filtered.filter(x => x.assigned_to && x.assigned_to.includes(filterEmployee));
+                     }
+                     if (filterService) {
+                        const search = filterService.toLowerCase();
+                        filtered = filtered.filter(x => {
+                           const types = (x.work_types || x.service_type || "").toLowerCase();
+                           if (types.includes(search)) return true;
+                           if (search.includes("mutation") && types.includes("mutation")) return true;
+                           return false;
+                        });
+                     }
                      if (sortOrder === "oldest") {
                         filtered.sort((a,b) => new Date(a.created_at) - new Date(b.created_at));
                      } else {
