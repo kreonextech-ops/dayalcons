@@ -119,7 +119,7 @@ export default function Admin(props) {
         <main
           className={`mx-[12px] h-full flex-none transition-all md:pr-2 xl:ml-[313px]`}
         >
-          <div className="h-full">
+          <div className="h-full max-w-[1400px] mx-auto w-full">
             <Navbar
               onOpenSidenav={() => setOpen(true)}
               logoText={"Horizon UI Tailwind React"}
