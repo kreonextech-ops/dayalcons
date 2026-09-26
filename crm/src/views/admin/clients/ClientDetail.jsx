@@ -122,6 +122,31 @@ const ClientDetail = ({ client, onBack }) => {
     work_types: client?.work_types || "",
   });
 
+  // Always re-fetch fresh data from DB when the detail opens
+  useEffect(() => {
+    const refetchClient = async () => {
+      if (!client?.id) return;
+      const { data, error } = await supabase.from("clients").select("*").eq("id", client.id).single();
+      if (!error && data) {
+        setClientData(prev => ({
+          ...prev,
+          name: data.name || prev.name,
+          phone: data.phone || prev.phone,
+          email: data.email || prev.email,
+          address: data.address || prev.address,
+          company: data.company || prev.company,
+          gst: data.gst || prev.gst,
+          status: data.status || prev.status,
+          assigned_to: data.assigned_to ?? prev.assigned_to,
+          created_at: data.created_at || prev.created_at,
+          work_types: data.work_types || prev.work_types,
+          source: data.source || prev.source,
+        }));
+      }
+    };
+    refetchClient();
+  }, [client?.id]);
+
   const [activeProjectsCount, setActiveProjectsCount] = useState(0);
   const [activeServicesCount, setActiveServicesCount] = useState(0);
   const [financialTotals, setFinancialTotals] = useState({ amount: 0, paid: 0, due: 0 });
