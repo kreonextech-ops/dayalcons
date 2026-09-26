@@ -289,7 +289,11 @@ const Projects = () => {
                         filtered = filtered.filter(p => (p.id && p.id.toLowerCase().includes(lower)) || (p.client?.name && p.client.name.toLowerCase().includes(lower)) || (p.client?.phone && p.client.phone.toLowerCase().includes(lower)) || (p.client?.address && p.client.address.toLowerCase().includes(lower)) || (p.name && p.name.toLowerCase().includes(lower)));
                      }
                      if (filterType) {
-                        filtered = filtered.filter(p => p.description && p.description.includes(filterType));
+                        const typeLower = filterType.toLowerCase();
+                        filtered = filtered.filter(p => 
+                           (p.description && p.description.toLowerCase().includes(typeLower)) ||
+                           (p.name && p.name.toLowerCase().includes(typeLower))
+                        );
                      }
                      if (filterStatus) {
                         filtered = filtered.filter(p => p.status === filterStatus);
