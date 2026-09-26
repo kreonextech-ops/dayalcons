@@ -37,19 +37,13 @@ export default function HeroSection() {
   return (
     <section className="relative w-full h-[100dvh] md:h-[calc(100vh-88px)] md:mt-[88px] flex flex-col overflow-hidden bg-black">
       
-      {/* Background Container - Video Background */}
+      {/* Background Container */}
       <div className="absolute inset-0 z-0 bg-[#071A2F]">
-        <video 
-          autoPlay 
-          loop 
-          muted 
-          playsInline
-          webkit-playsinline="true"
-          poster="https://pub-00d1d73a43a643edb96c64ca062ab6df.r2.dev/website/backdrop.png"
+        <img 
+          src="/images/backdrop.jpg"
+          alt="Dayal Constructions Background"
           className="w-full h-full object-cover object-center opacity-80"
-        >
-          <source src="https://pub-00d1d73a43a643edb96c64ca062ab6df.r2.dev/website/hero1.mp4" type="video/mp4" />
-        </video>
+        />
         <div className="absolute inset-0 blueprint-grid opacity-10"></div>
       </div>
 
