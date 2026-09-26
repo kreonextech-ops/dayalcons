@@ -61,79 +61,48 @@ export default function SignIn() {
     else navigate("/admin/default");
   };
 
+
+  // ── Global Auth Listener (for standard redirects) ────────────────────────
+  React.useEffect(() => {
+    const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
+      // If user comes back from a Google OAuth redirect, this will fire
+      if (event === "SIGNED_IN" && session?.user?.email) {
+        // Only run if not already in session storage to prevent loops
+        const existing = sessionStorage.getItem("dayal_user");
+        if (!existing) {
+          const { data: emp } = await supabase
+            .from("employees")
+            .select("*")
+            .eq("email", session.user.email)
+            .single();
+
+          if (emp && emp.is_active !== false) {
+            await enterDashboard(emp);
+          }
+        }
+      }
+    });
+    return () => authListener?.subscription?.unsubscribe();
+  }, []);
+
   // ── Google Popup Sign-In ──────────────────────────────────────────────────
   const handleGoogleSignIn = async () => {
     setError("");
     setLoading(true);
 
-    // Open OAuth URL in a small popup — NO page redirect
-    const { data, error: oauthErr } = await supabase.auth.signInWithOAuth({
+    const { error: oauthErr } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        skipBrowserRedirect: true,
         queryParams: { prompt: "select_account" },
+        // Use current URL so they come back here
         redirectTo: window.location.origin + "/crm/auth/sign-in",
       },
     });
 
-    if (oauthErr || !data?.url) {
-      setError(oauthErr?.message || "Google sign-in failed.");
+    if (oauthErr) {
+      setError(oauthErr.message || "Google sign-in failed.");
       setLoading(false);
-      return;
     }
-
-    const width = 500, height = 600;
-    const left = window.screenX + (window.outerWidth - width) / 2;
-    const top = window.screenY + (window.outerHeight - height) / 2;
-    const popup = window.open(
-      data.url,
-      "GoogleSignIn",
-      `width=${width},height=${height},left=${left},top=${top},toolbar=no,menubar=no`
-    );
-
-    if (!popup) {
-      // Popup blocked — fall back to redirect
-      window.location.href = data.url;
-      return;
-    }
-
-    // Listen for session via onAuthStateChange
-    const { data: listener } = supabase.auth.onAuthStateChange(async (event, session) => {
-      if ((event === "SIGNED_IN" || event === "TOKEN_REFRESHED") && session?.user?.email) {
-        listener?.subscription?.unsubscribe();
-        try { popup.close(); } catch (_) {}
-
-        const { data: emp } = await supabase
-          .from("employees")
-          .select("*")
-          .eq("email", session.user.email)
-          .single();
-
-        if (!emp) {
-          setError(`No employee account for ${session.user.email}.`);
-          await supabase.auth.signOut();
-          setLoading(false);
-          return;
-        }
-        if (emp.is_active === false) {
-          setError("Your account has been disabled. Contact the administrator.");
-          await supabase.auth.signOut();
-          setLoading(false);
-          return;
-        }
-
-        await enterDashboard(emp);
-      }
-    });
-
-    // If user closes popup without signing in
-    const pollClosed = setInterval(() => {
-      if (popup.closed) {
-        clearInterval(pollClosed);
-        listener?.subscription?.unsubscribe();
-        setLoading(false);
-      }
-    }, 500);
   };
 
   // ── Password Sign-In ──────────────────────────────────────────────────────
@@ -149,21 +118,55 @@ export default function SignIn() {
     }
 
     try {
-      const { data, error: dbErr } = await supabase
+      // 1. Try proper Supabase Auth first
+      const { data: authData, error: authErr } = await supabase.auth.signInWithPassword({ email, password });
+      
+      let finalEmail = email;
+
+      if (authErr) {
+        // 2. Fallback for un-migrated users: check employees table directly
+        const { data: dbData, error: dbErr } = await supabase
+          .from("employees")
+          .select("*")
+          .eq("email", email)
+          .eq("password", password)
+          .single();
+
+        if (dbErr || !dbData) {
+          setError("Invalid email or password.");
+          setLoading(false);
+          return;
+        }
+        
+        // 3. Lazy Migration: silently create their Supabase Auth account for next time
+        supabase.auth.signUp({ email, password }).catch(() => {});
+        finalEmail = email;
+      } else {
+        finalEmail = authData?.user?.email || email;
+      }
+
+      // 4. Fetch the full employee profile for roles/designation
+      const { data: emp, error: empErr } = await supabase
         .from("employees")
         .select("*")
-        .eq("email", email)
-        .eq("password", password)
+        .eq("email", finalEmail)
         .single();
 
-      if (dbErr || !data) {
-        setError("Invalid email or password.");
-      } else if (data.is_active === false) {
-        setError("Your account has been disabled. Please contact the administrator.");
-      } else {
-        await enterDashboard(data);
+      if (empErr || !emp) {
+        setError(`No employee account for ${finalEmail}.`);
+        setLoading(false);
+        return;
       }
-    } catch {
+
+      if (emp.is_active === false) {
+        setError("Your account has been disabled. Please contact the administrator.");
+        setLoading(false);
+        return;
+      }
+
+      await enterDashboard(emp);
+
+    } catch (e) {
       setError("An error occurred during sign in.");
     } finally {
       setLoading(false);
