@@ -21,8 +21,9 @@ const Tasks = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [selectedTask, setSelectedTask] = useState(null);
+  const lastCloseTime = useRef(0);
   React.useEffect(() => {
-    const handleReset = () => setSelectedTask(null);
+    const handleReset = () => setSelectedTask(null); lastCloseTime.current = Date.now();
     window.addEventListener("reset-view", handleReset);
     return () => window.removeEventListener("reset-view", handleReset);
   }, []);
@@ -38,7 +39,7 @@ const Tasks = () => {
   }, [location, selectedTask]);
 
   const handleCloseDetail = () => {
-     setSelectedTask(null);
+     setSelectedTask(null); lastCloseTime.current = Date.now();
      navigate('/admin/tasks');
   };
   const [activeView, setActiveView] = useState("Kanban");
@@ -256,7 +257,7 @@ const Tasks = () => {
         alert("Failed to delete task: " + error.message);
      } else {
         setAllTasks(prev => prev.filter(t => t.id !== taskId));
-        setSelectedTask(null);
+        setSelectedTask(null); lastCloseTime.current = Date.now();
      }
   };
 

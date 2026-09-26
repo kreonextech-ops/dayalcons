@@ -65,6 +65,7 @@ const Clients = () => {
   const [loading, setLoading] = useState(true);
   const [selectedClient, setSelectedClient] = useState(null);
   const scrollPosRef = useRef(0);
+  const lastCloseTime = useRef(0);
 
 
   // Modals
@@ -241,7 +242,7 @@ const Clients = () => {
     return () => supabase.removeChannel(channel);
   }, []);
   useEffect(() => {
-    const handleReset = () => setSelectedClient(null);
+    const handleReset = () => setSelectedClient(null); lastCloseTime.current = Date.now();
     window.addEventListener("reset-view", handleReset);
     return () => window.removeEventListener("reset-view", handleReset);
   }, []);
@@ -460,7 +461,7 @@ const Clients = () => {
                      if (filtered.length === 0) return <tr><td colSpan="7" className="py-12 text-center text-gray-500">No clients found.</td></tr>;
                      const paginated = filtered.slice((currentPage - 1) * 10, currentPage * 10);
                      return paginated.map((client, index) => (
-                        <tr key={client.id} className="border-b border-gray-100 hover:bg-gray-50 dark:hover:bg-navy-800 cursor-pointer" onClick={() => setSelectedClient(client)}>
+                        <tr key={client.id} className="border-b border-gray-100 hover:bg-gray-50 dark:hover:bg-navy-800 cursor-pointer" onClick={() => { if (Date.now() - lastCloseTime.current < 500) return; setSelectedClient(client); }}>
                            <td className="py-2 px-6" onClick={(e) => e.stopPropagation()}>
                               <input type="checkbox" className="w-4 h-4 rounded text-[#2563EB] border-[#E2E8F0] dark:border-navy-700 cursor-pointer" />
                            </td>
