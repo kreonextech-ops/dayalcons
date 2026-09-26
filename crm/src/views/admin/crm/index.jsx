@@ -313,7 +313,16 @@ ${finalNotes}`;
     setLoading(false);
   };
 
-  useEffect(() => { fetchLeads(); }, []);
+  useEffect(() => {
+    fetchLeads();
+    const channel = supabase
+      .channel('leads-realtime')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'leads' }, () => {
+        fetchLeads(false);
+      })
+      .subscribe();
+    return () => supabase.removeChannel(channel);
+  }, []);
   useEffect(() => {
     const handleReset = () => setSelectedLead(null);
     window.addEventListener("reset-view", handleReset);

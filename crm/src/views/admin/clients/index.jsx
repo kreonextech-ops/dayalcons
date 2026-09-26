@@ -228,7 +228,16 @@ const Clients = () => {
     setLoading(false);
   };
 
-  useEffect(() => { fetchClients(); }, []);
+  useEffect(() => {
+    fetchClients();
+    const channel = supabase
+      .channel('clients-realtime')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'clients' }, () => {
+        fetchClients(false);
+      })
+      .subscribe();
+    return () => supabase.removeChannel(channel);
+  }, []);
   useEffect(() => {
     const handleReset = () => setSelectedClient(null);
     window.addEventListener("reset-view", handleReset);

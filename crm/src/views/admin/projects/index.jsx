@@ -112,6 +112,14 @@ const Projects = () => {
         setLoading(false);
      };
      fetchProjects();
+
+    const channel = supabase
+      .channel('projects-realtime')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'projects' }, () => {
+        fetchProjects(false);
+      })
+      .subscribe();
+    return () => supabase.removeChannel(channel);
   }, [refreshTrigger]);
 
   const handleDelete = async (e, id) => {

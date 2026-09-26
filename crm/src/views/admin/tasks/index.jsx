@@ -109,6 +109,14 @@ const Tasks = () => {
         }
      };
      fetchAllData();
+
+    const channel = supabase
+      .channel('tasks-realtime')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'tasks' }, () => {
+        fetchAllData();
+      })
+      .subscribe();
+    return () => supabase.removeChannel(channel);
   }, [showNewModal, refreshTrigger]);
 
   React.useEffect(() => {

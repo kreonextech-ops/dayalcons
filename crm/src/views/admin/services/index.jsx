@@ -123,6 +123,14 @@ const Services = () => {
         setLoading(false);
      };
      fetchServices();
+
+    const channel = supabase
+      .channel('services-realtime')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'services' }, () => {
+        fetchServices(false);
+      })
+      .subscribe();
+    return () => supabase.removeChannel(channel);
   }, [refreshTrigger]);
 
   const handleDelete = async (e, id) => {

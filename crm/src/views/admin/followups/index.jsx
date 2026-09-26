@@ -60,7 +60,14 @@ const FollowUps = () => {
   };
 
   useEffect(() => {
-     fetchData();
+    fetchData();
+    const channel = supabase
+      .channel('followups-realtime')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'follow_ups' }, () => {
+        fetchData();
+      })
+      .subscribe();
+    return () => supabase.removeChannel(channel);
   }, []);
 
   // Fetch record options based on selected module
