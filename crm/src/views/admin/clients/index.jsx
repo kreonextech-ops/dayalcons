@@ -499,11 +499,11 @@ const Clients = () => {
           </div>
           {/* Pagination */}
           <div className="p-4 border-t border-[#E2E8F0] dark:border-navy-700 flex justify-between items-center bg-white dark:bg-navy-800">
-             <span className="text-[13px] font-medium text-[#64748B] dark:text-gray-400">Showing {finalFiltered.length > 0 ? ((currentPage - 1) * 10 + 1) : 0} - {Math.min(currentPage * 10, finalFiltered.length)} of {finalFiltered.length} clients</span>
+             <span className="text-[13px] font-medium text-[#64748B] dark:text-gray-400">Showing {clients.length > 0 ? ((currentPage - 1) * 10 + 1) : 0} - {Math.min(currentPage * 10, clients.length)} of {clients.length} clients</span>
              <div className="flex gap-1">
                <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1} className="h-8 px-3 rounded border border-[#E2E8F0] dark:border-navy-700 text-[13px] font-medium text-[#64748B] dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-navy-800 flex items-center transition disabled:opacity-50"><MdKeyboardArrowLeft /> Prev</button>
                <button className="h-8 px-3 rounded bg-[#2563EB] text-white text-[13px] font-medium shadow-sm">{currentPage}</button>
-               <button onClick={() => setCurrentPage(p => p + 1)} disabled={currentPage * 10 >= finalFiltered.length} className="h-8 px-3 rounded border border-[#E2E8F0] dark:border-navy-700 text-[13px] font-medium text-[#64748B] dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-navy-800 flex items-center transition disabled:opacity-50">Next <MdKeyboardArrowRight /></button>
+               <button onClick={() => setCurrentPage(p => p + 1)} disabled={currentPage * 10 >= clients.length} className="h-8 px-3 rounded border border-[#E2E8F0] dark:border-navy-700 text-[13px] font-medium text-[#64748B] dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-navy-800 flex items-center transition disabled:opacity-50">Next <MdKeyboardArrowRight /></button>
              </div>
           </div>
         </Card>
