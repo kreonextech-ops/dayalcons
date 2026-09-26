@@ -28,7 +28,7 @@ const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 const DESIGN_SERVICES_LIST = [
-  "Land Registration & Mutation", "Building Plan Approval", "2D Floor Plan Design", 
+  "Land Registration", "Mutation / Conversion", "L.U.C.C", "Building Plan Approval", "2D Floor Plan Design", 
   "3D Floor Plan Design", "3D Elevation Design", "Soil Testing", "Structural Design", 
   "Vastu Consultation", "Interior Design"
 ];

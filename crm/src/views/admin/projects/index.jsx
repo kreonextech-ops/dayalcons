@@ -235,7 +235,7 @@ const Projects = () => {
         </div>
 
         {/* GREEN PART: STICKY WRAPPER */}
-          <div className="sticky top-[80px] z-30 bg-[#F8FAFC] dark:bg-navy-900 pt-2 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 h-[calc(100vh-130px)] flex flex-col pb-2">
+          <div className="sticky top-[80px] z-30 bg-[#F8FAFC] dark:bg-navy-900 pt-2 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 min-h-[700px] flex flex-col pb-2">
           {/* Search & Filters */}
         <Card extra="shrink-0 p-4 border border-[#E2E8F0] dark:border-navy-700 mb-4 shadow-sm">
           <div className="flex flex-row justify-between items-center gap-4 w-full overflow-x-auto pb-1">
