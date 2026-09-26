@@ -62,14 +62,6 @@ const CRMLeads = () => {
   const [selectedLead, setSelectedLead] = useState(null);
   const scrollPosRef = useRef(0);
 
-  useEffect(() => {
-    if (!selectedLead && !loading && scrollPosRef.current > 0) {
-      setTimeout(() => {
-        window.scrollTo({ top: scrollPosRef.current, behavior: "auto" });
-        scrollPosRef.current = 0;
-      }, 50);
-    }
-  }, [selectedLead, loading]);
   const [convertLeadData, setConvertLeadData] = useState(null);
   const [convertedCount, setConvertedCount] = useState(0);
   const [followupTodayCount, setFollowupTodayCount] = useState(0);
@@ -232,8 +224,8 @@ const CRMLeads = () => {
     name: "", phone: "", whatsapp: "", email: "", service_type: [], source: "", address: "", notes: "", status: "New", lead_temperature: "Warm Lead"
   });
 
-  const fetchLeads = async () => {
-    setLoading(true);
+  const fetchLeads = async (showLoader = true) => {
+    if (showLoader) setLoading(true);
     let query = supabase.from("leads").select("*").order('created_at', { ascending: false });
     
     // User requested: "lead section should visible to all employee(update the permission)"
@@ -406,12 +398,10 @@ const CRMLeads = () => {
     }
   };
 
-  if (selectedLead) {
-    return <LeadDetail lead={selectedLead} onBack={() => { setSelectedLead(null); fetchLeads(); }} />;
-  }
-
   return (
-    <div className="w-full max-w-full bg-[#F8FAFC] dark:bg-navy-900 min-h-screen pt-4 pb-24">
+    <>
+    {selectedLead && <LeadDetail lead={selectedLead} onBack={() => { setSelectedLead(null); fetchLeads(false); }} />}
+    <div className={`w-full max-w-full bg-[#F8FAFC] dark:bg-navy-900 min-h-screen pt-4 pb-24 ${selectedLead ? 'hidden' : 'block'}`}>
       {convertLeadData && (
         <div className="fixed inset-0 z-[99] flex items-center justify-center bg-black/50 backdrop-blur-sm">
           <div className="bg-white dark:bg-navy-800 rounded-[20px] p-6 w-full max-w-md shadow-2xl transform transition-all">
@@ -565,7 +555,7 @@ const CRMLeads = () => {
                      if (loading) return <tr><td colSpan="11" className="py-12 text-center text-gray-500">Loading leads...</td></tr>;
                      if (filtered.length === 0) return <tr><td colSpan="11" className="py-12 text-center text-gray-500">No leads found.</td></tr>;
                      return filtered.map((lead, index) => (
-                        <tr key={lead.id} className="border-b border-gray-100 hover:bg-gray-50 dark:hover:bg-navy-800 cursor-pointer" onClick={() => { scrollPosRef.current = window.scrollY; setSelectedLead(lead); }}>
+                        <tr key={lead.id} className="border-b border-gray-100 hover:bg-gray-50 dark:hover:bg-navy-800 cursor-pointer" onClick={() => setSelectedLead(lead)}>
                            <td className="py-2 px-6" onClick={(e) => e.stopPropagation()}>
                               <input type="checkbox" className="w-4 h-4 rounded text-[#2563EB] border-[#E2E8F0] dark:border-navy-700 cursor-pointer" />
                            </td>
@@ -835,6 +825,7 @@ const CRMLeads = () => {
       )}
 
     </div>
+    </>
   );
 };
 

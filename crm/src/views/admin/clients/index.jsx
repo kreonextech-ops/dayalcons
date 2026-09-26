@@ -59,14 +59,6 @@ const Clients = () => {
   const [selectedClient, setSelectedClient] = useState(null);
   const scrollPosRef = useRef(0);
 
-  useEffect(() => {
-    if (!selectedClient && !loading && scrollPosRef.current > 0) {
-      setTimeout(() => {
-        window.scrollTo({ top: scrollPosRef.current, behavior: "auto" });
-        scrollPosRef.current = 0;
-      }, 50);
-    }
-  }, [selectedClient, loading]);
 
   // Modals
   const [showNewClientModal, setShowNewClientModal] = useState(false);
@@ -169,8 +161,8 @@ const Clients = () => {
       XLSX.writeFile(wb, "Clients_Export.xlsx");
   };
 
-  const fetchClients = async () => {
-    setLoading(true);
+  const fetchClients = async (showLoader = true) => {
+    if (showLoader) setLoading(true);
     let query = supabase.from("clients").select("*").order('created_at', { ascending: false });
       if (!isAdmin && loggedInUser?.id) {
          query = query.like('assigned_to', `%${loggedInUser.id}%`);
@@ -261,12 +253,10 @@ const Clients = () => {
     }
   };
 
-  if (selectedClient) {
-    return <ClientDetail client={selectedClient} onBack={() => { setSelectedClient(null); fetchClients(); }} />;
-  }
-
   return (
-    <div className="w-full max-w-full bg-[#F8FAFC] dark:bg-navy-900 min-h-screen pt-4 pb-24">
+    <>
+    {selectedClient && <ClientDetail client={selectedClient} onBack={() => { setSelectedClient(null); fetchClients(false); }} />}
+    <div className={`w-full max-w-full bg-[#F8FAFC] dark:bg-navy-900 min-h-screen pt-4 pb-24 ${selectedClient ? 'hidden' : 'block'}`}>
       <div className="max-w-[1180px] mx-auto px-4 sm:px-6 lg:px-8 font-sans text-[#475569] dark:text-gray-200 dark:text-white">
         
         <div className="pt-2 pb-4 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
@@ -380,7 +370,7 @@ const Clients = () => {
                      if (loading) return <tr><td colSpan="7" className="py-12 text-center text-gray-500">Loading clients...</td></tr>;
                      if (filtered.length === 0) return <tr><td colSpan="7" className="py-12 text-center text-gray-500">No clients found.</td></tr>;
                      return filtered.map((client, index) => (
-                        <tr key={client.id} className="border-b border-gray-100 hover:bg-gray-50 dark:hover:bg-navy-800 cursor-pointer" onClick={() => { scrollPosRef.current = window.scrollY; setSelectedClient(client); }}>
+                        <tr key={client.id} className="border-b border-gray-100 hover:bg-gray-50 dark:hover:bg-navy-800 cursor-pointer" onClick={() => setSelectedClient(client)}>
                            <td className="py-2 px-6" onClick={(e) => e.stopPropagation()}>
                               <input type="checkbox" className="w-4 h-4 rounded text-[#2563EB] border-[#E2E8F0] dark:border-navy-700 cursor-pointer" />
                            </td>
@@ -551,6 +541,7 @@ const Clients = () => {
       )}
 
     </div>
+    </>
   );
 };
 
