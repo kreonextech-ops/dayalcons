@@ -122,30 +122,40 @@ const ClientDetail = ({ client, onBack }) => {
     work_types: client?.work_types || "",
   });
 
-  // Always re-fetch fresh data from DB when the detail opens
+  // Always re-fetch fresh data DIRECTLY from Supabase when detail opens
   useEffect(() => {
     const refetchClient = async () => {
       if (!client?.id) return;
       const { data, error } = await supabase.from("clients").select("*").eq("id", client.id).single();
       if (!error && data) {
-        setClientData(prev => ({
-          ...prev,
-          name: data.name || prev.name,
-          phone: data.phone || prev.phone,
-          email: data.email || prev.email,
-          address: data.address || prev.address,
-          company: data.company || prev.company,
-          gst: data.gst || prev.gst,
-          status: data.status || prev.status,
-          assigned_to: data.assigned_to ?? prev.assigned_to,
-          created_at: data.created_at || prev.created_at,
-          work_types: data.work_types || prev.work_types,
-          source: data.source || prev.source,
-        }));
+        // Complete replace from Supabase — no merging, no conditions
+        // Whatever is in Supabase is exactly what is shown
+        setClientData({
+          id: data.id,
+          name: data.name || "",
+          phone: data.phone || "",
+          email: data.email || "",
+          address: data.address || "",
+          company: data.company || "",
+          gst: "",  // gst not in DB schema
+          status: data.status || "Active",
+          assigned_to: data.assigned_to || null,
+          leadData: client?.leadData || {},
+          created_at: data.created_at || "",
+          work_types: data.work_types || "",
+          source: data.source || "",
+          budget: data.budget || "",
+          plot_size: data.plot_size || "",
+          timeline: data.timeline || "",
+          lead_score: data.lead_score || 0,
+          lead_temperature: data.lead_temperature || "",
+          notes: data.notes || "",
+        });
       }
     };
     refetchClient();
   }, [client?.id]);
+
 
   const [activeProjectsCount, setActiveProjectsCount] = useState(0);
   const [activeServicesCount, setActiveServicesCount] = useState(0);
