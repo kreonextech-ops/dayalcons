@@ -89,7 +89,7 @@ export default function PartneredBrands() {
         </svg>
       </div>
 
-      <div className="max-w-[1400px] mx-auto px-6 relative z-10">
+      <div className="max-w-[1920px] mx-auto px-6 relative z-10">
         
         {/* Header */}
         <div className="flex flex-col items-center text-center mb-[80px]">

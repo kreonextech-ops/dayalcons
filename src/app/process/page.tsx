@@ -56,7 +56,7 @@ function HeroSection() {
 
       {/* Content */}
       <motion.div 
-        className="relative z-10 w-full max-w-[1400px] mx-auto px-6 md:px-12 pt-24"
+        className="relative z-10 w-full max-w-[1920px] mx-auto px-6 md:px-12 pt-24"
         style={{ y: yContent, opacity: opacityContent }}
       >
         <div className="max-w-[700px]">
@@ -171,7 +171,7 @@ function TimelineSection() {
 
   return (
     <section className="px-6 md:px-12" ref={containerRef}>
-      <div className="max-w-[1400px] mx-auto">
+      <div className="max-w-[1920px] mx-auto">
         
         {/* Title Area */}
         <div className="text-center mb-20">
@@ -310,7 +310,7 @@ function ProcessHighlights() {
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, margin: "-100px" }}
-        className="max-w-[1400px] mx-auto bg-white rounded-[32px] p-8 md:p-12 shadow-[0_20px_60px_rgba(6,43,85,0.06)] border border-[#062B55]/5 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 md:gap-4 divide-y sm:divide-y-0 sm:divide-x divide-[#062B55]/10"
+        className="max-w-[1920px] mx-auto bg-white rounded-[32px] p-8 md:p-12 shadow-[0_20px_60px_rgba(6,43,85,0.06)] border border-[#062B55]/5 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 md:gap-4 divide-y sm:divide-y-0 sm:divide-x divide-[#062B55]/10"
       >
         {highlights.map((item, i) => (
           <motion.div 
@@ -349,7 +349,7 @@ function CTASection() {
 
   return (
     <section className="px-6 md:px-12" ref={containerRef}>
-      <div className="max-w-[1400px] mx-auto rounded-[48px] bg-[#062B55] overflow-hidden relative shadow-[0_30px_60px_rgba(6,43,85,0.2)] min-h-[400px] flex items-center">
+      <div className="max-w-[1920px] mx-auto rounded-[48px] bg-[#062B55] overflow-hidden relative shadow-[0_30px_60px_rgba(6,43,85,0.2)] min-h-[400px] flex items-center">
         
         {/* Background Blueprint Shifting */}
         <motion.div 

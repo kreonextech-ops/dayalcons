@@ -122,7 +122,7 @@ export default function UltraPremiumServices() {
 
         {/* Content */}
         <motion.div 
-          className="relative z-10 w-full max-w-[1440px] mx-auto px-6 lg:px-12 pt-24"
+          className="relative z-10 w-full max-w-[1920px] mx-auto px-6 lg:px-12 pt-24"
           style={{ y: yContent, opacity: opacityContent }}
         >
           <div className="max-w-[900px]">
@@ -185,7 +185,7 @@ export default function UltraPremiumServices() {
       {/* SECTION 2: OUR CORE SERVICES */}
       {/* ======================================= */}
       <section id="services" className="w-full py-[120px] bg-white relative z-10">
-        <div className="max-w-[1440px] mx-auto px-6 lg:px-12">
+        <div className="max-w-[1920px] mx-auto px-6 lg:px-12">
           
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={staggerContainer} className="text-center mb-16">
             <motion.span variants={fadeUp} className="inline-block font-['Inter',_sans-serif] text-[12px] font-bold tracking-[0.2em] text-[#0F5EFF] uppercase mb-4">
@@ -242,7 +242,7 @@ export default function UltraPremiumServices() {
           <img src="/images/footer-blueprint.jpg" alt="" className="w-full h-full object-cover" onError={(e) => e.currentTarget.style.display = 'none'} />
         </div>
 
-        <div className="max-w-[1440px] mx-auto px-6 lg:px-12 relative z-10 flex flex-col lg:flex-row items-center gap-16">
+        <div className="max-w-[1920px] mx-auto px-6 lg:px-12 relative z-10 flex flex-col lg:flex-row items-center gap-16">
           
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={staggerContainer} className="w-full lg:w-[35%]">
             <motion.span variants={fadeUp} className="inline-block font-['Inter',_sans-serif] text-[12px] font-bold tracking-[0.2em] text-[#18C8FF] uppercase mb-4">
@@ -279,7 +279,7 @@ export default function UltraPremiumServices() {
       {/* SECTION 4: SERVICE CATEGORIES */}
       {/* ======================================= */}
       <section className="w-full py-[120px] bg-[#F8FBFE]">
-        <div className="max-w-[1440px] mx-auto px-6 lg:px-12">
+        <div className="max-w-[1920px] mx-auto px-6 lg:px-12">
           
           <div className="text-center mb-16">
             <span className="inline-block font-['Inter',_sans-serif] text-[12px] font-bold tracking-[0.2em] text-[#0F5EFF] uppercase">
@@ -381,7 +381,7 @@ export default function UltraPremiumServices() {
         </div>
         <div className="absolute inset-0 z-0 bg-gradient-to-r from-[#041226] via-[#041226]/80 to-transparent"></div>
 
-        <div className="max-w-[1440px] mx-auto px-6 lg:px-12 relative z-10 flex flex-col lg:flex-row items-center gap-16">
+        <div className="max-w-[1920px] mx-auto px-6 lg:px-12 relative z-10 flex flex-col lg:flex-row items-center gap-16">
           
           {/* Left - Locations */}
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={staggerContainer} className="w-full lg:w-3/5">
@@ -421,7 +421,7 @@ export default function UltraPremiumServices() {
       {/* FINAL CTA */}
       {/* ======================================= */}
       <section className="w-full px-6 lg:px-12 py-[80px] bg-white">
-        <div className="max-w-[1440px] mx-auto bg-gradient-to-br from-[#082C5C] to-[#04152D] rounded-[32px] p-[40px] lg:p-[80px] relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-12 shadow-2xl">
+        <div className="max-w-[1920px] mx-auto bg-gradient-to-br from-[#082C5C] to-[#04152D] rounded-[32px] p-[40px] lg:p-[80px] relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-12 shadow-2xl">
           
           <div className="absolute right-0 bottom-0 opacity-[0.05] w-[50%] pointer-events-none mix-blend-screen">
              <img src="/images/footer-blueprint.jpg" alt="" className="w-full h-auto object-cover" onError={(e) => e.currentTarget.style.display = 'none'} />

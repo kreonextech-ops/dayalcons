@@ -51,7 +51,7 @@ export default function ServicesMarquee() {
         <div className="absolute inset-0 bg-[#F8FAFC]/90"></div>
       </div>
 
-      <div className="max-w-[1440px] mx-auto px-margin-mobile md:px-margin-desktop relative z-10 mb-16">
+      <div className="max-w-[1920px] mx-auto px-margin-mobile md:px-margin-desktop relative z-10 mb-16">
         <div className="flex flex-col items-start gap-4">
           <div className="flex items-center gap-3">
             <div className="w-[32px] h-[2px] bg-[#1196F2]"></div>

@@ -44,7 +44,7 @@ const STAGES = [
 export default function ProcessTimeline() {
   return (
     <section className="w-full py-20 lg:py-28 bg-[#F8FAFC] relative overflow-hidden">
-      <div className="max-w-[1440px] mx-auto px-6 lg:px-12 relative z-10">
+      <div className="max-w-[1920px] mx-auto px-6 lg:px-12 relative z-10">
         
         {/* Header Section */}
         <div className="text-center mb-16 lg:mb-24 flex flex-col items-center">

@@ -66,7 +66,7 @@ export default function ContactSection() {
         <div className="absolute bottom-0 left-0 w-full h-[150px] bg-gradient-to-t from-white/50 to-transparent"></div>
       </div>
 
-      <div className="max-w-[1400px] mx-auto px-6 relative z-10">
+      <div className="max-w-[1920px] mx-auto px-6 relative z-10">
         
         {/* 3-COLUMN MAIN LAYOUT */}
         <div className="flex flex-col lg:flex-row gap-10 lg:gap-8 xl:gap-12 justify-between items-start">

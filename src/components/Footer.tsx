@@ -65,7 +65,7 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="max-w-[1440px] w-full mx-auto px-6 pt-20 pb-12 relative z-10 flex-1 flex flex-col justify-between">
+      <div className="max-w-[1920px] w-full mx-auto px-6 pt-20 pb-12 relative z-10 flex-1 flex flex-col justify-between">
         
         {/* Footer Content Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-12 lg:gap-8 mb-10">

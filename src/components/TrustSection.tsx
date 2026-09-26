@@ -105,7 +105,7 @@ export default function TrustSection() {
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, amount: 0.25 }}
-        className="relative z-10 w-full max-w-[1320px] px-6 md:px-[80px] mx-auto flex flex-col items-start"
+        className="relative z-10 w-full max-w-[1920px] px-6 md:px-[80px] mx-auto flex flex-col items-start"
       >
         {/* HEADER BLOCK */}
         <div className="flex flex-col items-start w-full">

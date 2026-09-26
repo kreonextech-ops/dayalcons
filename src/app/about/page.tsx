@@ -64,7 +64,7 @@ function HeroSection() {
 
       {/* Content */}
       <motion.div 
-        className="relative z-10 w-full max-w-[1400px] mx-auto px-6 md:px-12 pt-24"
+        className="relative z-10 w-full max-w-[1920px] mx-auto px-6 md:px-12 pt-24"
         style={{ y: yContent, opacity: opacityContent }}
       >
         <div className="max-w-[800px]">
@@ -132,7 +132,7 @@ function AboutIntro() {
         whileInView={{ opacity: 1, y: 0, filter: "blur(0px)" }}
         viewport={{ once: true, margin: "-100px" }}
         transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-        className="max-w-[1400px] mx-auto text-center flex flex-col items-center relative z-10"
+        className="max-w-[1920px] mx-auto text-center flex flex-col items-center relative z-10"
       >
         <div className="w-[40px] h-[2px] bg-[#18AFFF] mb-6"></div>
         <h2 className="text-[40px] md:text-[56px] font-[800] text-[#062B55] mb-8">About Us</h2>
@@ -150,7 +150,7 @@ function AboutIntro() {
 function MissionVision() {
   return (
     <section className="px-6 md:px-12">
-      <div className="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div className="max-w-[1920px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-8">
         
         {/* Mission */}
         <motion.div 
@@ -213,7 +213,7 @@ function FounderSection() {
       {/* Background blueprint faint */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-[120%] bg-[url(/images/footer-blueprint.jpg)] opacity-[0.03] bg-repeat grayscale invert mix-blend-multiply pointer-events-none"></div>
 
-      <div className="max-w-[1400px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center relative z-10">
+      <div className="max-w-[1920px] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-16 items-center relative z-10">
         
         {/* Left: Image */}
         <motion.div 
@@ -293,7 +293,7 @@ function WhyChooseUs() {
 
   return (
     <section className="px-6 md:px-12 bg-[#F9FAFC] py-[120px]">
-      <div className="max-w-[1400px] mx-auto">
+      <div className="max-w-[1920px] mx-auto">
         <div className="text-center mb-16">
           <h2 className="text-[40px] md:text-[56px] font-[800] text-[#062B55]">Why Choose Us?</h2>
         </div>
@@ -336,7 +336,7 @@ function OurTeam() {
 
   return (
     <section className="px-6 md:px-12 py-[60px]">
-      <div className="max-w-[1400px] mx-auto">
+      <div className="max-w-[1920px] mx-auto">
         <div className="text-center mb-16">
           <h2 className="text-[40px] md:text-[56px] font-[800] text-[#062B55] mb-4">Our Team</h2>
           <p className="text-[18px] text-[#062B55]/70 max-w-[600px] mx-auto font-[500]">

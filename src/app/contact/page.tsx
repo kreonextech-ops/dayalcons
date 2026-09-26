@@ -91,7 +91,7 @@ export default function ContactPage() {
 
         {/* Content */}
         <motion.div 
-          className="relative z-10 w-full max-w-[1440px] mx-auto px-6 lg:px-12"
+          className="relative z-10 w-full max-w-[1920px] mx-auto px-6 lg:px-12"
           style={{ y: yContent, opacity: opacityContent }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -160,7 +160,7 @@ export default function ContactPage() {
       {/* SECTION 2: GET IN TOUCH */}
       {/* ======================================= */}
       <section className="w-full py-[100px] lg:py-[120px] bg-[#F4F8FB] relative z-10 px-6 lg:px-12">
-        <div className="max-w-[1400px] mx-auto">
+        <div className="max-w-[1920px] mx-auto">
           
           {/* Header */}
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={staggerContainer} className="text-center mb-16">
@@ -348,7 +348,7 @@ export default function ContactPage() {
       {/* SECTION 3: VISIT OUR OFFICE */}
       {/* ======================================= */}
       <section className="w-full py-[100px] bg-[#F8FBFE]">
-        <div className="max-w-[1400px] mx-auto px-6 lg:px-12">
+        <div className="max-w-[1920px] mx-auto px-6 lg:px-12">
           
           <div className="mb-10 text-center lg:text-left">
             <span className="inline-block font-bold text-[12px] tracking-[0.2em] text-[#18AFFF] uppercase mb-2">
@@ -431,7 +431,7 @@ export default function ContactPage() {
       {/* SECTION 4: TRUST CTA BANNER */}
       {/* ======================================= */}
       <section className="w-full py-[100px] lg:py-[120px] bg-[#F4F8FB] relative z-10 px-6 lg:px-12">
-        <div className="max-w-[1400px] mx-auto relative rounded-[32px] overflow-hidden bg-gradient-to-r from-[#062B55] to-[#0A3B73] shadow-[0_20px_60px_rgba(6,43,85,0.15)] flex flex-col lg:flex-row items-center p-10 lg:p-20">
+        <div className="max-w-[1920px] mx-auto relative rounded-[32px] overflow-hidden bg-gradient-to-r from-[#062B55] to-[#0A3B73] shadow-[0_20px_60px_rgba(6,43,85,0.15)] flex flex-col lg:flex-row items-center p-10 lg:p-20">
           
           {/* Animated Blueprint Illustration */}
           <div className="absolute top-0 left-0 w-full lg:w-[60%] h-full opacity-20 pointer-events-none mix-blend-screen">

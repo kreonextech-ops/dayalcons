@@ -76,7 +76,7 @@ export default function AboutSection() {
         ></div>
       </motion.div>
 
-      <div className="max-w-[1440px] w-full mx-auto px-6 md:px-[80px] grid grid-cols-1 lg:grid-cols-[46%_54%] gap-[64px] items-center relative z-10">
+      <div className="max-w-[1920px] w-full mx-auto px-6 md:px-[80px] grid grid-cols-1 lg:grid-cols-[46%_54%] gap-[64px] items-center relative z-10">
         
         {/* Left Side Content */}
         <motion.div 

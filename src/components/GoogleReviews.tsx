@@ -178,7 +178,7 @@ export default function GoogleReviews() {
         <div className="absolute bottom-0 left-0 w-full h-48 opacity-[0.08] bg-[url(/images/contact-bg.jpg)] bg-cover bg-bottom mix-blend-multiply filter grayscale blur-[1px]"></div>
       </div>
 
-      <div className="max-w-[1440px] mx-auto px-6 relative z-10">
+      <div className="max-w-[1920px] mx-auto px-6 relative z-10">
         
         {/* Header */}
         <div className="flex flex-col items-center justify-center text-center mb-16 relative">
@@ -254,7 +254,7 @@ export default function GoogleReviews() {
       </div>
 
       {/* Bottom Trust Strip */}
-      <div className="max-w-[1440px] mx-auto px-6 relative z-10">
+      <div className="max-w-[1920px] mx-auto px-6 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {[
             { stat: '4.9★', text: 'Google Rating', icon: 'star_rate' },

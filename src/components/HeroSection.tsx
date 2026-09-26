@@ -54,7 +54,7 @@ export default function HeroSection() {
       </div>
 
       {/* Content Container */}
-      <div className="relative z-10 w-full max-w-[1440px] mx-auto px-6 md:px-12 flex-1 pt-[80px] md:pt-0 flex flex-col justify-center md:justify-end md:pb-[60px] text-left">
+      <div className="relative z-10 w-full max-w-[1920px] mx-auto px-6 md:px-12 flex-1 pt-[80px] md:pt-0 flex flex-col justify-center md:justify-end md:pb-[60px] text-left">
         
         {/* Adjusted mb-16 to mb-6 and justify-end to bring it closer to buttons */}
         <div className="w-full flex flex-col mb-6 cursor-default min-h-[160px] md:min-h-[220px] justify-end pb-2">

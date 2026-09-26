@@ -98,7 +98,7 @@ export default function ProjectsPage() {
 
         {/* Content */}
         <motion.div 
-          className="relative z-10 w-full max-w-[1440px] mx-auto px-6 lg:px-12 pt-24"
+          className="relative z-10 w-full max-w-[1920px] mx-auto px-6 lg:px-12 pt-24"
           style={{ y: yContent, opacity: opacityContent }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -182,7 +182,7 @@ export default function ProjectsPage() {
       {/* SECTION 2: PROJECT GALLERY */}
       {/* ======================================= */}
       <section id="gallery" className="w-full py-[100px] lg:py-[120px] bg-white relative z-10">
-        <div className="max-w-[1400px] mx-auto px-6 lg:px-12">
+        <div className="max-w-[1920px] mx-auto px-6 lg:px-12">
           
           {/* Header */}
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={staggerContainer} className="text-center mb-16 max-w-[800px] mx-auto">
@@ -252,7 +252,7 @@ export default function ProjectsPage() {
         </div>
         <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-[#18AFFF] rounded-full blur-[150px] opacity-20 pointer-events-none transform translate-x-1/2 -translate-y-1/2"></div>
         
-        <div className="max-w-[1400px] mx-auto px-6 lg:px-12 relative z-10 flex flex-col lg:flex-row gap-16 lg:gap-24">
+        <div className="max-w-[1920px] mx-auto px-6 lg:px-12 relative z-10 flex flex-col lg:flex-row gap-16 lg:gap-24">
           
           {/* Left Content */}
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true, margin: "-100px" }} variants={staggerContainer} className="w-full lg:w-[40%] flex flex-col justify-center">
@@ -290,7 +290,7 @@ export default function ProjectsPage() {
       {/* SECTION 4: SIGNATURE CTA */}
       {/* ======================================= */}
       <section className="w-full py-[100px] lg:py-[120px] bg-white relative z-10 px-6 lg:px-12">
-        <div className="max-w-[1400px] mx-auto relative rounded-[32px] overflow-hidden bg-gradient-to-r from-[#062B55] to-[#0A3B73] shadow-[0_20px_60px_rgba(6,43,85,0.15)]">
+        <div className="max-w-[1920px] mx-auto relative rounded-[32px] overflow-hidden bg-gradient-to-r from-[#062B55] to-[#0A3B73] shadow-[0_20px_60px_rgba(6,43,85,0.15)]">
           
           {/* Animated Blueprint Illustration */}
           <div className="absolute top-0 left-0 w-full lg:w-[50%] h-full opacity-20 pointer-events-none mix-blend-screen">
