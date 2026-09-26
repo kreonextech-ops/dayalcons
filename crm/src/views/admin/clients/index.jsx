@@ -224,7 +224,14 @@ const Clients = () => {
          
          const finalWorkTypes = activeWorks.length > 0 ? activeWorks.join(', ') : (client.work_types || localData.work_types || "");
          
-         return { ...client, ...localData, lastContact, activeProjectsCount: clientProjects.length, work_types: finalWorkTypes };
+         const mergedClient = { ...client };
+         if (localData.phone && !mergedClient.phone) mergedClient.phone = localData.phone;
+         if (localData.email && !mergedClient.email) mergedClient.email = localData.email;
+         if (localData.address && !mergedClient.address) mergedClient.address = localData.address;
+         if (localData.company && !mergedClient.company) mergedClient.company = localData.company;
+         if (localData.gst && !mergedClient.gst) mergedClient.gst = localData.gst;
+         
+         return { ...mergedClient, lastContact, activeProjectsCount: clientProjects.length, work_types: finalWorkTypes };
       });
       setClients(merged);
     }
@@ -242,10 +249,15 @@ const Clients = () => {
     e.preventDefault();
     const { data: newClientData, error } = await supabase.from("clients").insert([{
       name: newClient.name,
-        status: 'active',
-        work_types: Array.isArray(newClient.work_types) ? newClient.work_types.join(', ') : newClient.work_types,
-        ...(newClient.created_at ? { created_at: new Date(newClient.created_at).toISOString() } : {})
-      }]).select();
+      status: 'active',
+      phone: newClient.phone || null,
+      email: newClient.email || null,
+      address: newClient.address || null,
+      company: newClient.company || null,
+      notes: newClient.gst ? `GST: ${newClient.gst}` : null,
+      work_types: Array.isArray(newClient.work_types) ? newClient.work_types.join(', ') : newClient.work_types,
+      ...(newClient.created_at ? { created_at: new Date(newClient.created_at).toISOString() } : {})
+    }]).select();
     
     if (!error && newClientData && newClientData.length > 0) {
       // Save extra fields to local storage

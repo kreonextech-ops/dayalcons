@@ -69,7 +69,12 @@ const Projects = () => {
       if (!error && data) {
         const merged = data.map(client => {
            const localData = JSON.parse(localStorage.getItem(`client_${client.id}`) || "{}");
-           return { ...client, ...localData };
+           const mergedClient = { ...client };
+           if (localData.phone && !mergedClient.phone) mergedClient.phone = localData.phone;
+           if (localData.email && !mergedClient.email) mergedClient.email = localData.email;
+           if (localData.address && !mergedClient.address) mergedClient.address = localData.address;
+           if (localData.company && !mergedClient.company) mergedClient.company = localData.company;
+           return mergedClient;
         });
         setAllClients(merged);
       }
@@ -133,7 +138,11 @@ const Projects = () => {
      if (newCase.clientType === "new") {
        const { data: newClientData, error } = await supabase.from("clients").insert([{
          name: newCase.clientName,
-         status: 'active'
+         status: 'active',
+         phone: newCase.phone || null,
+         email: newCase.email || null,
+         address: newCase.address || null,
+         notes: newCase.whatsapp ? `WhatsApp: ${newCase.whatsapp}` : null
        }]).select();
        
        if (!error && newClientData && newClientData.length > 0) {
