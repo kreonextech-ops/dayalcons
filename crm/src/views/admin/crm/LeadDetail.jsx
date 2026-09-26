@@ -209,8 +209,8 @@ ${finalNotes}`;
     setLeadData({ ...leadData, lead_temperature: newTemp });
     
     
-    localData.lead_temperature = newTemp;
-    localStorage.setItem(`lead_${leadData.id}`, JSON.stringify(localData));
+    
+    
     
     const {error} = await supabase.from("leads").update({ lead_temperature: newTemp }).eq("id", leadData.id); if (error) { alert("Failed to update temperature: " + error.message); }
   };

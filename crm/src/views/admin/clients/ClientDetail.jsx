@@ -398,13 +398,7 @@ const ClientDetail = ({ client, onBack }) => {
         if (match) whatsapp = match[1];
     }
     
-    localStorage.setItem(`lead_${newId}`, JSON.stringify({
-       whatsapp: whatsapp,
-       email: clientData.email,
-       address: clientData.address,
-       notes: clientData.notes,
-       lead_temperature: clientData.lead_temperature
-    }));
+    
 
     await supabase.from('clients').delete().eq('id', clientData.id);
     onBack({ id: clientData.id, deleted: true });
