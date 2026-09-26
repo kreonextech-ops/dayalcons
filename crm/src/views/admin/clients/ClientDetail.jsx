@@ -422,7 +422,7 @@ const ClientDetail = ({ client, onBack }) => {
 
     if (insertError) {
       console.error(insertError);
-      alert("Failed to convert back to lead.");
+      alert("Failed to convert: " + (insertError?.message || JSON.stringify(insertError)));
       return;
     }
     
@@ -499,9 +499,9 @@ const ClientDetail = ({ client, onBack }) => {
               'bg-yellow-500 text-white'
             }`}
           >
-            <option value="Ongoing" className="bg-white text-black">STATUS: ONGOING</option>
-            <option value="Hold" className="bg-white text-black">STATUS: HOLD</option>
-            <option value="Closed" className="bg-white text-black">STATUS: CLOSED</option>
+            <option value="Ongoing">STATUS: ONGOING</option>
+            <option value="Hold">STATUS: HOLD</option>
+            <option value="Closed">STATUS: CLOSED</option>
           </select>
           {isAdmin && (
             <div className="flex gap-2 mt-3">
