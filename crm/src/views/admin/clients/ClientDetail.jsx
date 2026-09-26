@@ -115,7 +115,7 @@ const ClientDetail = ({ client, onBack }) => {
     address: client?.address || "",
     company: client?.company || "",
     gst: client?.gst || "",
-    status: client?.status || "Active",
+    status: client?.status || "Ongoing",
     assigned_to: client?.assigned_to || null,
     leadData: client?.leadData || {},
     created_at: client?.created_at || "",
@@ -138,7 +138,7 @@ const ClientDetail = ({ client, onBack }) => {
           address: data.address || "",
           company: data.company || "",
           gst: "",  // gst not in DB schema
-          status: data.status || "Active",
+          status: data.status || "Ongoing",
           assigned_to: data.assigned_to || null,
           leadData: client?.leadData || {},
           created_at: data.created_at || "",
@@ -485,9 +485,24 @@ const ClientDetail = ({ client, onBack }) => {
           </div>
         </div>
         <div className="mt-6 flex flex-col items-end md:mt-0">
-          <span className={`rounded-full px-4 py-1 text-xs font-bold tracking-wide ${clientData.status === 'Active' ? 'bg-[#16A34A] text-white' : 'bg-gray-500 text-white'}`}>
-            STATUS: {clientData.status.toUpperCase()}
-          </span>
+          <select 
+            value={clientData.status || 'Ongoing'}
+            onChange={async (e) => {
+              const newStatus = e.target.value;
+              setClientData({...clientData, status: newStatus});
+              await supabase.from('clients').update({ status: newStatus }).eq('id', clientData.id);
+            }}
+            className={`appearance-none cursor-pointer outline-none shadow-md rounded-full px-4 py-1 text-xs font-bold tracking-wide uppercase ${
+              clientData.status === 'Ongoing' ? 'bg-yellow-500 text-white' : 
+              clientData.status === 'Hold' ? 'bg-blue-500 text-white' : 
+              clientData.status === 'Closed' ? 'bg-red-500 text-white' :
+              'bg-yellow-500 text-white'
+            }`}
+          >
+            <option value="Ongoing" className="bg-white text-black">STATUS: ONGOING</option>
+            <option value="Hold" className="bg-white text-black">STATUS: HOLD</option>
+            <option value="Closed" className="bg-white text-black">STATUS: CLOSED</option>
+          </select>
           {isAdmin && (
             <div className="flex gap-2 mt-3">
               <button onClick={handleConvertToLead} className="px-3 py-1.5 bg-yellow-500 text-white rounded-[8px] text-[12px] font-bold shadow hover:bg-yellow-600 transition">Convert back to Lead</button>
@@ -604,7 +619,8 @@ const ClientDetail = ({ client, onBack }) => {
                   <div className="flex justify-between items-center mb-4">
                     <h3 className="text-[16px] font-semibold text-[#0F172A] dark:text-white">Entity Information</h3>
                     {isEditingClient ? (
-                       <button onClick={handleSaveClientInfo} className="text-[#16A34A] flex items-center gap-1 font-bold text-sm"><MdSave /> Save</button>
+                       <span className="text-[#16A34A] flex items-center gap-1 font-bold text-sm text-xs italic">Auto-saves on click away</span>
+                       <button onClick={() => setIsEditingClient(false)} className="ml-3 px-3 py-1 bg-gray-100 rounded text-xs font-bold hover:bg-gray-200">Done Editing</button>
                     ) : (
                        <MdEdit onClick={() => setIsEditingClient(true)} className="text-[#64748B] dark:text-gray-400 cursor-pointer hover:text-[#16A34A]" />
                     )}
@@ -612,11 +628,11 @@ const ClientDetail = ({ client, onBack }) => {
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {isEditingClient ? (
                       <>
-                        <div className="flex flex-col"><label className="text-xs text-gray-500">Company Name</label><input type="text" className="border rounded p-2 text-sm outline-none border-[#16A34A]" value={clientData.company} onChange={e => setClientData({...clientData, company: e.target.value})} /></div>
-                        <div className="flex flex-col"><label className="text-xs text-gray-500">Contact Name</label><input type="text" className="border rounded p-2 text-sm outline-none border-[#16A34A]" value={clientData.name} onChange={e => setClientData({...clientData, name: e.target.value})} /></div>
-                        <div className="flex flex-col"><label className="text-xs text-gray-500">Phone</label><input type="text" className="border rounded p-2 text-sm outline-none border-[#16A34A]" value={clientData.phone} onChange={e => setClientData({...clientData, phone: e.target.value})} /></div>
-                        <div className="flex flex-col"><label className="text-xs text-gray-500">Email</label><input type="email" className="border rounded p-2 text-sm outline-none border-[#16A34A]" value={clientData.email} onChange={e => setClientData({...clientData, email: e.target.value})} /></div>
-                        <div className="flex flex-col"><label className="text-xs text-gray-500">GST / PAN</label><input type="text" className="border rounded p-2 text-sm outline-none border-[#16A34A]" value={clientData.gst} onChange={e => setClientData({...clientData, gst: e.target.value})} /></div>
+                        <div className="flex flex-col"><label className="text-xs text-gray-500">Company Name</label><input type="text" className="border rounded p-2 text-sm outline-none border-[#16A34A]" onBlur={handleSaveClientInfo} value={clientData.company} onChange={e => setClientData({...clientData, company: e.target.value})} /></div>
+                        <div className="flex flex-col"><label className="text-xs text-gray-500">Contact Name</label><input type="text" className="border rounded p-2 text-sm outline-none border-[#16A34A]" onBlur={handleSaveClientInfo} value={clientData.name} onChange={e => setClientData({...clientData, name: e.target.value})} /></div>
+                        <div className="flex flex-col"><label className="text-xs text-gray-500">Phone</label><input type="text" className="border rounded p-2 text-sm outline-none border-[#16A34A]" onBlur={handleSaveClientInfo} value={clientData.phone} onChange={e => setClientData({...clientData, phone: e.target.value})} /></div>
+                        <div className="flex flex-col"><label className="text-xs text-gray-500">Email</label><input type="email" className="border rounded p-2 text-sm outline-none border-[#16A34A]" onBlur={handleSaveClientInfo} value={clientData.email} onChange={e => setClientData({...clientData, email: e.target.value})} /></div>
+                        <div className="flex flex-col"><label className="text-xs text-gray-500">GST / PAN</label><input type="text" className="border rounded p-2 text-sm outline-none border-[#16A34A]" onBlur={handleSaveClientInfo} value={clientData.gst} onChange={e => setClientData({...clientData, gst: e.target.value})} /></div>
                         <div className="flex flex-col"><label className="text-xs text-gray-500">Billing Address</label><input type="text" className="border rounded p-2 text-sm outline-none border-[#16A34A]" value={clientData.address} onChange={e => setClientData({...clientData, address: e.target.value})} /></div>
                         <div className="flex flex-col"><label className="text-xs text-gray-500">Work Types</label><input type="text" className="border rounded p-2 text-sm outline-none border-[#16A34A]" value={clientData.work_types || ""} onChange={e => setClientData({...clientData, work_types: e.target.value})} /></div>
                         <div className="flex flex-col"><label className="text-xs text-gray-500">Source</label>

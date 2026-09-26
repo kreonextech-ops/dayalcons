@@ -56,6 +56,7 @@ const Clients = () => {
   const [clients, setClients] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
     const [sortOrder, setSortOrder] = useState("newest");
+  const [filterStatus, setFilterStatus] = useState("");
   const [filterEmployee, setFilterEmployee] = useState("");
   const [filterService, setFilterService] = useState("");
   const [employeesMap, setEmployeesMap] = useState({});
@@ -346,6 +347,17 @@ const Clients = () => {
                   />
                 </div>
                   <div className="flex gap-3 flex-nowrap items-center shrink-0">
+                      <select 
+                        value={filterStatus}
+                        onChange={(e) => setFilterStatus(e.target.value)}
+                        className="h-10 px-4 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 text-[14px] text-[#475569] dark:text-gray-200 dark:text-white outline-none focus:border-[#2563EB] bg-transparent dark:bg-navy-900 cursor-pointer w-[160px] truncate"
+                        title="Filter by Status"
+                      >
+                        <option value="">All Statuses</option>
+                        <option value="Ongoing">Ongoing</option>
+                        <option value="Hold">Hold</option>
+                        <option value="Closed">Closed</option>
+                      </select>
                       <select 
                         value={filterEmployee}
                         onChange={(e) => setFilterEmployee(e.target.value)}
