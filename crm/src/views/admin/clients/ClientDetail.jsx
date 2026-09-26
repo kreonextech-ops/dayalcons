@@ -619,8 +619,10 @@ const ClientDetail = ({ client, onBack }) => {
                   <div className="flex justify-between items-center mb-4">
                     <h3 className="text-[16px] font-semibold text-[#0F172A] dark:text-white">Entity Information</h3>
                     {isEditingClient ? (
-                       <span className="text-[#16A34A] flex items-center gap-1 font-bold text-sm text-xs italic">Auto-saves on click away</span>
-                       <button onClick={() => setIsEditingClient(false)} className="ml-3 px-3 py-1 bg-gray-100 rounded text-xs font-bold hover:bg-gray-200">Done Editing</button>
+                       <div className="flex items-center">
+                         <span className="text-[#16A34A] flex items-center gap-1 font-bold text-xs italic">Auto-saves on click away</span>
+                         <button onClick={() => setIsEditingClient(false)} className="ml-3 px-3 py-1 bg-gray-100 rounded text-xs font-bold hover:bg-gray-200">Done Editing</button>
+                       </div>
                     ) : (
                        <MdEdit onClick={() => setIsEditingClient(true)} className="text-[#64748B] dark:text-gray-400 cursor-pointer hover:text-[#16A34A]" />
                     )}
