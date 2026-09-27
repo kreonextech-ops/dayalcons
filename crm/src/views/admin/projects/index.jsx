@@ -225,7 +225,7 @@ const Projects = () => {
         </div>
 
         {/* KPIs */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4 mb-1">
           {kpis.map((kpi, i) => (
              <Card key={i} extra="p-4 border border-[#E2E8F0] dark:border-navy-700 shadow-sm hover:shadow-md transition">
                 <p className="text-[11px] font-semibold text-[#64748B] dark:text-gray-400 uppercase mb-1">{kpi.title}</p>
@@ -235,7 +235,7 @@ const Projects = () => {
         </div>
 
         {/* GREEN PART: STICKY WRAPPER */}
-          <div className="sticky top-[60px] z-30 bg-[#F8FAFC] dark:bg-navy-900 pt-2 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 block pb-2">
+          <div className="sticky top-[60px] z-30 bg-[#F8FAFC] dark:bg-navy-900 pt-0 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 block pb-2">
           {/* Search & Filters */}
         <Card extra="shrink-0 p-4 border border-[#E2E8F0] dark:border-navy-700 mb-4 shadow-sm">
           <div className="flex flex-row justify-between items-center gap-4 w-full overflow-x-auto pb-1">
@@ -268,6 +268,8 @@ const Projects = () => {
             </div>
           </div>
         </Card>
+        </div>
+
 
         {/* Table */}
         <Card extra="flex flex-col border border-[#E2E8F0] dark:border-navy-700 overflow-hidden shadow-sm">
@@ -389,7 +391,7 @@ const Projects = () => {
              </table>
            </div>
          </Card>
-         </div> {/* Close Green Sticky Wrapper */}
+         
          <div className="h-[25vh] shrink-0" />
         </div>
 
@@ -412,7 +414,7 @@ const Projects = () => {
                <div className="p-8 overflow-y-auto flex-1 custom-scrollbar">
                   {modalStep === 1 && (
                      <div className="animate-fade-in space-y-6">
-                        <div className="flex gap-4 mb-4">
+                        <div className="flex gap-4 mb-1">
                            <button onClick={() => setNewCase({...newCase, clientType: "new"})} className={`px-4 py-2 rounded-lg text-sm font-bold border transition ${newCase.clientType === 'new' ? 'bg-[#2563EB] text-white border-[#2563EB]' : 'bg-white dark:bg-navy-800 text-[#64748B] dark:text-gray-400 border-[#E2E8F0] dark:border-navy-700'}`}>New Client</button>
                            <button onClick={() => setNewCase({...newCase, clientType: "existing"})} className={`px-4 py-2 rounded-lg text-sm font-bold border transition ${newCase.clientType === 'existing' ? 'bg-[#2563EB] text-white border-[#2563EB]' : 'bg-white dark:bg-navy-800 text-[#64748B] dark:text-gray-400 border-[#E2E8F0] dark:border-navy-700'}`}>Existing Client</button>
                         </div>

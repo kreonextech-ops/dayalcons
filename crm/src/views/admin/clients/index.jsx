@@ -311,7 +311,7 @@ const Clients = () => {
         </div>
 
         {/* 2. KPI Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-1">
             {[
                { title: "Total Clients", val: clients.length || "0", icon: <MdPeople className="text-[#2563EB]" />, bg: "bg-blue-50" },
                { title: "Active Clients", val: clients.filter(c => c.status === 'Active').length || "0", icon: <MdLocalFireDepartment className="text-[#DC2626]" />, bg: "bg-red-50" },
@@ -334,7 +334,7 @@ const Clients = () => {
 
         </div> {/* Close Red Part */}
           {/* GREEN PART: STICKY WRAPPER */}
-          <div className="sticky top-[60px] z-30 bg-[#F8FAFC] dark:bg-navy-900 pt-2 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 block pb-2">
+          <div className="sticky top-[60px] z-30 bg-[#F8FAFC] dark:bg-navy-900 pt-0 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 block pb-2">
           {/* 3. Search & Filter Toolbar */}
           <Card extra="shrink-0 p-3 border border-[#E2E8F0] dark:border-navy-700 mb-3 shadow-sm">
               <div className="flex flex-row justify-between items-center gap-4 w-full overflow-x-auto pb-1">
@@ -407,6 +407,8 @@ const Clients = () => {
                 </div>
               </div>
               </Card>
+        </div>
+
 
           {/* 4. Clients Data Table */}
         <Card extra="flex flex-col border border-[#E2E8F0] dark:border-navy-700 overflow-hidden shadow-sm">
@@ -505,7 +507,6 @@ const Clients = () => {
             </table>
           </div>
           </Card>
-        </div> {/* Close Green Sticky Wrapper */}
         
 
         </div>

@@ -504,7 +504,7 @@ ${finalNotes}`;
         </div>
 
         {/* 2. KPI Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-1">
           {[
              { title: "Total Leads", val: leads.length || "0", icon: <MdPeople className="text-[#2563EB]" />, bg: "bg-blue-50" },
                { title: "Hot Leads", val: leads.filter(l => l.lead_temperature === 'Hot').length || "0", icon: <MdLocalFireDepartment className="text-[#DC2626]" />, bg: "bg-red-50" },
@@ -527,7 +527,7 @@ ${finalNotes}`;
 
         </div> {/* Close Red Part */}
           {/* GREEN PART: STICKY WRAPPER */}
-          <div className="sticky top-[60px] z-30 bg-[#F8FAFC] dark:bg-navy-900 pt-2 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 block pb-2">
+          <div className="sticky top-[60px] z-30 bg-[#F8FAFC] dark:bg-navy-900 pt-0 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 block pb-2">
           {/* 3. Search & Filter Toolbar */}
           <Card extra="shrink-0 p-3 border border-[#E2E8F0] dark:border-navy-700 mb-3 shadow-sm">
               <div className="flex flex-row justify-between items-center gap-4 w-full overflow-x-auto pb-1">
@@ -604,6 +604,8 @@ ${finalNotes}`;
                 </div>
               </div>
               </Card>
+        </div>
+
 
           {/* 4. Leads Data Table */}
         <Card extra="flex flex-col border border-[#E2E8F0] dark:border-navy-700 overflow-hidden shadow-sm">
@@ -733,7 +735,6 @@ ${finalNotes}`;
             </table>
           </div>
           </Card>
-        </div> {/* Close Green Sticky Wrapper */}
         
 
         </div>
