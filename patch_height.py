@@ -1,22 +1,25 @@
 import os
-import glob
 
-def patch_height(filepath):
-    with open(filepath, "r", encoding="utf-8") as f:
-        content = f.read()
-    
-    # Change h-[calc(100vh-something)] flex flex-col to min-h-[700px] flex flex-col
-    import re
-    new_content = re.sub(r'h-\[calc\(100vh-\d+px\)\]\s+flex\s+flex-col', 'min-h-[700px] flex flex-col', content)
-    
-    if new_content != content:
-        with open(filepath, "w", encoding="utf-8") as f:
-            f.write(new_content)
-        print(f"Patched {filepath}")
+directories = [
+    'crm/src/views/admin/crm',
+    'crm/src/views/admin/clients',
+    'crm/src/views/admin/services',
+    'crm/src/views/admin/projects',
+    'crm/src/views/admin/tasks',
+    'crm/src/views/admin/followups'
+]
 
-patch_height("crm/src/views/admin/crm/index.jsx")
-patch_height("crm/src/views/admin/clients/index.jsx")
-patch_height("crm/src/views/admin/services/index.jsx")
-patch_height("crm/src/views/admin/projects/index.jsx")
-patch_height("crm/src/views/admin/tasks/index.jsx")
-patch_height("crm/src/views/admin/followups/index.jsx")
+for d in directories:
+    fp = os.path.join(d, 'index.jsx')
+    if not os.path.exists(fp): continue
+    
+    with open(fp, 'r', encoding='utf-8') as f:
+        c = f.read()
+    
+    # Increase the max height so it fits 10 rows comfortably even if text wraps
+    c = c.replace('max-h-[600px]', 'max-h-[760px]')
+    
+    with open(fp, 'w', encoding='utf-8') as f:
+        f.write(c)
+
+print("Done")

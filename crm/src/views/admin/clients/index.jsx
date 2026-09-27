@@ -412,7 +412,7 @@ const Clients = () => {
 
           {/* 4. Clients Data Table */}
         <Card extra="flex flex-col border border-[#E2E8F0] dark:border-navy-700 overflow-hidden shadow-sm">
-          <div className="overflow-auto w-full max-h-[600px] custom-scrollbar">
+          <div className="overflow-auto w-full max-h-[760px] custom-scrollbar">
             <table className="w-full text-left border-collapse min-w-[900px]">
               <thead className="sticky top-0 z-20 bg-[#F8FAFC] dark:bg-navy-900 shadow-sm">
                 <tr className="bg-[#F8FAFC] dark:bg-navy-900 border-b border-[#E2E8F0] dark:border-navy-700">
@@ -482,7 +482,7 @@ const Clients = () => {
                              <td className="py-2 px-4 text-[12px] text-gray-500 truncate max-w-[180px]" title={client.address || ""}>
                                 {client.address || "-"}
                              </td>
-                             <td className="py-4 px-4 text-[13px] font-medium text-brand-500">
+                             <td className="py-2 px-4 text-[13px] font-medium text-brand-500">
                                 <div className="max-w-[150px] truncate" title={client.work_types || "-"}>{client.work_types || "-"}</div>
                                </td>
                              <td className="py-2 px-4 text-sm">
@@ -490,10 +490,10 @@ const Clients = () => {
                                  {client.status || 'Ongoing'}
                               </span>
                            </td>
-                           <td className="py-4 px-4 text-[12px] text-gray-500">
+                           <td className="py-2 px-4 text-[12px] text-gray-500">
                                 {client.created_at ? new Date(client.created_at).toLocaleDateString("en-GB", { day: '2-digit', month: 'short', year: 'numeric' }) : "-"}
                              </td>
-                           <td className="py-4 px-6 text-right">
+                           <td className="py-2 px-6 text-right">
                                 {isAdmin && (
                                    <button onClick={(e) => { e.stopPropagation(); handleDeleteClient(client.id); }} className="text-red-500 hover:bg-red-50 p-2 rounded-lg transition" title="Delete Client">
                                       <MdDeleteOutline size={20} />

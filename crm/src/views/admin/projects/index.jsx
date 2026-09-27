@@ -273,7 +273,7 @@ const Projects = () => {
 
         {/* Table */}
         <Card extra="flex flex-col border border-[#E2E8F0] dark:border-navy-700 overflow-hidden shadow-sm">
-           <div className="overflow-auto w-full max-h-[600px] custom-scrollbar">
+           <div className="overflow-auto w-full max-h-[760px] custom-scrollbar">
              <table className="w-full text-left border-collapse min-w-[900px]">
                <thead className="sticky top-0 z-20 bg-[#F8FAFC] dark:bg-navy-900 shadow-sm">
                  <tr className="bg-[#F8FAFC] dark:bg-navy-900 border-b border-[#E2E8F0] dark:border-navy-700">
