@@ -218,7 +218,7 @@ const Services = () => {
   ];
 
   return (
-    <div className="w-full bg-[#F8FAFC] dark:bg-navy-900 min-h-screen pt-12 pb-24 font-sans text-[#475569] dark:text-gray-200 dark:text-white">
+    <div className="w-full bg-[#F8FAFC] dark:bg-navy-900 h-auto pt-12 pb-24 font-sans text-[#475569] dark:text-gray-200 dark:text-white">
       <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Header */}
@@ -246,7 +246,7 @@ const Services = () => {
         </div>
 
         {/* GREEN PART: STICKY WRAPPER */}
-          <div className="sticky top-[80px] z-30 bg-[#F8FAFC] dark:bg-navy-900 pt-2 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 min-h-[700px] flex flex-col pb-2">
+          <div className="sticky top-[80px] z-30 bg-[#F8FAFC] dark:bg-navy-900 pt-2 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 block pb-2">
           {/* Search & Filters */}
         <Card extra="shrink-0 p-4 border border-[#E2E8F0] dark:border-navy-700 mb-4 shadow-sm">
           <div className="flex flex-row justify-between items-center gap-4 w-full overflow-x-auto pb-1">
@@ -281,8 +281,8 @@ const Services = () => {
         </Card>
 
         {/* Table */}
-        <Card extra="flex-1 flex flex-col min-h-0 border border-[#E2E8F0] dark:border-navy-700 overflow-hidden shadow-sm">
-           <div className="flex-1 overflow-auto w-full">
+        <Card extra="flex flex-col border border-[#E2E8F0] dark:border-navy-700 overflow-hidden shadow-sm">
+           <div className="overflow-auto w-full max-h-[600px] custom-scrollbar">
              <table className="w-full text-left border-collapse min-w-[900px]">
                <thead className="sticky top-0 z-20 bg-[#F8FAFC] dark:bg-navy-900 shadow-sm">
                  <tr className="bg-[#F8FAFC] dark:bg-navy-900 border-b border-[#E2E8F0] dark:border-navy-700">

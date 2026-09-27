@@ -465,7 +465,7 @@ ${finalNotes}`;
   return (
     <>
     {selectedLead && <LeadDetail lead={selectedLead} onBack={(updated) => { if(updated && updated.id){ setLeads(leads.map(l => l.id === updated.id ? updated : l)); } setSelectedLead(null); lastCloseTime.current = Date.now(); fetchLeads(false); }} />}
-    <div className={`w-full max-w-full bg-[#F8FAFC] dark:bg-navy-900 min-h-screen pt-4 pb-24 ${selectedLead ? 'hidden' : 'block'}`}>
+    <div className={`w-full max-w-full bg-[#F8FAFC] dark:bg-navy-900 h-auto pt-4 pb-8 ${selectedLead ? 'hidden' : 'block'}`}>
       {convertLeadData && (
         <div className="fixed inset-0 z-[99] flex items-center justify-center bg-black/50 backdrop-blur-sm">
           <div className="bg-white dark:bg-navy-800 rounded-[20px] p-6 w-full max-w-md shadow-2xl transform transition-all">
@@ -527,7 +527,7 @@ ${finalNotes}`;
 
         </div> {/* Close Red Part */}
           {/* GREEN PART: STICKY WRAPPER */}
-          <div className="sticky top-[80px] z-30 bg-[#F8FAFC] dark:bg-navy-900 pt-2 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 min-h-[700px] flex flex-col pb-2">
+          <div className="sticky top-[80px] z-30 bg-[#F8FAFC] dark:bg-navy-900 pt-2 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 block pb-2">
           {/* 3. Search & Filter Toolbar */}
           <Card extra="shrink-0 p-3 border border-[#E2E8F0] dark:border-navy-700 mb-3 shadow-sm">
               <div className="flex flex-row justify-between items-center gap-4 w-full overflow-x-auto pb-1">
@@ -606,8 +606,8 @@ ${finalNotes}`;
               </Card>
 
           {/* 4. Leads Data Table */}
-        <Card extra="flex-1 flex flex-col min-h-0 border border-[#E2E8F0] dark:border-navy-700 overflow-hidden shadow-sm">
-          <div className="flex-1 overflow-auto w-full">
+        <Card extra="flex flex-col border border-[#E2E8F0] dark:border-navy-700 overflow-hidden shadow-sm">
+          <div className="overflow-auto w-full max-h-[600px] custom-scrollbar">
             <table className="w-full text-left border-collapse min-w-[900px]">
               <thead className="sticky top-0 z-20 bg-[#F8FAFC] dark:bg-navy-900 shadow-sm">
                 <tr className="bg-[#F8FAFC] dark:bg-navy-900 border-b border-[#E2E8F0] dark:border-navy-700">
@@ -689,7 +689,7 @@ ${finalNotes}`;
                      }
                      if (loading) return <tr><td colSpan="11" className="py-12 text-center text-gray-500">Loading leads...</td></tr>;
                      if (filtered.length === 0) return <tr><td colSpan="11" className="py-12 text-center text-gray-500">No leads found.</td></tr>;
-                     const paginated = filtered.slice((currentPage - 1) * 10, currentPage * 10);
+                     const paginated = filtered;
                      return paginated.map((lead, index) => (
                         <tr key={lead.id} className="border-b border-gray-100 hover:bg-gray-50 dark:hover:bg-navy-800 cursor-pointer" onClick={() => { if (Date.now() - lastCloseTime.current < 500) return; setSelectedLead(lead); }}>
                            <td className="py-2 px-6" onClick={(e) => e.stopPropagation()}>
@@ -732,16 +732,7 @@ ${finalNotes}`;
                </tbody>
             </table>
           </div>
-          {/* Pagination */}
-          <div className="p-4 border-t border-[#E2E8F0] dark:border-navy-700 flex justify-between items-center bg-white dark:bg-navy-800">
-             <span className="text-[13px] font-medium text-[#64748B] dark:text-gray-400">Showing {leads.length > 0 ? ((currentPage - 1) * 10 + 1) : 0} - {Math.min(currentPage * 10, leads.length)} of {leads.length} leads</span>
-             <div className="flex gap-1">
-               <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1} className="h-8 px-3 rounded border border-[#E2E8F0] dark:border-navy-700 text-[13px] font-medium text-[#64748B] dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-navy-800 flex items-center transition disabled:opacity-50"><MdKeyboardArrowLeft /> Prev</button>
-               <button className="h-8 px-3 rounded bg-[#2563EB] text-white text-[13px] font-medium shadow-sm">{currentPage}</button>
-               <button onClick={() => setCurrentPage(p => p + 1)} disabled={currentPage * 10 >= leads.length} className="h-8 px-3 rounded border border-[#E2E8F0] dark:border-navy-700 text-[13px] font-medium text-[#64748B] dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-navy-800 flex items-center transition disabled:opacity-50">Next <MdKeyboardArrowRight /></button>
-             </div>
-          </div>
-        </Card>
+          </Card>
         </div> {/* Close Green Sticky Wrapper */}
         
 

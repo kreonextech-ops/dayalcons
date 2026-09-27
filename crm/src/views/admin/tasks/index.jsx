@@ -267,7 +267,7 @@ const Tasks = () => {
   }
 
   return (
-    <div className="w-full bg-[#F8FAFC] dark:bg-navy-900 min-h-screen pt-12 pb-24 font-sans text-[#475569] dark:text-gray-200">
+    <div className="w-full bg-[#F8FAFC] dark:bg-navy-900 h-auto pt-12 pb-24 font-sans text-[#475569] dark:text-gray-200">
       <div className="max-w-[1600px] mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Header */}

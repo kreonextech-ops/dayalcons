@@ -286,7 +286,7 @@ const Clients = () => {
   return (
     <>
     {selectedClient && <ClientDetail client={selectedClient} onBack={(updated) => { if(updated && updated.id){ if (updated.deleted) { setClients(clients.filter(c => c.id !== updated.id)); } else { setClients(clients.map(c => c.id === updated.id ? updated : c)); } } setSelectedClient(null); fetchClients(false); }} />}
-    <div className={`w-full max-w-full bg-[#F8FAFC] dark:bg-navy-900 min-h-screen pt-4 pb-24 ${selectedClient ? 'hidden' : 'block'}`}>
+    <div className={`w-full max-w-full bg-[#F8FAFC] dark:bg-navy-900 h-auto pt-4 pb-8 ${selectedClient ? 'hidden' : 'block'}`}>
       <div className="max-w-[1180px] mx-auto px-4 sm:px-6 lg:px-8 font-sans text-[#475569] dark:text-gray-200 dark:text-white">
         
         <div className="pt-2 pb-4 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8">
@@ -334,7 +334,7 @@ const Clients = () => {
 
         </div> {/* Close Red Part */}
           {/* GREEN PART: STICKY WRAPPER */}
-          <div className="sticky top-[80px] z-30 bg-[#F8FAFC] dark:bg-navy-900 pt-2 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 min-h-[700px] flex flex-col pb-2">
+          <div className="sticky top-[80px] z-30 bg-[#F8FAFC] dark:bg-navy-900 pt-2 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 block pb-2">
           {/* 3. Search & Filter Toolbar */}
           <Card extra="shrink-0 p-3 border border-[#E2E8F0] dark:border-navy-700 mb-3 shadow-sm">
               <div className="flex flex-row justify-between items-center gap-4 w-full overflow-x-auto pb-1">
@@ -409,8 +409,8 @@ const Clients = () => {
               </Card>
 
           {/* 4. Clients Data Table */}
-        <Card extra="flex-1 flex flex-col min-h-0 border border-[#E2E8F0] dark:border-navy-700 overflow-hidden shadow-sm">
-          <div className="flex-1 overflow-auto w-full">
+        <Card extra="flex flex-col border border-[#E2E8F0] dark:border-navy-700 overflow-hidden shadow-sm">
+          <div className="overflow-auto w-full max-h-[600px] custom-scrollbar">
             <table className="w-full text-left border-collapse min-w-[900px]">
               <thead className="sticky top-0 z-20 bg-[#F8FAFC] dark:bg-navy-900 shadow-sm">
                 <tr className="bg-[#F8FAFC] dark:bg-navy-900 border-b border-[#E2E8F0] dark:border-navy-700">
@@ -459,7 +459,7 @@ const Clients = () => {
                      }
                      if (loading) return <tr><td colSpan="7" className="py-12 text-center text-gray-500">Loading clients...</td></tr>;
                      if (filtered.length === 0) return <tr><td colSpan="7" className="py-12 text-center text-gray-500">No clients found.</td></tr>;
-                     const paginated = filtered.slice((currentPage - 1) * 10, currentPage * 10);
+                     const paginated = filtered;
                      return paginated.map((client, index) => (
                         <tr key={client.id} className="border-b border-gray-100 hover:bg-gray-50 dark:hover:bg-navy-800 cursor-pointer" onClick={() => { if (Date.now() - lastCloseTime.current < 500) return; setSelectedClient(client); }}>
                            <td className="py-2 px-6" onClick={(e) => e.stopPropagation()}>
@@ -498,16 +498,7 @@ const Clients = () => {
                </tbody>
             </table>
           </div>
-          {/* Pagination */}
-          <div className="p-4 border-t border-[#E2E8F0] dark:border-navy-700 flex justify-between items-center bg-white dark:bg-navy-800">
-             <span className="text-[13px] font-medium text-[#64748B] dark:text-gray-400">Showing {clients.length > 0 ? ((currentPage - 1) * 10 + 1) : 0} - {Math.min(currentPage * 10, clients.length)} of {clients.length} clients</span>
-             <div className="flex gap-1">
-               <button onClick={() => setCurrentPage(p => Math.max(1, p - 1))} disabled={currentPage === 1} className="h-8 px-3 rounded border border-[#E2E8F0] dark:border-navy-700 text-[13px] font-medium text-[#64748B] dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-navy-800 flex items-center transition disabled:opacity-50"><MdKeyboardArrowLeft /> Prev</button>
-               <button className="h-8 px-3 rounded bg-[#2563EB] text-white text-[13px] font-medium shadow-sm">{currentPage}</button>
-               <button onClick={() => setCurrentPage(p => p + 1)} disabled={currentPage * 10 >= clients.length} className="h-8 px-3 rounded border border-[#E2E8F0] dark:border-navy-700 text-[13px] font-medium text-[#64748B] dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-navy-800 flex items-center transition disabled:opacity-50">Next <MdKeyboardArrowRight /></button>
-             </div>
-          </div>
-        </Card>
+          </Card>
         </div> {/* Close Green Sticky Wrapper */}
         
 
