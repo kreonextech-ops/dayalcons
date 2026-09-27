@@ -334,7 +334,7 @@ const Clients = () => {
 
         </div> {/* Close Red Part */}
           {/* GREEN PART: STICKY WRAPPER */}
-          <div className="sticky top-[80px] z-30 bg-[#F8FAFC] dark:bg-navy-900 pt-2 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 block pb-2">
+          <div className="sticky top-[60px] z-30 bg-[#F8FAFC] dark:bg-navy-900 pt-2 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 block pb-2">
           {/* 3. Search & Filter Toolbar */}
           <Card extra="shrink-0 p-3 border border-[#E2E8F0] dark:border-navy-700 mb-3 shadow-sm">
               <div className="flex flex-row justify-between items-center gap-4 w-full overflow-x-auto pb-1">
@@ -420,6 +420,7 @@ const Clients = () => {
                   <th className="py-4 px-4 text-[12px] font-medium text-[#64748B] dark:text-gray-400 uppercase tracking-wider">Contact Info</th>
                   <th className="py-4 px-4 text-[12px] font-medium text-[#64748B] dark:text-gray-400 uppercase tracking-wider">Address</th>
                   <th className="py-4 px-4 text-[12px] font-medium text-[#64748B] dark:text-gray-400 uppercase tracking-wider">Services & Projects</th>
+                  <th className="py-4 px-4 text-[12px] font-medium text-[#64748B] dark:text-gray-400 uppercase tracking-wider">Status</th>
                   <th className="py-4 px-4 text-[12px] font-medium text-[#64748B] dark:text-gray-400 uppercase tracking-wider">Date Created</th>
                   <th className="py-4 px-6 text-[12px] font-medium text-[#64748B] dark:text-gray-400 uppercase tracking-wider text-right">Actions</th>
                 </tr>
@@ -457,8 +458,8 @@ const Clients = () => {
                            (c.notes && String(c.notes).toLowerCase().includes(lower))
                         );
                      }
-                     if (loading) return <tr><td colSpan="7" className="py-12 text-center text-gray-500">Loading clients...</td></tr>;
-                     if (filtered.length === 0) return <tr><td colSpan="7" className="py-12 text-center text-gray-500">No clients found.</td></tr>;
+                     if (loading) return <tr><td colSpan="8" className="py-12 text-center text-gray-500">Loading clients...</td></tr>;
+                     if (filtered.length === 0) return <tr><td colSpan="8" className="py-12 text-center text-gray-500">No clients found.</td></tr>;
                      const paginated = filtered;
                      return paginated.map((client, index) => (
                         <tr key={client.id} className="border-b border-gray-100 hover:bg-gray-50 dark:hover:bg-navy-800 cursor-pointer" onClick={() => { if (Date.now() - lastCloseTime.current < 500) return; setSelectedClient(client); }}>
@@ -482,7 +483,12 @@ const Clients = () => {
                              <td className="py-4 px-4 text-[13px] font-medium text-brand-500">
                                 <div className="max-w-[150px] truncate" title={client.work_types || "-"}>{client.work_types || "-"}</div>
                                </td>
-                             <td className="py-4 px-4 text-[12px] text-gray-500">
+                             <td className="py-2 px-4 text-sm">
+                              <span className={`px-3 py-1 rounded-full text-xs font-bold ${client.status === 'Ongoing' ? 'bg-yellow-100 text-yellow-700' : client.status === 'Closed' ? 'bg-red-100 text-red-700' : 'bg-blue-100 text-blue-700'}`}>
+                                 {client.status || 'Ongoing'}
+                              </span>
+                           </td>
+                           <td className="py-4 px-4 text-[12px] text-gray-500">
                                 {client.created_at ? new Date(client.created_at).toLocaleDateString("en-GB", { day: '2-digit', month: 'short', year: 'numeric' }) : "-"}
                              </td>
                            <td className="py-4 px-6 text-right">

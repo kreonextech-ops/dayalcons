@@ -527,7 +527,7 @@ ${finalNotes}`;
 
         </div> {/* Close Red Part */}
           {/* GREEN PART: STICKY WRAPPER */}
-          <div className="sticky top-[80px] z-30 bg-[#F8FAFC] dark:bg-navy-900 pt-2 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 block pb-2">
+          <div className="sticky top-[60px] z-30 bg-[#F8FAFC] dark:bg-navy-900 pt-2 -mx-4 px-4 sm:-mx-6 sm:px-6 lg:-mx-8 lg:px-8 block pb-2">
           {/* 3. Search & Filter Toolbar */}
           <Card extra="shrink-0 p-3 border border-[#E2E8F0] dark:border-navy-700 mb-3 shadow-sm">
               <div className="flex flex-row justify-between items-center gap-4 w-full overflow-x-auto pb-1">
@@ -706,7 +706,7 @@ ${finalNotes}`;
                             <td className="py-2 px-4 text-sm text-gray-600 truncate max-w-[150px]" title={lead.address || ""}>{lead.address || "-"}</td>
                            <td className="py-2 px-4 text-sm text-gray-600">{lead.service_type || "-"}</td>
                            <td className="py-2 px-4 text-sm">
-                              <span className={`px-3 py-1 rounded-full text-xs font-bold ${lead.status === 'New' ? 'bg-blue-100 text-blue-700' : lead.status === 'Contacted' ? 'bg-yellow-100 text-yellow-700' : lead.status === 'Converted' ? 'bg-green-100 text-green-700' : 'bg-gray-100 dark:bg-navy-700 text-gray-600'}`}>
+                              <span className={`px-3 py-1 rounded-full text-xs font-bold ${lead.status === 'New' ? 'bg-blue-100 text-blue-700' : (lead.status === 'Ongoing' || lead.status === 'Contacted') ? 'bg-yellow-100 text-yellow-700' : lead.status === 'Converted' ? 'bg-green-100 text-green-700' : lead.status === 'Closed' ? 'bg-red-100 text-red-700' : 'bg-gray-100 dark:bg-navy-700 text-gray-600'}`}>
                                  {lead.status}
                               </span>
                            </td>
