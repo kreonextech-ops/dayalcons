@@ -185,7 +185,7 @@ ${finalNotes}`;
 
   const handleSaveClientInfo = async () => {
     setIsEditingClient(false);
-    await supabase.from("leads").update({
+    const { error } = await supabase.from("leads").update({
        name: leadData.name,
        phone: leadData.phone,
        email: leadData.email,
@@ -193,6 +193,9 @@ ${finalNotes}`;
        source: leadData.source,
        created_at: leadData.created_at
     }).eq("id", leadData.id);
+    if (error) {
+       alert("Failed to save changes: " + error.message);
+    }
   };
 
   const handleSaveProjectInfo = async () => {

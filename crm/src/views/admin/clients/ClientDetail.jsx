@@ -315,7 +315,7 @@ const ClientDetail = ({ client, onBack }) => {
   const handleSaveClientInfo = async () => {
     setIsEditingClient(false);
     if (clientData.id) {
-       await supabase.from("clients").update({
+       const { error } = await supabase.from("clients").update({
           company: clientData.company,
           name: clientData.name,
           phone: clientData.phone,
@@ -324,6 +324,9 @@ const ClientDetail = ({ client, onBack }) => {
           source: clientData.source,
           created_at: clientData.created_at
        }).eq("id", clientData.id);
+       if (error) {
+          alert("Failed to save changes: " + error.message);
+       }
     }
   };
 
