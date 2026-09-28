@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Card from "components/card";
 import { MdAdd, MdMoreVert, MdFolder, MdClose, MdCheckCircle } from "react-icons/md";
-import { createClient } from "@supabase/supabase-js";
 
 const TabDepartments = () => {
   const [depts, setDepts] = useState([]);
@@ -9,28 +8,16 @@ const TabDepartments = () => {
   const [newDept, setNewDept] = useState({ name: "", head: "" });
 
   useEffect(() => {
-     const fetchDepts = async () => {
-        const { data } = await createClient(
-           process.env.REACT_APP_SUPABASE_URL || "https://gdzligxryodasaxnhdco.supabase.co",
-           process.env.REACT_APP_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdkemxpZ3hyeW9kYXNheG5oZGNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcxNTg1MDUsImV4cCI6MjEwMjczNDUwNX0.AYTyAMf22g8au51ATReRQdQc2IzDLYQ2vtQH_Uyfrpg"
-        ).from('employees').select('department');
-        
-        if (data) {
-           const grouped = {};
-           data.forEach(d => {
-               if (d.department) {
-                   grouped[d.department] = (grouped[d.department] || 0) + 1;
-               }
-           });
-           const final = Object.keys(grouped).map(k => ({ name: k, head: "Assigned Automatically", empCount: grouped[k], projects: "-" }));
-           setDepts(final);
-        }
-     };
-     fetchDepts();
+     const saved = localStorage.getItem("dayal_departments");
+     if (saved) setDepts(JSON.parse(saved));
   }, []);
 
   const handleSave = () => {
-     alert("Departments are created automatically when you assign them to an employee.");
+     if (!newDept.name) return;
+     const updated = [...depts, { ...newDept, empCount: 0, projects: 0 }];
+     localStorage.setItem("dayal_departments", JSON.stringify(updated));
+     setDepts(updated);
+     setNewDept({ name: "", head: "" });
      setShowModal(false);
   };
 

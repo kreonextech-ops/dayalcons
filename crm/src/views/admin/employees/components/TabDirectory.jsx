@@ -35,8 +35,8 @@ return (
     <div className="animate-fade-in">
        {/* Search & Filters */}
        <Card extra="p-4 border border-[#E2E8F0] mb-6 shadow-sm">
-          <div className="flex flex-col lg:flex-row justify-between items-center gap-4">
-            <div className="relative w-full lg:w-[300px]">
+          <div className="flex flex-row justify-between items-center gap-4 w-full">
+            <div className="relative flex-1 min-w-[200px] max-w-[400px]">
               <MdSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#64748B] text-xl" />
               <input type="text" placeholder="Search employee, designation, phone..." className="w-full pl-10 pr-4 h-10 rounded-[10px] border border-[#E2E8F0] text-[13px] outline-none focus:border-[#2563EB] transition-colors" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
             </div>
