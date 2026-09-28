@@ -59,7 +59,7 @@ return (
                    <th className="py-4 px-6 text-[11px] font-bold text-[#64748B] uppercase tracking-wider">Employee</th>
                    <th className="py-4 px-4 text-[11px] font-bold text-[#64748B] uppercase tracking-wider">Department</th>
                    <th className="py-4 px-4 text-[11px] font-bold text-[#64748B] uppercase tracking-wider">Designation</th>
-                   <th className="py-4 px-4 text-[11px] font-bold text-[#64748B] uppercase tracking-wider">Login Details</th>
+                   <th className="py-4 px-4 text-[11px] font-bold text-[#64748B] uppercase tracking-wider">Email</th>
                    <th className="py-4 px-4 text-[11px] font-bold text-[#64748B] uppercase tracking-wider">Contact</th>
                    <th className="py-4 px-4 text-[11px] font-bold text-[#64748B] uppercase tracking-wider">Status</th>
                    <th className="py-4 px-6 text-[11px] font-bold text-[#64748B] uppercase tracking-wider text-right">Actions</th>

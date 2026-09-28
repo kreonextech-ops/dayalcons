@@ -41,7 +41,7 @@ const Employees = () => {
        const { data, error } = await supabase.from('employees').select('*');
        if (data && !error) {
            setEmpCount(data.length);
-           setAdminCount(data.filter(e => e.role === 'Admin' || e.role === 'CRO').length);
+           setAdminCount(data.filter(e => e.role === 'Admin').length);
            
            const depts = new Set();
            const desigs = new Set();

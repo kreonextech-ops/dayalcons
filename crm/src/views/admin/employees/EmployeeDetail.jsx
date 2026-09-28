@@ -52,6 +52,7 @@ const EmployeeDetail = ({ employee, onBack, onEditProfile }) => {
     manager: "—",
     phone: employee?.phone || "—",
     email: employee?.email || "—",
+    password: employee?.password || "—",
     
   });
 
@@ -141,6 +142,10 @@ const EmployeeDetail = ({ employee, onBack, onEditProfile }) => {
                   <div>
                      <p className="text-[11px] font-bold text-[#64748B] uppercase">Email</p>
                      <p className="text-[13px] font-medium text-[#0F172A]">{empData.email}</p>
+                  </div>
+                  <div>
+                     <p className="text-[11px] font-bold text-[#64748B] uppercase">Password</p>
+                     <p className="text-[13px] font-mono text-[#0F172A]">{empData.password}</p>
                   </div>
                </div>
                
