@@ -1,110 +1,137 @@
 import React, { useState, useEffect } from "react";
 import Card from "components/card";
-import { MdAdd, MdMoreVert, MdWork, MdClose, MdCheckCircle } from "react-icons/md";
+import { MdAdd, MdMoreVert, MdEngineering, MdClose, MdCheckCircle, MdDelete } from "react-icons/md";
+import { createClient } from "@supabase/supabase-js";
+
+const supabaseUrl = process.env.REACT_APP_SUPABASE_URL || "https://gdzligxryodasaxnhdco.supabase.co";
+const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdkemxpZ3hyeW9kYXNheG5oZGNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcxNTg1MDUsImV4cCI6MjEwMjczNDUwNX0.AYTyAMf22g8au51ATReRQdQc2IzDLYQ2vtQH_Uyfrpg";
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 const TabDesignations = () => {
-  const [designations, setDesignations] = useState([]);
+  const [desigs, setDesigs] = useState([]);
+  const [empCounts, setEmpCounts] = useState({});
+  const [depts, setDepts] = useState([]);
   const [showModal, setShowModal] = useState(false);
-  const [newDesig, setNewDesig] = useState({ title: "", department: "", reportsTo: "" });
-  const [availableDepts, setAvailableDepts] = useState([]);
+  const [newDesig, setNewDesig] = useState({ title: "", department: "", level: "Junior" });
+  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-     const saved = localStorage.getItem("dayal_designations");
-     if (saved) setDesignations(JSON.parse(saved));
+  const fetchDesigs = async () => {
+     setLoading(true);
+     const { data: dData, error: dError } = await supabase.from('designations').select('*').order('created_at', { ascending: true });
+     const { data: eData, error: eError } = await supabase.from('employees').select('designation');
+     const { data: deptData } = await supabase.from('departments').select('name');
      
-     const depts = localStorage.getItem("dayal_departments");
-     if (depts) setAvailableDepts(JSON.parse(depts));
-  }, []);
+     if (deptData) setDepts(deptData.map(d => d.name));
+     if (!dError && dData) setDesigs(dData);
+     if (!eError && eData) {
+        const counts = {};
+        eData.forEach(e => {
+           if (e.designation) counts[e.designation] = (counts[e.designation] || 0) + 1;
+        });
+        setEmpCounts(counts);
+     }
+     setLoading(false);
+  };
 
-  const handleSave = () => {
-     if (!newDesig.title) return;
-     const updated = [...designations, { ...newDesig, empCount: 0 }];
-     localStorage.setItem("dayal_designations", JSON.stringify(updated));
-     setDesignations(updated);
-     setNewDesig({ title: "", department: "", reportsTo: "" });
-     setShowModal(false);
+  useEffect(() => { fetchDesigs(); }, []);
+
+  const handleSave = async () => {
+     if (!newDesig.title) { alert("Title is required."); return; }
+     const { error } = await supabase.from('designations').insert([{ 
+         title: newDesig.title, 
+         department: newDesig.department, 
+         level: newDesig.level 
+     }]);
+     if (error) alert("Failed to save. It may already exist.");
+     else {
+        setNewDesig({ title: "", department: "", level: "Junior" });
+        setShowModal(false);
+        fetchDesigs();
+     }
+  };
+
+  const handleDelete = async (id, title) => {
+     if (empCounts[title] > 0) {
+        alert(`Cannot delete ${title} because there are ${empCounts[title]} employees assigned to it.`);
+        return;
+     }
+     if (!window.confirm(`Are you sure you want to delete ${title}?`)) return;
+     const { error } = await supabase.from('designations').delete().eq('id', id);
+     if (error) alert("Failed to delete.");
+     else fetchDesigs();
   };
 
   return (
     <div className="animate-fade-in relative">
        <div className="flex justify-between items-center mb-6">
           <div>
-             <h3 className="text-[18px] font-bold text-[#0F172A]">Designations</h3>
-             <p className="text-[13px] text-[#64748B]">Custom organizational hierarchy mapped to departments.</p>
+             <h3 className="text-[18px] font-bold text-[#0F172A] dark:text-white">Designations ({desigs.length})</h3>
+             <p className="text-[14px] text-[#64748B] dark:text-gray-400">Define job titles and hierarchy levels.</p>
           </div>
-          <button onClick={() => setShowModal(true)} className="flex items-center gap-1 bg-[#2563EB] text-white px-4 py-2 rounded-lg text-[13px] font-bold shadow-sm hover:bg-[#1D4ED8]">
-             <MdAdd /> Create Designation
+          <button onClick={() => setShowModal(true)} className="flex items-center gap-2 bg-[#10B981] text-white px-4 py-2 rounded-[10px] text-[13px] font-bold shadow-md hover:bg-[#059669] transition">
+             <MdAdd className="text-lg" /> Add Designation
           </button>
        </div>
 
-       <Card extra="border border-[#E2E8F0] overflow-hidden shadow-sm">
-           <div className="overflow-x-auto">
-             <table className="w-full text-left border-collapse min-w-[800px]">
-               <thead>
-                 <tr className="bg-[#F8FAFC] border-b border-[#E2E8F0]">
-                   <th className="py-4 px-6 text-[11px] font-bold text-[#64748B] uppercase tracking-wider">Designation</th>
-                   <th className="py-4 px-4 text-[11px] font-bold text-[#64748B] uppercase tracking-wider">Department</th>
-                   <th className="py-4 px-4 text-[11px] font-bold text-[#64748B] uppercase tracking-wider">Reports To</th>
-                   <th className="py-4 px-4 text-[11px] font-bold text-[#64748B] uppercase tracking-wider">Employees</th>
-                   <th className="py-4 px-6 text-[11px] font-bold text-[#64748B] uppercase tracking-wider text-right">Actions</th>
-                 </tr>
-               </thead>
-               <tbody>
-                  {designations.length === 0 ? (
-                     <tr>
-                        <td colSpan="5" className="py-16 text-center">
-                           <h3 className="text-[16px] font-bold text-[#0F172A] mb-2">No designations created.</h3>
-                           <p className="text-[14px] text-[#64748B]">Click "Create Designation" to set up hierarchy.</p>
-                        </td>
-                     </tr>
-                  ) : (
-                     designations.map((d, i) => (
-                        <tr key={i} className="border-b border-gray-100 hover:bg-gray-50 transition">
-                           <td className="py-4 px-6">
-                              <div className="flex items-center gap-3">
-                                 <div className="w-8 h-8 rounded-lg bg-gray-100 text-gray-500 flex items-center justify-center text-sm"><MdWork /></div>
-                                 <p className="text-[14px] font-bold text-[#0F172A]">{d.title}</p>
-                              </div>
-                           </td>
-                           <td className="py-4 px-4 text-[13px] font-medium text-[#475569]">{d.department || "—"}</td>
-                           <td className="py-4 px-4 text-[13px] text-[#64748B]">{d.reportsTo || "—"}</td>
-                           <td className="py-4 px-4"><span className="bg-gray-100 text-gray-600 px-2.5 py-1 rounded-full text-[11px] font-bold">{d.empCount}</span></td>
-                           <td className="py-4 px-6 text-right"><button className="text-gray-400 hover:text-[#0F172A]"><MdMoreVert size={20} /></button></td>
-                        </tr>
-                     ))
-                  )}
-               </tbody>
-             </table>
-           </div>
-        </Card>
+       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {loading ? <p className="p-4">Loading...</p> : desigs.map((d) => (
+             <Card key={d.id} extra="p-5 border border-[#E2E8F0] dark:border-navy-700 shadow-sm hover:shadow-md transition">
+                <div className="flex justify-between items-start mb-4">
+                   <div className="w-10 h-10 bg-green-50 dark:bg-navy-800 rounded-full flex items-center justify-center text-[#10B981] text-xl">
+                      <MdEngineering />
+                   </div>
+                   <button onClick={() => handleDelete(d.id, d.title)} className="text-[#64748B] hover:text-red-500 transition p-1"><MdDelete className="text-xl" /></button>
+                </div>
+                <h4 className="text-[15px] font-bold text-[#0F172A] dark:text-white mb-1">{d.title}</h4>
+                <p className="text-[12px] text-[#64748B] dark:text-gray-400 mb-1">Dept: {d.department || "General"}</p>
+                <div className="flex justify-between items-end mt-4 pt-4 border-t border-[#E2E8F0] dark:border-navy-700">
+                   <span className="bg-gray-100 dark:bg-navy-700 text-[#475569] dark:text-gray-300 px-2 py-1 rounded-[6px] text-[10px] font-bold">{d.level}</span>
+                   <div className="text-right">
+                      <p className="text-[10px] font-bold text-[#64748B] uppercase">Employees</p>
+                      <p className="text-[13px] font-bold text-[#0F172A] dark:text-white">{empCounts[d.title] || 0}</p>
+                   </div>
+                </div>
+             </Card>
+          ))}
+          {desigs.length === 0 && !loading && <p className="p-4 text-gray-500">No designations configured yet.</p>}
+       </div>
 
        {showModal && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-             <div className="w-full max-w-[500px] bg-white rounded-[20px] shadow-2xl flex flex-col animate-fade-in">
-                <div className="p-6 border-b border-[#E2E8F0] flex justify-between items-center bg-[#F8FAFC] rounded-t-[20px]">
-                   <h2 className="text-[18px] font-bold text-[#0F172A]">Create Designation</h2>
-                   <button onClick={() => setShowModal(false)} className="w-8 h-8 rounded-full hover:bg-gray-200 flex items-center justify-center text-gray-500 transition"><MdClose size={20} /></button>
+          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm">
+             <div className="w-full max-w-[400px] bg-white dark:bg-navy-800 rounded-[20px] shadow-xl p-6">
+                <div className="flex justify-between items-center mb-6">
+                   <h3 className="text-[18px] font-bold text-[#0F172A] dark:text-white">New Designation</h3>
+                   <button onClick={() => setShowModal(false)} className="text-[#64748B] hover:text-[#0F172A]"><MdClose className="text-xl" /></button>
                 </div>
-                <div className="p-6 space-y-4">
+                <div className="space-y-4">
                    <div>
-                      <label className="block text-[11px] font-bold text-[#475569] mb-1.5 uppercase">Designation Title *</label>
-                      <input type="text" value={newDesig.title} onChange={e => setNewDesig({...newDesig, title: e.target.value})} placeholder="e.g. Lead Architect" className="w-full h-11 px-3 rounded-[10px] border border-[#E2E8F0] text-[14px] outline-none focus:border-[#2563EB]"/>
+                      <label className="text-[12px] font-bold text-[#1E293B] dark:text-gray-300">Job Title*</label>
+                      <input type="text" className="w-full h-11 mt-1 px-4 border border-[#E2E8F0] dark:border-navy-700 rounded-[10px] text-[13px] outline-none focus:border-[#10B981]" placeholder="e.g. Senior Architect" value={newDesig.title} onChange={e => setNewDesig({...newDesig, title: e.target.value})} />
                    </div>
                    <div>
-                      <label className="block text-[11px] font-bold text-[#475569] mb-1.5 uppercase">Assign to Department</label>
-                      <select value={newDesig.department} onChange={e => setNewDesig({...newDesig, department: e.target.value})} className="w-full h-11 px-3 rounded-[10px] border border-[#E2E8F0] text-[14px] outline-none focus:border-[#2563EB] bg-white">
+                      <label className="text-[12px] font-bold text-[#1E293B] dark:text-gray-300">Department</label>
+                      <select className="w-full h-11 mt-1 px-4 border border-[#E2E8F0] dark:border-navy-700 rounded-[10px] text-[13px] outline-none focus:border-[#10B981]" value={newDesig.department} onChange={e => setNewDesig({...newDesig, department: e.target.value})}>
                          <option value="">Select Department</option>
-                         {availableDepts.map(d => <option key={d.name} value={d.name}>{d.name}</option>)}
+                         {depts.map(d => <option key={d} value={d}>{d}</option>)}
                       </select>
                    </div>
                    <div>
-                      <label className="block text-[11px] font-bold text-[#475569] mb-1.5 uppercase">Reports To (Optional)</label>
-                      <input type="text" value={newDesig.reportsTo} onChange={e => setNewDesig({...newDesig, reportsTo: e.target.value})} placeholder="e.g. Project Manager" className="w-full h-11 px-3 rounded-[10px] border border-[#E2E8F0] text-[14px] outline-none focus:border-[#2563EB]"/>
+                      <label className="text-[12px] font-bold text-[#1E293B] dark:text-gray-300">Seniority Level</label>
+                      <select className="w-full h-11 mt-1 px-4 border border-[#E2E8F0] dark:border-navy-700 rounded-[10px] text-[13px] outline-none focus:border-[#10B981]" value={newDesig.level} onChange={e => setNewDesig({...newDesig, level: e.target.value})}>
+                         <option>Entry</option>
+                         <option>Junior</option>
+                         <option>Standard</option>
+                         <option>Senior</option>
+                         <option>Lead / Manager</option>
+                         <option>Executive</option>
+                      </select>
                    </div>
                 </div>
-                <div className="p-6 border-t border-[#E2E8F0] flex justify-end gap-3 bg-white rounded-b-[20px]">
-                   <button onClick={() => setShowModal(false)} className="px-5 h-10 rounded-[10px] font-bold text-sm text-[#64748B] hover:bg-gray-100 transition">Cancel</button>
-                   <button onClick={handleSave} className="flex items-center gap-2 px-6 h-10 rounded-[10px] bg-[#2563EB] text-white font-bold text-sm hover:bg-[#1D4ED8] transition shadow-md"><MdCheckCircle size={18}/> Save Designation</button>
+                <div className="mt-8 flex gap-3">
+                   <button onClick={() => setShowModal(false)} className="flex-1 h-11 border border-[#E2E8F0] dark:border-navy-700 rounded-[10px] text-[13px] font-bold text-[#64748B] hover:bg-gray-50">Cancel</button>
+                   <button onClick={handleSave} className="flex-1 h-11 bg-[#10B981] text-white rounded-[10px] text-[13px] font-bold shadow-md hover:bg-[#059669] flex items-center justify-center gap-2">
+                      <MdCheckCircle /> Save Designation
+                   </button>
                 </div>
              </div>
           </div>
@@ -112,5 +139,4 @@ const TabDesignations = () => {
     </div>
   );
 };
-
 export default TabDesignations;

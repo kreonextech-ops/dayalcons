@@ -74,12 +74,15 @@ const Employees = () => {
 
   const [availableDepts, setAvailableDepts] = useState([]);
   const [availableDesigs, setAvailableDesigs] = useState([]);
+  const [availableRoles, setAvailableRoles] = useState([]);
+
 
   useEffect(() => {
-     const depts = localStorage.getItem("dayal_departments");
-     if (depts) setAvailableDepts(JSON.parse(depts));
-     const desigs = localStorage.getItem("dayal_designations");
-     if (desigs) setAvailableDesigs(JSON.parse(desigs));
+     if (showNewModal) {
+         supabase.from('departments').select('name').then(({data}) => { if (data) setAvailableDepts(data); });
+         supabase.from('designations').select('title').then(({data}) => { if (data) setAvailableDesigs(data); });
+         supabase.from('roles').select('name').then(({data}) => { if (data) setAvailableRoles(data); });
+     }
   }, [showNewModal]);
 
   const generateAutoId = () => {
@@ -224,7 +227,7 @@ const Employees = () => {
 
         {/* Inner Tabs */}
         <div className="flex gap-4 mb-6 border-b border-[#E2E8F0] pb-2">
-           {["Employees", "Departments", "Designations"].map(tab => (
+           {["Employees", "Departments", "Designations", "Roles & Permissions"].map(tab => (
               <button 
                  key={tab}
                  onClick={() => setActiveTab(tab)}
@@ -243,7 +246,7 @@ const Employees = () => {
            {activeTab === "Employees" && <TabDirectory onSelect={(e) => setSelectedEmployee(e)} refreshTrigger={refreshTrigger} />}
            {activeTab === "Departments" && <TabDepartments />}
            {activeTab === "Designations" && <TabDesignations />}
-           
+           {activeTab === "Roles & Permissions" && <TabRoles />}
         </div>
        </>
      );
@@ -334,6 +337,13 @@ const Employees = () => {
                               </datalist>
                            </div>
 
+                           <div>
+                              <label className="block text-[11px] font-bold text-[#475569] mb-1.5 uppercase">System Role</label>
+                              <select value={newEmp.role} onChange={(e) => setNewEmp({...newEmp, role: e.target.value})} className="w-full h-11 px-3 rounded-[10px] border border-[#E2E8F0] text-[14px] outline-none bg-white focus:border-[#2563EB]">
+                                 <option value="">Select Role</option>
+                                 {availableRoles.map(r => <option key={r.name} value={r.name}>{r.name}</option>)}
+                              </select>
+                           </div>
                            <div>
                               <label className="block text-[11px] font-bold text-[#475569] mb-1.5 uppercase">Employment Type</label>
                               <select value={newEmp.empType} onChange={(e) => setNewEmp({...newEmp, empType: e.target.value})} className="w-full h-11 px-3 rounded-[10px] border border-[#E2E8F0] text-[14px] outline-none bg-white focus:border-[#2563EB]">
