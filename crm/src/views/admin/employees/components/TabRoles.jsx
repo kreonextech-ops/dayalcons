@@ -1,154 +1,253 @@
 import React, { useState, useEffect } from "react";
 import Card from "components/card";
-import { MdAdd, MdMoreVert, MdSecurity, MdClose, MdCheckCircle, MdDelete } from "react-icons/md";
-import { createClient } from "@supabase/supabase-js";
-
-const supabaseUrl = process.env.REACT_APP_SUPABASE_URL || "https://gdzligxryodasaxnhdco.supabase.co";
-const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdkemxpZ3hyeW9kYXNheG5oZGNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcxNTg1MDUsImV4cCI6MjEwMjczNDUwNX0.AYTyAMf22g8au51ATReRQdQc2IzDLYQ2vtQH_Uyfrpg";
-const supabase = createClient(supabaseUrl, supabaseKey);
-
-const ALL_PERMISSIONS = [
-  "view_leads", "edit_leads", "delete_leads",
-  "view_clients", "edit_clients", "delete_clients",
-  "view_projects", "edit_projects", "delete_projects",
-  "view_services", "edit_services", "delete_services",
-  "view_tasks", "edit_tasks", "delete_tasks",
-  "all"
-];
+import { MdAdd, MdClose, MdCheckCircle } from "react-icons/md";
 
 const TabRoles = () => {
+  const defaultRoles = [
+    { name: "Admin", empCount: 0, permissions: "ALL" },
+    { 
+       name: "Project Manager", empCount: 0, 
+       permissions: {
+          "Construction Projects": { view: true, create: true, edit: true, delete: false },
+          "Tasks": { view: true, create: true, edit: true, delete: true },
+          "Employees": { view: true, create: false, edit: false, delete: false },
+          "Clients": { view: true, create: false, edit: false, delete: false },
+          "Vendors": { view: true, create: true, edit: true, delete: false }
+       }
+    },
+    { 
+       name: "Sales", empCount: 0, 
+       permissions: {
+          "Leads": { view: true, create: true, edit: true, delete: false },
+          "Clients": { view: true, create: true, edit: true, delete: false },
+          "Tasks": { view: true, create: true, edit: true, delete: false }
+       }
+    },
+    { 
+       name: "Architect", empCount: 0, 
+       permissions: {
+          "Consultancy Services": { view: true, create: true, edit: true, delete: false },
+          "Tasks": { view: true, create: true, edit: true, delete: false },
+          "Clients": { view: true, create: false, edit: false, delete: false }
+       }
+    },
+    { 
+       name: "Site Engineer", empCount: 0, 
+       permissions: {
+          "Construction Projects": { view: true, create: false, edit: true, delete: false },
+          "Tasks": { view: true, create: false, edit: true, delete: false }
+       }
+    },
+    { 
+       name: "Accountant", empCount: 0, 
+       permissions: {
+          "Finance": { view: true, create: true, edit: true, delete: false },
+          "Clients": { view: true, create: false, edit: false, delete: false },
+          "Construction Projects": { view: true, create: false, edit: false, delete: false }
+       }
+    },
+  ];
+
   const [roles, setRoles] = useState([]);
-  const [empCounts, setEmpCounts] = useState({});
+  const [activeRoleName, setActiveRoleName] = useState("Admin");
   const [showModal, setShowModal] = useState(false);
-  const [newRole, setNewRole] = useState({ name: "", permissions: [] });
-  const [loading, setLoading] = useState(true);
+  const [newRole, setNewRole] = useState({ name: "", permissions: {} });
+  const [isEditing, setIsEditing] = useState(false);
 
-  const fetchRoles = async () => {
-     setLoading(true);
-     const { data: rData, error: rError } = await supabase.from('roles').select('*').order('created_at', { ascending: true });
-     const { data: eData, error: eError } = await supabase.from('employees').select('role');
-     
-     if (!rError && rData) setRoles(rData);
-     if (!eError && eData) {
-        const counts = {};
-        eData.forEach(e => {
-           if (e.role) counts[e.role] = (counts[e.role] || 0) + 1;
-        });
-        setEmpCounts(counts);
-     }
-     setLoading(false);
-  };
+  const modulesForPermissions = [
+     "Dashboard", "Leads", "Clients", "Consultancy Services", "Construction Projects", "Tasks", "Finance", "Documents", "Vendors", "Employees"
+  ];
 
-  useEffect(() => { fetchRoles(); }, []);
-
-  const handleSave = async () => {
-     if (!newRole.name) { alert("Role name is required."); return; }
-     const { error } = await supabase.from('roles').insert([{ 
-         name: newRole.name, 
-         permissions: newRole.permissions 
-     }]);
-     if (error) alert("Failed to save. It may already exist.");
-     else {
-        setNewRole({ name: "", permissions: [] });
-        setShowModal(false);
-        fetchRoles();
-     }
-  };
-
-  const handleDelete = async (id, name) => {
-     if (empCounts[name] > 0) {
-        alert(`Cannot delete ${name} because there are ${empCounts[name]} employees assigned to it.`);
-        return;
-     }
-     if (["Admin", "CRO", "OAS", "Engineers", "Others"].includes(name)) {
-        alert("Cannot delete default system roles.");
-        return;
-     }
-     if (!window.confirm(`Are you sure you want to delete ${name}?`)) return;
-     const { error } = await supabase.from('roles').delete().eq('id', id);
-     if (error) alert("Failed to delete.");
-     else fetchRoles();
-  };
-
-  const togglePermission = (perm) => {
-     if (newRole.permissions.includes(perm)) {
-         setNewRole({ ...newRole, permissions: newRole.permissions.filter(p => p !== perm) });
+  useEffect(() => {
+     const saved = localStorage.getItem("dayal_roles");
+     if (saved) {
+        setRoles(JSON.parse(saved));
      } else {
-         setNewRole({ ...newRole, permissions: [...newRole.permissions, perm] });
+        setRoles(defaultRoles);
+        localStorage.setItem("dayal_roles", JSON.stringify(defaultRoles));
+     }
+     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handlePermissionToggle = (module, perm) => {
+     setNewRole(prev => {
+        const modPerms = prev.permissions[module] || {};
+        return {
+           ...prev,
+           permissions: {
+              ...prev.permissions,
+              [module]: { ...modPerms, [perm]: !modPerms[perm] }
+           }
+        };
+     });
+  };
+
+  const handleSave = () => {
+     if (!newRole.name) return;
+     let updatedRoles;
+     
+     if (isEditing) {
+        updatedRoles = roles.map(r => r.name === newRole.name ? { ...r, permissions: newRole.permissions } : r);
+     } else {
+        updatedRoles = [...roles, { ...newRole, empCount: 0 }];
+     }
+     
+     localStorage.setItem("dayal_roles", JSON.stringify(updatedRoles));
+     setRoles(updatedRoles);
+     
+     setActiveRoleName(newRole.name);
+     setNewRole({ name: "", permissions: {} });
+     setShowModal(false);
+     setIsEditing(false);
+  };
+
+  const handleEdit = () => {
+     const activeRole = roles.find(r => r.name === activeRoleName);
+     if (activeRole) {
+        // Handle "ALL" permission string translation to object for the form
+        let permsToEdit = activeRole.permissions;
+        if (permsToEdit === "ALL") {
+           permsToEdit = {};
+           modulesForPermissions.forEach(mod => {
+              permsToEdit[mod] = { view: true, create: true, edit: true, delete: true };
+           });
+        }
+        setNewRole({ name: activeRole.name, permissions: permsToEdit });
+        setIsEditing(true);
+        setShowModal(true);
      }
   };
+
+  const activeRole = roles.find(r => r.name === activeRoleName) || roles[0] || defaultRoles[0];
 
   return (
     <div className="animate-fade-in relative">
        <div className="flex justify-between items-center mb-6">
           <div>
-             <h3 className="text-[18px] font-bold text-[#0F172A] dark:text-white">Roles & Permissions ({roles.length})</h3>
-             <p className="text-[14px] text-[#64748B] dark:text-gray-400">Control system access boundaries.</p>
+             <h3 className="text-[18px] font-bold text-[#0F172A]">Permission Roles (RBAC)</h3>
+             <p className="text-[13px] text-[#64748B]">Manage pre-defined access levels for employees.</p>
           </div>
-          <button onClick={() => setShowModal(true)} className="flex items-center gap-2 bg-[#F59E0B] text-white px-4 py-2 rounded-[10px] text-[13px] font-bold shadow-md hover:bg-[#D97706] transition">
-             <MdAdd className="text-lg" /> Create Role
+          <button onClick={() => setShowModal(true)} className="flex items-center gap-1 text-[#2563EB] text-[13px] font-bold hover:underline">
+             Create Custom Role
           </button>
        </div>
 
-       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {loading ? <p className="p-4">Loading...</p> : roles.map((r) => (
-             <Card key={r.id} extra="p-5 border border-[#E2E8F0] dark:border-navy-700 shadow-sm hover:shadow-md transition">
-                <div className="flex justify-between items-start mb-4">
-                   <div className="w-10 h-10 bg-orange-50 dark:bg-navy-800 rounded-full flex items-center justify-center text-[#F59E0B] text-xl">
-                      <MdSecurity />
-                   </div>
-                   <button onClick={() => handleDelete(r.id, r.name)} className="text-[#64748B] hover:text-red-500 transition p-1"><MdDelete className="text-xl" /></button>
-                </div>
-                <h4 className="text-[16px] font-bold text-[#0F172A] dark:text-white mb-1">{r.name}</h4>
-                <div className="mt-4 pt-4 border-t border-[#E2E8F0] dark:border-navy-700 flex flex-col gap-3">
-                   <div className="flex flex-wrap gap-1">
-                      {r.permissions.length === 0 ? <span className="text-[11px] text-gray-400 italic">No permissions</span> : 
-                       r.permissions.slice(0, 5).map(p => <span key={p} className="bg-orange-50 text-orange-600 text-[10px] px-2 py-0.5 rounded-full border border-orange-100">{p}</span>)
-                      }
-                      {r.permissions.length > 5 && <span className="text-[10px] text-gray-500">+{r.permissions.length - 5} more</span>}
-                   </div>
-                   <div className="flex justify-between items-center mt-1">
-                      <span className="text-[12px] font-bold text-[#64748B]">{r.permissions.length} Total</span>
-                      <div className="text-right">
-                         <p className="text-[10px] font-bold text-[#64748B] uppercase">Users</p>
-                         <p className="text-[13px] font-bold text-[#0F172A] dark:text-white">{empCounts[r.name] || 0}</p>
-                      </div>
-                   </div>
-                </div>
-             </Card>
+       <div className="flex gap-4 overflow-x-auto pb-4 custom-scrollbar mb-6">
+          {roles.map(r => (
+             <div key={r.name} onClick={() => setActiveRoleName(r.name)}>
+                <Card extra={`flex-none w-[180px] p-5 cursor-pointer border transition-all ${activeRoleName === r.name ? 'border-[#2563EB] bg-blue-50/30 shadow-md' : 'border-[#E2E8F0] shadow-sm hover:shadow-md bg-white'}`}>
+                   <h4 className="text-[15px] font-bold text-[#0F172A] mb-2">{r.name}</h4>
+                   <p className="text-[12px] text-[#64748B]">{r.empCount} Employees</p>
+                </Card>
+             </div>
           ))}
        </div>
 
+       <Card extra="border border-[#E2E8F0] overflow-hidden shadow-sm">
+          <div className="p-6 border-b border-[#E2E8F0] flex justify-between items-center bg-[#F8FAFC]">
+             <h4 className="text-[14px] font-bold text-[#0F172A]">Module Permissions Matrix: <span className="text-[#2563EB]">{activeRole.name}</span></h4>
+             <button onClick={handleEdit} className="h-8 px-4 border border-[#E2E8F0] rounded bg-white text-[12px] font-bold text-[#64748B] hover:bg-gray-50">Edit</button>
+          </div>
+          <div className="overflow-x-auto">
+             <table className="w-full text-left">
+                <thead>
+                   <tr className="border-b border-[#E2E8F0]">
+                      <th className="py-4 px-6 text-[11px] font-bold text-[#64748B] uppercase">Module</th>
+                      <th className="py-4 px-4 text-[11px] font-bold text-[#64748B] uppercase text-center">View</th>
+                      <th className="py-4 px-4 text-[11px] font-bold text-[#64748B] uppercase text-center">Create</th>
+                      <th className="py-4 px-4 text-[11px] font-bold text-[#64748B] uppercase text-center">Edit</th>
+                      <th className="py-4 px-4 text-[11px] font-bold text-[#64748B] uppercase text-center">Delete</th>
+                   </tr>
+                </thead>
+                <tbody>
+                   {modulesForPermissions.map((mod, i) => {
+                      let hasView = false, hasCreate = false, hasEdit = false, hasDelete = false;
+
+                      if (activeRole.permissions === "ALL") {
+                         hasView = hasCreate = hasEdit = hasDelete = true;
+                      } else if (activeRole.permissions === "DEFAULT") {
+                         hasView = true; 
+                         hasCreate = false;
+                         hasEdit = false;
+                         hasDelete = false;
+                      } else if (activeRole.permissions && activeRole.permissions[mod]) {
+                         hasView = activeRole.permissions[mod].view || false;
+                         hasCreate = activeRole.permissions[mod].create || false;
+                         hasEdit = activeRole.permissions[mod].edit || false;
+                         hasDelete = activeRole.permissions[mod].delete || false;
+                      }
+
+                      return (
+                         <tr key={i} className="border-b border-gray-100 hover:bg-gray-50">
+                            <td className="py-4 px-6 text-[13px] font-bold text-[#0F172A]">{mod}</td>
+                            <td className="py-4 px-4 text-center">
+                               {hasView ? <div className="w-4 h-4 bg-gray-200 rounded mx-auto flex items-center justify-center text-white font-bold text-[10px]">✓</div> : <div className="w-4 h-4 bg-transparent border border-gray-200 rounded mx-auto"></div>}
+                            </td>
+                            <td className="py-4 px-4 text-center">
+                               {hasCreate ? <div className="w-4 h-4 bg-gray-200 rounded mx-auto flex items-center justify-center text-white font-bold text-[10px]">✓</div> : <div className="w-4 h-4 bg-transparent border border-gray-200 rounded mx-auto"></div>}
+                            </td>
+                            <td className="py-4 px-4 text-center">
+                               {hasEdit ? <div className="w-4 h-4 bg-gray-200 rounded mx-auto flex items-center justify-center text-white font-bold text-[10px]">✓</div> : <div className="w-4 h-4 bg-transparent border border-gray-200 rounded mx-auto"></div>}
+                            </td>
+                            <td className="py-4 px-4 text-center">
+                               {hasDelete ? <div className="w-4 h-4 bg-gray-200 rounded mx-auto flex items-center justify-center text-white font-bold text-[10px]">✓</div> : <div className="w-4 h-4 bg-transparent border border-gray-200 rounded mx-auto"></div>}
+                            </td>
+                         </tr>
+                      );
+                   })}
+                </tbody>
+             </table>
+          </div>
+       </Card>
+
        {showModal && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm">
-             <div className="w-full max-w-[600px] bg-white dark:bg-navy-800 rounded-[20px] shadow-xl p-6">
-                <div className="flex justify-between items-center mb-6">
-                   <h3 className="text-[18px] font-bold text-[#0F172A] dark:text-white">Create Custom Role</h3>
-                   <button onClick={() => setShowModal(false)} className="text-[#64748B] hover:text-[#0F172A]"><MdClose className="text-xl" /></button>
+          <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+             <div className="w-full max-w-[800px] bg-white rounded-[20px] shadow-2xl flex flex-col max-h-[90vh] animate-fade-in">
+                <div className="p-6 border-b border-[#E2E8F0] flex justify-between items-center bg-[#F8FAFC] rounded-t-[20px]">
+                   <h2 className="text-[18px] font-bold text-[#0F172A]">Create Custom Role</h2>
+                   <button onClick={() => setShowModal(false)} className="w-8 h-8 rounded-full hover:bg-gray-200 flex items-center justify-center text-gray-500 transition"><MdClose size={20} /></button>
                 </div>
-                
-                <div className="mb-6">
-                   <label className="text-[12px] font-bold text-[#1E293B] dark:text-gray-300">Role Name*</label>
-                   <input type="text" className="w-full h-11 mt-1 px-4 border border-[#E2E8F0] dark:border-navy-700 rounded-[10px] text-[13px] outline-none focus:border-[#F59E0B]" placeholder="e.g. Sales Manager" value={newRole.name} onChange={e => setNewRole({...newRole, name: e.target.value})} />
-                </div>
-
-                <div>
-                   <label className="text-[12px] font-bold text-[#1E293B] dark:text-gray-300 block mb-3">Module Permissions</label>
-                   <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 max-h-[300px] overflow-y-auto p-2 bg-gray-50 rounded-lg">
-                      {ALL_PERMISSIONS.map(perm => (
-                         <label key={perm} className="flex items-center gap-2 text-[12px] text-[#475569] cursor-pointer">
-                            <input type="checkbox" checked={newRole.permissions.includes(perm)} onChange={() => togglePermission(perm)} className="rounded border-gray-300 text-[#F59E0B] focus:ring-[#F59E0B]" />
-                            {perm}
-                         </label>
-                      ))}
+                <div className="p-6 overflow-y-auto custom-scrollbar flex-1">
+                   <div className="mb-6">
+                      <label className="block text-[11px] font-bold text-[#475569] mb-1.5 uppercase">Role Name *</label>
+                      <input type="text" value={newRole.name} disabled={isEditing} onChange={e => setNewRole({...newRole, name: e.target.value})} placeholder="e.g. Junior Architect" className={`w-full h-11 px-3 rounded-[10px] border border-[#E2E8F0] text-[14px] outline-none ${isEditing ? 'bg-gray-100 text-gray-500 cursor-not-allowed' : 'bg-white focus:border-[#2563EB]'}`}/>
                    </div>
+                   
+                   <h4 className="text-[14px] font-bold text-[#0F172A] mb-3 border-b border-[#E2E8F0] pb-2">Permission Matrix</h4>
+                   <table className="w-full text-left bg-white border border-[#E2E8F0] rounded-xl overflow-hidden shadow-sm">
+                        <thead>
+                           <tr className="bg-gray-50 border-b border-[#E2E8F0]">
+                              <th className="py-3 px-4 text-[11px] font-bold text-[#475569] uppercase">Module</th>
+                              {["View", "Create", "Edit", "Delete"].map(action => (
+                                 <th key={action} className="py-3 px-2 text-[11px] font-bold text-[#475569] uppercase text-center">{action}</th>
+                              ))}
+                           </tr>
+                        </thead>
+                        <tbody>
+                           {modulesForPermissions.map(mod => (
+                              <tr key={mod} className="border-b border-gray-100 hover:bg-gray-50 transition">
+                                 <td className="py-2.5 px-4 text-[12px] font-bold text-[#0F172A]">{mod}</td>
+                                 {["view", "create", "edit", "delete"].map(action => {
+                                    const isChecked = newRole.permissions[mod]?.[action] || false;
+                                    return (
+                                       <td key={action} className="py-2.5 px-2 text-center">
+                                          <input 
+                                             type="checkbox" 
+                                             checked={isChecked}
+                                             onChange={() => handlePermissionToggle(mod, action)}
+                                             className="w-4 h-4 rounded border-gray-300 text-[#2563EB] cursor-pointer" 
+                                          />
+                                       </td>
+                                    )
+                                 })}
+                              </tr>
+                           ))}
+                        </tbody>
+                     </table>
                 </div>
-
-                <div className="mt-8 flex gap-3">
-                   <button onClick={() => setShowModal(false)} className="flex-1 h-11 border border-[#E2E8F0] dark:border-navy-700 rounded-[10px] text-[13px] font-bold text-[#64748B] hover:bg-gray-50">Cancel</button>
-                   <button onClick={handleSave} className="flex-1 h-11 bg-[#F59E0B] text-white rounded-[10px] text-[13px] font-bold shadow-md hover:bg-[#D97706] flex items-center justify-center gap-2">
-                      <MdCheckCircle /> Create Role
-                   </button>
+                <div className="p-6 border-t border-[#E2E8F0] flex justify-end gap-3 bg-white rounded-b-[20px]">
+                   <button onClick={() => setShowModal(false)} className="px-5 h-10 rounded-[10px] font-bold text-sm text-[#64748B] hover:bg-gray-100 transition">Cancel</button>
+                   <button onClick={handleSave} className="flex items-center gap-2 px-6 h-10 rounded-[10px] bg-[#2563EB] text-white font-bold text-sm hover:bg-[#1D4ED8] transition shadow-md"><MdCheckCircle size={18}/> Save Role</button>
                 </div>
              </div>
           </div>
@@ -156,4 +255,5 @@ const TabRoles = () => {
     </div>
   );
 };
+
 export default TabRoles;
