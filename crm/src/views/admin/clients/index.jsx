@@ -6,7 +6,7 @@ import { logAction } from "utils/auditLogger";
 import * as XLSX from "xlsx";
 import { useRef } from "react";
 import ClientDetail from "./ClientDetail";
-import { MdAdd, MdCurrencyRupee, MdBusinessCenter, MdCheckCircle, MdCloudDownload, MdDeleteOutline, MdDomainVerification, MdEdit, MdEngineering, MdFoundation, MdHouse, MdKeyboardArrowLeft, MdKeyboardArrowRight, MdLayers, MdLocationCity, MdMoreVert, MdOutlineArchitecture, MdOutlineFoundation, MdOutlineRefresh, MdPerson, MdPeople, MdLocalFireDepartment, MdPhotoSizeSelectSmall, MdSearch, MdWaterDrop } from "react-icons/md";
+import { MdAdd, MdCurrencyRupee, MdBusinessCenter, MdCheckCircle, MdCloudDownload, MdDeleteOutline, MdClose, MdDomainVerification, MdEdit, MdEngineering, MdFoundation, MdHouse, MdKeyboardArrowLeft, MdKeyboardArrowRight, MdLayers, MdLocationCity, MdMoreVert, MdOutlineArchitecture, MdOutlineFoundation, MdOutlineRefresh, MdPerson, MdPeople, MdLocalFireDepartment, MdPhotoSizeSelectSmall, MdSearch, MdWaterDrop } from "react-icons/md";
 
 
 
@@ -71,6 +71,8 @@ const Clients = () => {
   // Modals
   const [showNewClientModal, setShowNewClientModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(null);
+  const [showErrorModal, setShowErrorModal] = useState(null);
+
 
   // New Client Form State
   const [newClient, setNewClient] = useState({
@@ -276,10 +278,14 @@ const Clients = () => {
   };
 
   const handleDeleteClient = async (id) => {
+    const { error } = await supabase.from("clients").delete().eq("id", id);
+    if (error) {
+       setShowDeleteModal(null);
+       setShowErrorModal("Cannot delete this Client because they currently have active Projects or Services attached to them. Please delete the associated projects/services first.");
+       return;
+    }
     setShowDeleteModal(null);
     setClients(clients.filter(c => c.id !== id));
-    
-    await supabase.from("clients").delete().eq("id", id);
     fetchClients(false);
   };
 
@@ -612,7 +618,22 @@ const Clients = () => {
         </div>
       )}
 
-      {/* Delete Confirmation Modal */}
+            {showErrorModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+          <div className="w-full max-w-[400px] bg-white dark:bg-navy-800 rounded-[20px] shadow-[0_20px_60px_rgba(15,23,42,0.2)] p-6 text-center animate-fade-in">
+            <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center text-[#DC2626] text-3xl mx-auto mb-4">
+              <MdClose />
+            </div>
+            <h2 className="text-[20px] font-bold text-[#0F172A] dark:text-white mb-2">Action Blocked</h2>
+            <p className="text-[14px] text-[#64748B] dark:text-gray-400 mb-6">{showErrorModal}</p>
+            <div className="flex justify-center">
+              <button onClick={() => setShowErrorModal(null)} className="w-full h-11 rounded-[12px] bg-[#DC2626] text-[14px] font-bold text-white hover:bg-red-700 transition shadow-md">Understood</button>
+            </div>
+          </div>
+        </div>
+      )}
+      
+{/* Delete Confirmation Modal */}
       {showDeleteModal && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
           <div className="w-full max-w-[400px] bg-white dark:bg-navy-800 rounded-[20px] shadow-[0_20px_60px_rgba(15,23,42,0.2)] p-6 text-center animate-fade-in">

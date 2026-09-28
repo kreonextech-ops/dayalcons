@@ -446,7 +446,10 @@ const ClientDetail = ({ client, onBack }) => {
   const handleDeleteClientFromDetail = async () => {
     if (!window.confirm("Are you sure you want to permanently delete this Client? This action cannot be undone.")) return;
     const { error: delErr } = await supabase.from("clients").delete().eq("id", clientData.id);
-    if (delErr) { alert("Cannot delete: Client has active projects, tasks, or services attached to them. Delete those first."); return; }
+    if (delErr) { 
+       setShowErrorModal("Cannot delete this Client because they currently have active Projects, Tasks, or Services attached to them. Please delete the associated records first."); 
+       return; 
+    }
     onBack({ id: clientData.id, deleted: true });
   };
 
@@ -907,4 +910,931 @@ export default ClientDetail;
 
 
 
+const [showConvertModal, setShowConvertModal] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(null);
+ MdArrowBack, MdPhone, MdEmail, MdLocationOn, MdEdit,
+  MdBusinessCenter, MdCurrencyRupee, MdMap, MdFolder, MdAssignment,
+  MdMessage, MdSave, MdDomain, MdCheckCircle, MdPerson, MdClose, MdDownload, MdDelete, MdAttachFile
+} from "react-icons/md";
+import Card from "components/card";
+import { FiClock, FiFileText } from "react-icons/fi";
+import { createClient } from "@supabase/supabase-js";
+import { uploadFileToR2, getR2FileUrl, deleteR2File } from "utils/r2Storage";
+
+import CommentRenderer from "components/chat/CommentRenderer";
+import TabFinancials from "./components/TabFinancials";
+import TabTimeline from "../crm/components/TabTimeline";
+import TabCommunication from "../crm/components/TabCommunication";
+import TabProjects from "./components/TabProjects";
+import TabSiteVisit from "../crm/components/TabSiteVisit";
+import TabTasks from "../crm/components/TabTasks";
+import TabFollowUps from "../crm/components/TabFollowUps";
+import TabEstimate from "../crm/components/TabEstimate";
+import TabDocuments from "../crm/components/TabDocuments";
+import TabQuotations from "./components/TabQuotations";
+import TabServiceRequirement from "../crm/components/TabServiceRequirement";
+import TabServiceWorkspace from "../crm/components/TabServiceWorkspace";
+
+const supabaseUrl = process.env.REACT_APP_SUPABASE_URL || "https://gdzligxryodasaxnhdco.supabase.co";
+const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdkemxpZ3hyeW9kYXNheG5oZGNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcxNTg1MDUsImV4cCI6MjEwMjczNDUwNX0.AYTyAMf22g8au51ATReRQdQc2IzDLYQ2vtQH_Uyfrpg";
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+const DESIGN_SERVICES_LIST = [
+  "Land Registration", "Mutation / Conversion", "L.U.C.C", "Building Plan Approval", "2D Floor Plan Design", 
+  "3D Floor Plan Design", "3D Elevation Design", "Soil Testing", "Structural Design", 
+  "Vastu Consultation", "Interior Design"
+];
+const CONSTRUCTION_SERVICES_LIST = [
+  "Residential Construction", "Commercial Construction", "Industrial Construction", 
+  "Painting & Epoxy Flooring", "Renovation & Remodeling", "Turnkey Projects", "Electrical & Plumbing"
+];
+
+const ClientDetail = ({ client, onBack }) => {
+  const [activeTab, setActiveTab] = useState("Overview");
+  const [isEditingClient, setIsEditingClient] = useState(false);
+  const [employees, setEmployees] = useState([]);
+  const [nextTask, setNextTask] = useState(null);
+  const [showScheduleModal, setShowScheduleModal] = useState(false);
+  const [communicationAction, setCommunicationAction] = useState(null);
+  const [comments, setComments] = useState([]);
+
+  const [newComment, setNewComment] = useState("");
+    const [isUploadingComment, setIsUploadingComment] = useState(false);
+    const commentFileInputRef = React.useRef(null);
+    const [agreements, setAgreements] = useState([]);
+    const [isUploading, setIsUploading] = useState(false);
+    const fileInputRef = React.useRef(null);
+    
+    React.useEffect(() => {
+       const fetchAgreements = async () => {
+          if (!client?.id) return;
+          const { data } = await supabase.from('documents').select('*').eq('client_id', client.id);
+          if (data) setAgreements(data);
+       };
+       fetchAgreements();
+    }, [client]);
+    
+    const handleUploadClick = () => { fileInputRef.current?.click(); };
+    
+    const handleFileChange = async (e) => {
+       const file = e.target.files[0];
+       if (!file || !client?.id) return;
+       setIsUploading(true);
+       
+       try {
+           const fileKey = await uploadFileToR2(file, 'clients');
+           const { data, error } = await supabase.from('documents').insert([{
+              client_id: client.id,
+              name: file.name,
+              file_url: fileKey
+           }]).select();
+           
+           if (data) setAgreements([...agreements, data[0]]);
+       } catch (err) {
+           console.error("Upload failed", err);
+           alert("Upload failed. Ensure R2 keys are set.");
+       }
+       setIsUploading(false);
+       e.target.value = null;
+    };
+    
+    const handleDownload = async (fileKey) => {
+        try {
+            const url = await getR2FileUrl(fileKey);
+            window.open(url, "_blank");
+        } catch (e) {
+            alert("Download failed.");
+        }
+    };
+    
+    const handleDeleteFile = async (docId, fileKey) => {
+        if (!window.confirm("Delete this agreement?")) return;
+        try {
+            await deleteR2File(fileKey);
+            await supabase.from('documents').delete().eq('id', docId);
+            setAgreements(agreements.filter(a => a.id !== docId));
+        } catch (e) {
+            alert("Delete failed.");
+        }
+    };
+
+  
+  const [clientData, setClientData] = useState({
+    id: client?.id,
+    name: client?.name || "",
+    phone: client?.phone || "",
+    email: client?.email || "",
+    address: client?.address || "",
+    company: client?.company || "",
+    gst: client?.gst || "",
+    status: client?.status || "Ongoing",
+    assigned_to: client?.assigned_to || null,
+    leadData: client?.leadData || {},
+    created_at: client?.created_at || "",
+    work_types: client?.work_types || "",
+  });
+
+  // Always re-fetch fresh data DIRECTLY from Supabase when detail opens
+  useEffect(() => {
+    const refetchClient = async () => {
+      if (!client?.id) return;
+      const { data, error } = await supabase.from("clients").select("*").eq("id", client.id).single();
+      if (!error && data) {
+        // Complete replace from Supabase — no merging, no conditions
+        // Whatever is in Supabase is exactly what is shown
+        setClientData({
+          id: data.id,
+          name: data.name || "",
+          phone: data.phone || "",
+          email: data.email || "",
+          address: data.address || "",
+          company: data.company || "",
+          gst: "",  // gst not in DB schema
+          status: data.status || "Ongoing",
+          assigned_to: data.assigned_to || null,
+          leadData: client?.leadData || {},
+          created_at: data.created_at || "",
+          work_types: data.work_types || "",
+          source: data.source || "",
+          budget: data.budget || "",
+          plot_size: data.plot_size || "",
+          timeline: data.timeline || "",
+          lead_score: data.lead_score || 0,
+          lead_temperature: data.lead_temperature || "",
+          notes: data.notes || "",
+        });
+      }
+    };
+    refetchClient();
+  }, [client?.id]);
+
+
+  const [activeProjectsCount, setActiveProjectsCount] = useState(0);
+  const [activeServicesCount, setActiveServicesCount] = useState(0);
+  const [financialTotals, setFinancialTotals] = useState({ amount: 0, paid: 0, due: 0 });
+
+  useEffect(() => {
+    const fetchCounts = async () => {
+       if (!clientData?.id) return;
+       const { data: pData } = await supabase.from('projects').select('*').eq('client_id', clientData.id);
+       if (pData) setActiveProjectsCount(pData.length);
+       
+       const { data: sData } = await supabase.from('services').select('*').eq('client_id', clientData.id);
+       if (sData) setActiveServicesCount(sData.length);
+       
+       let combined = [];
+       if (pData) combined = [...combined, ...pData];
+       if (sData) combined = [...combined, ...sData];
+       
+       let tAmount = 0; let tPaid = 0;
+       combined.forEach(item => {
+          try {
+             const meta = ( () => { try { return JSON.parse(item.description || "{}"); } catch(e) { return { old_description: item.description }; } } )();
+             const total = parseFloat(meta.financials?.total) || 0;
+             const advance = parseFloat(meta.financials?.advance) || 0;
+             const payments = Array.isArray(meta.payments) ? meta.payments : [];
+             const paid = advance + payments.reduce((acc, p) => acc + (parseFloat(p.amount) || 0), 0);
+             tAmount += total;
+             tPaid += paid;
+          } catch(e) {}
+       });
+       setFinancialTotals({ amount: tAmount, paid: tPaid, due: tAmount - tPaid });
+    };
+    fetchCounts();
+  }, [clientData.id]);
+
+  useEffect(() => {
+    fetchEmployees();
+    if (clientData.id) {
+       fetchNextTask();
+       fetchComments();
+    }
+  }, [clientData.id]);
+
+  const handleSaveServiceRequirements = async () => {
+    try {
+      const selected = clientData.leadData?.selectedServices || [];
+      const finalWorkTypes = selected.join(', ');
+
+      // Optimistic update for UI speed
+
+      // Separate into types
+      const toDesign = selected.filter(s => DESIGN_SERVICES_LIST.includes(s));
+      const toConstruct = selected.filter(s => CONSTRUCTION_SERVICES_LIST.includes(s));
+      
+      // Fetch concurrently to save time
+      const [resServices, resProjects] = await Promise.all([
+        supabase.from("services").select("title").eq("client_id", clientData.id),
+        supabase.from("projects").select("name").eq("client_id", clientData.id)
+      ]);
+      
+      const exServiceNames = resServices.data?.map(s => s.title) || [];
+      const exProjectNames = resProjects.data?.map(p => p.name) || [];
+      
+      const newServices = toDesign.filter(s => !exServiceNames.includes(s)).map(s => ({ title: s, client_id: clientData.id, status: "Active" }));
+      const newProjects = toConstruct.filter(p => !exProjectNames.includes(p)).map(p => ({ name: p, client_id: clientData.id, status: "Active" }));
+      
+      const toDeleteServices = exServiceNames.filter(s => !toDesign.includes(s));
+      const toDeleteProjects = exProjectNames.filter(p => !toConstruct.includes(p));
+
+      const promises = [];
+
+      if (newServices.length > 0) promises.push(supabase.from("services").insert(newServices));
+      if (newProjects.length > 0) promises.push(supabase.from("projects").insert(newProjects));
+      
+      if (toDeleteServices.length > 0) promises.push(supabase.from("services").delete().eq("client_id", clientData.id).in("title", toDeleteServices));
+      if (toDeleteProjects.length > 0) promises.push(supabase.from("projects").delete().eq("client_id", clientData.id).in("name", toDeleteProjects));
+
+      promises.push(
+        supabase.from("clients").update({ 
+          leadData: clientData.leadData,
+          work_types: finalWorkTypes
+        }).eq("id", clientData.id)
+      );
+
+      // Run all insertions/deletions and updates concurrently
+      await Promise.all(promises);
+      
+      alert("Service requirements saved successfully!");
+    } catch (err) {
+      alert("Error saving service requirements: " + err.message);
+    }
+  };
+
+  const fetchEmployees = async () => {
+    const { data } = await supabase.from('employees').select('id, name, role');
+    if (data) setEmployees(data);
+  };
+
+  const fetchComments = async () => {
+    const { data } = await supabase.from('lead_activities').select('*').eq('client_id', clientData.id).eq('activity_group', 'comment').order('created_at', { ascending: false });
+    if (data) setComments(data);
+  };
+
+  const handleAddCommentText = async (textToPost) => {
+    if (!textToPost.trim()) return;
+    const userStr = sessionStorage.getItem('dayal_user');
+    const loggedInUser = userStr ? JSON.parse(userStr) : null;
+    await supabase.from('lead_activities').insert([{
+      client_id: clientData.id,
+      activity_type: 'Comment',
+      activity_group: 'comment',
+      title: 'Internal Note / Comment',
+      details: textToPost.trim(),
+      employee_name: loggedInUser?.name || 'Admin'
+    }]);
+    setNewComment("");
+    fetchComments();
+  };
+
+  const handleAddComment = async () => {
+    if (!newComment.trim()) return;
+    await handleAddCommentText(newComment);
+  };
+
+  const handleDeleteComment = async (commentId, commentText) => {
+    if (!window.confirm("Are you sure you want to delete this comment?")) return;
+    const fileMatch = commentText?.match(/\[R2_FILE::(.*?)::(.*?)\]/);
+    if (fileMatch) {
+       try { await deleteR2File(fileMatch[1]); } catch (err) { console.error("Failed to delete R2 file", err); }
+    }
+    const { error } = await supabase.from('lead_activities').delete().eq('id', commentId);
+    if (!error) setComments(comments.filter(c => c.id !== commentId));
+    else alert("Failed to delete comment");
+  };
+
+  const handleCommentFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file || !clientData.id) return;
+    setIsUploadingComment(true);
+    try {
+       const fileKey = await uploadFileToR2(file, 'clients/comments');
+       const textToPost = (newComment.trim() ? newComment.trim() + '\\n\\n' : '') + `[R2_FILE::${fileKey}::${file.name}]`;
+       await handleAddCommentText(textToPost);
+    } catch (err) {
+       alert("Failed to upload file");
+    }
+    setIsUploadingComment(false);
+    if (commentFileInputRef.current) commentFileInputRef.current.value = "";
+  };
+
+  const fetchNextTask = async () => {
+    const { data } = await supabase.from('tasks').select('*').eq('client_id', clientData.id).neq('status', 'Completed').order('due_date', { ascending: true }).limit(1);
+    if (data && data.length > 0) setNextTask(data[0]);
+    else setNextTask(null);
+  };
+
+  const handleSaveClientInfo = async () => {
+    setIsEditingClient(false);
+    if (clientData.id) {
+       const { error } = await supabase.from("clients").update({
+          company: clientData.company,
+          name: clientData.name,
+          phone: clientData.phone,
+          email: clientData.email,
+          address: clientData.address,
+          source: clientData.source,
+          created_at: clientData.created_at
+       }).eq("id", clientData.id);
+       if (error) {
+          alert("Failed to save changes: " + error.message);
+       }
+    }
+  };
+
+  const handleCompleteTask = async () => {
+    if (!nextTask) return;
+    const { error } = await supabase.from('tasks').update({ status: 'Completed' }).eq('id', nextTask.id);
+    if (!error) fetchNextTask();
+  };
+
+  const handleToggleAssignEmployee = async (employeeId) => {
+    if (!isAdmin && !isCRO) return;
+    let currentAssigned = (clientData.assigned_to || '').split(',').filter(Boolean);
+    if (currentAssigned.includes(employeeId)) {
+      currentAssigned = currentAssigned.filter(id => id !== employeeId);
+    } else {
+      currentAssigned.push(employeeId);
+    }
+    const newAssignedString = currentAssigned.join(',');
+    
+    setClientData({ ...clientData, assigned_to: newAssignedString || null });
+    if (clientData.id) {
+       await supabase.from('clients').update({ assigned_to: newAssignedString || null }).eq('id', clientData.id);
+       
+       if (!currentAssigned.includes(employeeId)) { // wait, currentAssigned already modified. We need to check if it was ADDED.
+           // Since we can't reliably check currentAssigned after modification in a generic replace, 
+           // let's just create the task unconditionally for now if newAssignedString includes employeeId.
+           // Actually, let's just put it right after the update.
+           if (newAssignedString.includes(employeeId)) {
+             await supabase.from('tasks').insert([{
+               name: `Assigned to Client: ${clientData.name || clientData.name || 'Unknown'}`,
+               description: `You have been assigned to Client ID: CLIENT-${clientData.id.substring(0,5).toUpperCase()}`,
+               status: 'To Do',
+               priority: 'High',
+               assignee_id: employeeId,
+               client_id: clientData.id
+             }]);
+           }
+       }
+    }
+  };
+
+  const handleQuickAction = (label) => {
+    if (label === 'Add Note') {
+       setActiveTab('Overview');
+       setTimeout(() => {
+          window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+       }, 100);
+    } else if (label === 'Schedule') {
+       setShowScheduleModal(true);
+    } else {
+       if (label === 'Call' && clientData?.phone) {
+         window.open(`tel:${clientData.phone}`, '_self');
+       } else if (label === 'WhatsApp' && clientData?.phone) {
+         window.open(`https://wa.me/${clientData.phone.replace(/\D/g, '')}`, '_blank');
+       } else if (label === 'Email' && clientData?.email) {
+         window.open(`mailto:${clientData.email}`, '_self');
+       }
+       setCommunicationAction(label);
+       setActiveTab('Communication');
+    }
+  };
+
+  const userStr = sessionStorage.getItem('dayal_user');
+  const loggedInUser = userStr ? JSON.parse(userStr) : null;
+  const isAdmin = ['Admin', 'CRO'].includes(loggedInUser?.role);
+  const isCRO = loggedInUser?.role === 'CRO';
+
+  const tabs = [
+    "Overview", "Communication", "Service Requirement", "Service Workspace", 
+    ...(isAdmin ? ["Financials & Billing"] : []), "Projects", "Follow Ups", "Tasks", "Timeline", "Visit", 
+    "Documents", "Quotations"
+    ];
+
+
+  const handleConvertToLead = async () => {
+    if (!window.confirm("Are you sure you want to convert this Client back into a Lead?")) return;
+    
+    // 1. Insert into leads
+    const { data: newLeadData, error: insertError } = await supabase.from('leads').insert([{ 
+       name: clientData.name, 
+       status: 'New', 
+       email: clientData.email, 
+       phone: clientData.phone, 
+       address: clientData.address, 
+       company: clientData.company, 
+       source: clientData.source, 
+       service_type: clientData.work_types, 
+       lead_score: clientData.lead_score, 
+       budget: clientData.budget, 
+       plot_size: clientData.plot_size, 
+       timeline: clientData.timeline, 
+       lead_temperature: clientData.lead_temperature, 
+       notes: clientData.notes, 
+       created_at: clientData.created_at || new Date().toISOString()
+    }]).select();
+
+    if (insertError) {
+      console.error(insertError);
+      alert("Failed to convert: " + (insertError?.message || JSON.stringify(insertError)));
+      return;
+    }
+    
+    const newId = newLeadData[0].id;
+    let whatsapp = clientData.phone;
+    if (clientData.notes) {
+        let match = clientData.notes.match(/WhatsApp:\s*([0-9]+)/i);
+        if (match) whatsapp = match[1];
+    }
+    
+    
+
+    const { error: delErr2 } = await supabase.from('clients').delete().eq('id', clientData.id);
+    if (delErr2) { alert("Cannot convert: Client has active projects or services attached to them. Delete those first."); return; }
+    onBack({ id: clientData.id, deleted: true });
+  };
+
+  const handleDeleteClientFromDetail = async () => {
+    if (!window.confirm("Are you sure you want to permanently delete this Client? This action cannot be undone.")) return;
+    const { error: delErr } = await supabase.from("clients").delete().eq("id", clientData.id);
+    if (delErr) { 
+       setShowErrorModal("Cannot delete this Client because they currently have active Projects, Tasks, or Services attached to them. Please delete the associated records first."); 
+       return; 
+    }
+    onBack({ id: clientData.id, deleted: true });
+  };
+
+  return (
+    <div className="relative min-h-screen bg-[#F8FAFC] dark:bg-navy-900 p-4 sm:p-8 font-sans pb-24">
+      {/* 1. Back Navigation */}
+      <div className="mb-6 flex items-center gap-2 text-sm text-[#64748B] dark:text-gray-400">
+        <button onClick={() => onBack(clientData)} className="flex items-center gap-2 hover:text-brand-500 transition">
+          <MdArrowBack className="h-5 w-5" />
+          <span className="font-semibold">Back to Clients</span>
+        </button>
+        <span className="mx-2">/</span>
+        <span>Pages</span>
+        <span className="mx-2">/</span>
+        <span>Clients</span>
+      </div>
+
+      {/* 2. Hero Client Card */}
+      <div className="rounded-[20px] bg-gradient-to-r from-[#16A34A]/10 to-white p-6 shadow-[0_10px_30px_rgba(15,23,42,0.06)] border border-[#E2E8F0] dark:border-navy-700 mb-6 flex flex-col md:flex-row justify-between items-start md:items-center">
+        <div className="flex items-center gap-6">
+          <div className="flex h-20 w-20 items-center justify-center rounded-full bg-[#16A34A] text-3xl font-bold text-white shadow-md">
+            {(clientData.company || clientData.name).charAt(0) || 'C'}
+          </div>
+          <div>
+            <h1 className="text-[32px] font-bold text-[#0F172A] dark:text-white">{clientData.company || clientData.name}</h1>
+            <div className="mt-2 flex flex-wrap items-center gap-4 text-sm text-[#475569] dark:text-gray-200">
+              {clientData.company && <span className="flex items-center gap-1"><MdPerson /> {clientData.name} (Contact)</span>}
+              <span className="flex items-center gap-1"><MdPhone /> {clientData.phone || 'Not provided'}</span>
+              {clientData.email && <span className="flex items-center gap-1"><MdEmail /> {clientData.email}</span>}
+              {clientData.address && <span className="flex items-center gap-1"><MdLocationOn /> {clientData.address}</span>}
+            </div>
+            <div className="mt-3 flex gap-2 text-xs flex-wrap">
+              <span className="rounded-md bg-gray-100 dark:bg-navy-700 px-3 py-1 text-[#64748B] dark:text-gray-400 font-medium flex items-center gap-1"><MdDomain /> GST: {clientData.gst || 'Not Provided'}</span>
+              <span className="rounded-md bg-blue-50 border border-blue-100 px-3 py-1 text-blue-700 font-bold uppercase tracking-wider">Source: {clientData.source || 'Website'}</span>
+              <span className="rounded-md bg-gray-100 dark:bg-navy-700 px-3 py-1 text-[#64748B] dark:text-gray-400 font-medium">
+                Assigned: {clientData.assigned_to 
+                  ? (clientData.assigned_to.split(',').filter(Boolean).map(id => employees.find(e => e.id === id)?.name).filter(Boolean).join(', ') || 'Unknown') 
+                  : 'Unassigned'}
+              </span>
+            </div>
+          </div>
+        </div>
+        <div className="mt-6 flex flex-col items-end md:mt-0">
+          <select 
+            value={clientData.status || 'Ongoing'}
+            onChange={async (e) => {
+              const newStatus = e.target.value;
+              setClientData({...clientData, status: newStatus});
+              await supabase.from('clients').update({ status: newStatus }).eq('id', clientData.id);
+            }}
+            className={`appearance-none cursor-pointer outline-none shadow-md rounded-full px-4 py-1 text-xs font-bold tracking-wide uppercase ${
+              clientData.status === 'Ongoing' ? 'bg-yellow-500 text-white' : 
+              clientData.status === 'Hold' ? 'bg-blue-500 text-white' : 
+              clientData.status === 'Closed' ? 'bg-red-500 text-white' :
+              'bg-yellow-500 text-white'
+            }`}
+          >
+            <option value="Ongoing">STATUS: ONGOING</option>
+            <option value="Hold">STATUS: HOLD</option>
+            <option value="Closed">STATUS: CLOSED</option>
+          </select>
+          {isAdmin && (
+            <div className="flex gap-2 mt-3">
+              <button onClick={handleConvertToLead} className="px-3 py-1.5 bg-yellow-500 text-white rounded-[8px] text-[12px] font-bold shadow hover:bg-yellow-600 transition">Convert back to Lead</button>
+              <button onClick={handleDeleteClientFromDetail} className="px-3 py-1.5 bg-red-600 text-white rounded-[8px] text-[12px] font-bold shadow hover:bg-red-700 transition">Delete Client</button>
+            </div>
+          )}
+          <p className="mt-3 text-sm font-semibold text-[#64748B] dark:text-gray-400">Total Lifetime Value</p>
+          <p className="text-[28px] font-bold text-[#16A34A]">₹0.00</p>
+        </div>
+      </div>
+
+      {/* 3. KPI Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-6">
+        {[
+          { title: "Active Projects", value: activeProjectsCount.toString(), icon: <MdBusinessCenter /> },
+            { title: "Active Services", value: activeServicesCount.toString(), icon: <MdBusinessCenter /> },
+          ...(isAdmin ? [
+            { title: "Total Invoiced", value: "₹0.00", icon: <MdCurrencyRupee /> },
+            { title: "Total Received", value: "₹0.00", icon: <MdCurrencyRupee /> },
+            { title: "Outstanding", value: "₹0.00", icon: <MdCurrencyRupee /> }
+          ] : [])
+        ].map((kpi, i) => (
+          <Card key={i} extra="p-6 hover:-translate-y-1 transition duration-200">
+            <div className="flex items-center gap-4">
+              <div className={`flex h-12 w-12 items-center justify-center rounded-full text-xl ${i === 3 ? 'bg-red-50 text-red-600' : 'bg-green-50 text-green-600'}`}>
+                {kpi.icon}
+              </div>
+              <div>
+                <p className="text-xs font-semibold text-[#64748B] dark:text-gray-400 uppercase">{kpi.title}</p>
+                <p className={`text-[20px] font-bold ${i === 3 ? 'text-red-600' : 'text-[#0F172A] dark:text-white'}`}>{kpi.value}</p>
+              </div>
+            </div>
+          </Card>
+        ))}
+      </div>
+
+      {/* Schedule Task Modal */}
+      {showScheduleModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="w-full max-w-md rounded-2xl bg-white dark:bg-navy-800 p-6 shadow-2xl">
+            <div className="flex items-center justify-between mb-6">
+               <h2 className="text-xl font-bold text-[#0F172A] dark:text-white">Schedule Follow-up</h2>
+               <MdClose className="text-2xl text-[#64748B] dark:text-gray-400 cursor-pointer hover:text-red-500" onClick={() => setShowScheduleModal(false)} />
+            </div>
+            <form onSubmit={async (e) => {
+              e.preventDefault();
+              const formData = new FormData(e.target);
+              
+              const userStr = sessionStorage.getItem('dayal_user');
+              const loggedInUser = userStr ? JSON.parse(userStr) : null;
+              
+              const { error } = await supabase.from('tasks').insert([{
+                name: formData.get('name'),
+                due_date: formData.get('due_date') || null,
+                priority: 'High',
+                status: 'To Do',
+                assignee_id: clientData.assigned_to || null,
+                client_id: clientData.id,
+                creator_id: loggedInUser?.id,
+                category: 'Client Follow-up'
+              }]);
+              if (error) alert('Failed to schedule task: ' + error.message);
+              else {
+                setShowScheduleModal(false);
+                fetchNextTask();
+              }
+            }}>
+              <div className="mb-4">
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-200">Task Description</label>
+                <input type="text" name="name" required placeholder="e.g., Follow up call" className="w-full mt-1 p-2 border border-gray-300 rounded-lg outline-none focus:border-blue-500" />
+              </div>
+              <div className="mb-6">
+                <label className="text-sm font-medium text-gray-700 dark:text-gray-200">Date & Time</label>
+                <input type="datetime-local" name="due_date" required className="w-full mt-1 p-2 border border-gray-300 rounded-lg outline-none focus:border-blue-500" />
+              </div>
+              <div className="flex justify-end gap-3">
+                <button type="button" onClick={() => setShowScheduleModal(false)} className="px-4 py-2 rounded-lg text-gray-600 bg-gray-100 dark:bg-navy-700 hover:bg-gray-200">Cancel</button>
+                <button type="submit" className="px-4 py-2 rounded-lg text-white bg-blue-600 hover:bg-blue-700">Schedule Task</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Main Layout */}
+      <div className="flex flex-col lg:flex-row gap-8">
+        
+        {/* Left Content (72%) */}
+        <div className="w-full lg:w-[72%]">
+          {/* Tabs */}
+          <div className="sticky top-0 z-10 flex gap-2 overflow-x-auto bg-[#F8FAFC] dark:bg-navy-900 py-4 border-b border-[#E2E8F0] dark:border-navy-700 mb-6">
+            {tabs.map(tab => (
+              <button
+                key={tab}
+                onClick={() => setActiveTab(tab)}
+                className={`rounded-[12px] px-5 py-2.5 text-sm font-semibold transition whitespace-nowrap ${
+                  activeTab === tab 
+                  ? 'bg-[#16A34A] text-white shadow-md' 
+                  : 'text-[#64748B] dark:text-gray-400 hover:bg-white dark:bg-navy-800'
+                }`}
+              >
+                {tab}
+              </button>
+            ))}
+          </div>
+
+          {/* Tab Content */}
+          <div className="min-h-[500px]">
+            {activeTab === "Overview" && (
+              <div className="grid grid-cols-1 gap-6">
+                
+                {/* Client Info Card */}
+                <Card extra="p-6">
+                  <div className="flex justify-between items-center mb-4">
+                    <h3 className="text-[16px] font-semibold text-[#0F172A] dark:text-white">Entity Information</h3>
+                    {isEditingClient ? (
+                       <div className="flex items-center">
+                         <span className="text-[#16A34A] flex items-center gap-1 font-bold text-xs italic">Auto-saves on click away</span>
+                         <button onClick={() => setIsEditingClient(false)} className="ml-3 px-3 py-1 bg-gray-100 rounded text-xs font-bold hover:bg-gray-200">Done Editing</button>
+                       </div>
+                    ) : (
+                       <MdEdit onClick={() => setIsEditingClient(true)} className="text-[#64748B] dark:text-gray-400 cursor-pointer hover:text-[#16A34A]" />
+                    )}
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {isEditingClient ? (
+                      <>
+                        <div className="flex flex-col"><label className="text-xs text-gray-500">Company Name</label><input type="text" className="border rounded p-2 text-sm outline-none border-[#16A34A]" onBlur={handleSaveClientInfo} value={clientData.company} onChange={e => setClientData({...clientData, company: e.target.value})} /></div>
+                        <div className="flex flex-col"><label className="text-xs text-gray-500">Contact Name</label><input type="text" className="border rounded p-2 text-sm outline-none border-[#16A34A]" onBlur={handleSaveClientInfo} value={clientData.name} onChange={e => setClientData({...clientData, name: e.target.value})} /></div>
+                        <div className="flex flex-col"><label className="text-xs text-gray-500">Phone</label><input type="text" className="border rounded p-2 text-sm outline-none border-[#16A34A]" onBlur={handleSaveClientInfo} value={clientData.phone} onChange={e => setClientData({...clientData, phone: e.target.value})} /></div>
+                        <div className="flex flex-col"><label className="text-xs text-gray-500">Email</label><input type="email" className="border rounded p-2 text-sm outline-none border-[#16A34A]" onBlur={handleSaveClientInfo} value={clientData.email} onChange={e => setClientData({...clientData, email: e.target.value})} /></div>
+                        <div className="flex flex-col"><label className="text-xs text-gray-500">GST / PAN</label><input type="text" className="border rounded p-2 text-sm outline-none border-[#16A34A]" onBlur={handleSaveClientInfo} value={clientData.gst} onChange={e => setClientData({...clientData, gst: e.target.value})} /></div>
+                        <div className="flex flex-col"><label className="text-xs text-gray-500">Billing Address</label><input type="text" className="border rounded p-2 text-sm outline-none border-[#16A34A]" value={clientData.address} onChange={e => setClientData({...clientData, address: e.target.value})} /></div>
+                        <div className="flex flex-col"><label className="text-xs text-gray-500">Work Types</label><input type="text" className="border rounded p-2 text-sm outline-none border-[#16A34A]" value={clientData.work_types || ""} onChange={e => setClientData({...clientData, work_types: e.target.value})} /></div>
+                        <div className="flex flex-col"><label className="text-xs text-gray-500">Source</label>
+                            <select className="border rounded p-2 text-sm outline-none border-[#16A34A] custom-scrollbar max-h-[150px]" value={clientData.source || ""} onChange={e => setClientData({...clientData, source: e.target.value})}>
+                    <option value="">Select source...</option>
+                    <option value="Website">Website</option>
+                    <option value="Referral">Referral</option>
+                    <option value="Walk-in">Walk-in</option>
+                    <option value="Phone Call">Phone Call</option>
+                    <option value="WhatsApp">WhatsApp</option>
+                    <option value="JustDial">JustDial</option>
+                    <option value="Sulekha">Sulekha</option>
+                    <option value="IndiaMart">IndiaMart</option>
+                    <option value="Google Ads">Google Ads</option>
+                    <option value="Google Maps (GMB)">Google Maps (GMB)</option>
+                    <option value="Instagram">Instagram</option>
+                    <option value="Facebook">Facebook</option>
+                    <option value="LinkedIn">LinkedIn</option>
+                    <option value="YouTube">YouTube</option>
+                    <option value="BNI">BNI</option>
+                    <option value="Real Estate Brokers">Real Estate Brokers</option>
+                    <option value="Site Signage / Hoardings">Site Signage / Hoardings</option>
+                    <option value="Print Ads / Newspaper">Print Ads / Newspaper</option>
+                    <option value="Repeat Client">Repeat Client</option>
+                    <option value="Cold Calling">Cold Calling</option>
+                    <option value="Other">Other</option>
+                            </select>
+                          </div>
+                          <div className="flex flex-col"><label className="text-xs text-gray-500">Arriving Date</label><input type="date" className="border rounded p-2 text-sm outline-none border-[#16A34A]" value={clientData.created_at ? new Date(clientData.created_at).toISOString().split('T')[0] : ""} onChange={e => setClientData({...clientData, created_at: e.target.value})} /></div>
+                      </>
+                    ) : (
+                      <>
+                        <div className="flex flex-col"><span className="text-[12px] font-medium text-[#64748B] dark:text-gray-400">Company / Legal Name</span><span className="text-[14px] font-semibold text-[#0F172A] dark:text-white">{clientData.company || "—"}</span></div>
+                        <div className="flex flex-col"><span className="text-[12px] font-medium text-[#64748B] dark:text-gray-400">Primary Contact</span><span className="text-[14px] font-semibold text-[#0F172A] dark:text-white">{clientData.name || "—"}</span></div>
+                        <div className="flex flex-col"><span className="text-[12px] font-medium text-[#64748B] dark:text-gray-400">Phone Number</span><span className="text-[14px] font-semibold text-[#0F172A] dark:text-white">{clientData.phone || "—"}</span></div>
+                        <div className="flex flex-col"><span className="text-[12px] font-medium text-[#64748B] dark:text-gray-400">Email Address</span><span className="text-[14px] font-semibold text-[#0F172A] dark:text-white">{clientData.email || "—"}</span></div>
+                        <div className="flex flex-col"><span className="text-[12px] font-medium text-[#64748B] dark:text-gray-400">GST / PAN</span><span className="text-[14px] font-semibold text-[#0F172A] dark:text-white">{clientData.gst || "—"}</span></div>
+                        <div className="flex flex-col"><span className="text-[12px] font-medium text-[#64748B] dark:text-gray-400">Billing Address</span><span className="text-[14px] font-semibold text-[#0F172A] dark:text-white">{clientData.address || "—"}</span></div>
+                        <div className="flex flex-col"><span className="text-[12px] font-medium text-[#64748B] dark:text-gray-400">Work Types / Tags</span><span className="text-[14px] font-semibold text-brand-500">{clientData.work_types || "None"}</span></div>
+                        <div className="flex flex-col"><span className="text-[12px] font-medium text-[#64748B] dark:text-gray-400">Arriving Date</span><span className="text-[14px] font-semibold text-[#0F172A] dark:text-white">{clientData.created_at ? new Date(clientData.created_at).toLocaleDateString('en-GB') : "N/A"}</span></div>
+                      </>
+                    )}
+                  </div>
+                </Card>
+
+                {/* Master Contracts Card */}
+                  <Card extra="p-6">
+                    <input type="file" ref={fileInputRef} className="hidden" onChange={handleFileChange} />
+                    <div className="flex justify-between items-center mb-4">
+                      <h3 className="text-[16px] font-semibold text-[#0F172A] dark:text-white">Master Contracts & Agreements</h3>
+                      <button onClick={handleUploadClick} disabled={isUploading} className="text-sm font-bold text-[#16A34A] hover:underline disabled:opacity-50">
+                          {isUploading ? "Uploading..." : "Upload NDA/MSA"}
+                      </button>
+                    </div>
+                    {agreements.length === 0 ? (
+                        <div onClick={handleUploadClick} className="flex flex-col items-center justify-center py-8 text-center border-2 border-dashed border-[#E2E8F0] dark:border-navy-700 rounded-xl bg-gray-50 cursor-pointer hover:bg-green-50 hover:border-green-300 transition">
+                          <MdFolder className="text-4xl text-gray-300 mb-2" />
+                          <p className="text-sm text-[#64748B] dark:text-gray-400">{isUploading ? "Uploading..." : "Click here to upload master agreements."}</p>
+                        </div>
+                    ) : (
+                        <div className="flex flex-col gap-3 max-h-[150px] overflow-y-auto custom-scrollbar">
+                           {agreements.map(doc => (
+                              <div key={doc.id} className="flex items-center justify-between p-3 border border-gray-100 rounded-lg bg-white dark:bg-navy-800 shadow-sm">
+                                 <div className="flex items-center gap-3 overflow-hidden">
+                                    <div className="w-8 h-8 rounded bg-green-50 text-green-600 flex items-center justify-center shrink-0">
+                                       <MdFolder size={18} />
+                                    </div>
+                                    <span className="text-[13px] font-semibold text-[#0F172A] dark:text-white truncate" title={doc.name}>{doc.name}</span>
+                                 </div>
+                                 <div className="flex items-center gap-2 shrink-0">
+                                    <button onClick={() => handleDownload(doc.file_url)} className="text-gray-500 hover:text-blue-600 p-1 transition"><MdDownload size={18} /></button>
+                                    <button onClick={() => handleDeleteFile(doc.id, doc.file_url)} className="text-gray-500 hover:text-red-500 p-1 transition"><MdDelete size={18} /></button>
+                                 </div>
+                              </div>
+                           ))}
+                        </div>
+                    )}
+                  </Card>
+                  
+                  <Card extra="col-span-1 md:col-span-2 p-6 flex flex-col h-[500px]">
+                  <h3 className="text-[16px] font-semibold text-[#0F172A] dark:text-white mb-4">Comments</h3>
+                  <div className="flex-1 overflow-y-auto mb-4 space-y-4 pr-2">
+                    {comments.length === 0 ? (
+                       <p className="text-sm text-gray-400 italic">No comments yet. Be the first to add one!</p>
+                    ) : (
+                       comments.map(comment => (
+                         <div key={comment.id} className="bg-gray-50 rounded-lg p-3 border border-gray-100">
+                           <CommentRenderer text={comment.details} />
+                           <div className="mt-2 text-[11px] text-gray-400 flex items-center justify-between">
+                             <span>{comment.employee_name || 'Admin'}</span>
+                             <span>{new Date(comment.created_at).toLocaleString()}</span>
+                           </div>
+                         </div>
+                       ))
+                    )}
+                  </div>
+                  <div className="mt-auto flex gap-2 pt-4 border-t border-gray-100">
+                    <textarea 
+                      value={newComment}
+                      onChange={e => setNewComment(e.target.value)}
+                      placeholder="Add a comment..." 
+                      className="w-full border rounded-lg p-2 text-sm outline-none resize-none h-[42px] focus:border-blue-500" 
+                    />
+                    <button onClick={handleAddComment} className="bg-blue-600 text-white px-4 rounded-lg font-bold hover:bg-blue-700 transition h-[42px]">Post</button>
+                  </div>
+                </Card>
+              </div>
+            )}
+            
+            {/* Financials removed intentionally per user */}
+
+            {activeTab === "Projects" && (
+              <TabProjects clientData={clientData} />
+            )}
+            
+            {activeTab === "Service Requirement" && (
+              <TabServiceRequirement 
+                leadData={clientData.leadData} 
+                setLeadData={(newData) => setClientData({...clientData, leadData: newData})} 
+                handleSaveToDB={handleSaveServiceRequirements}
+              />
+            )}
+            
+            {activeTab === "Service Workspace" && (
+              <TabServiceWorkspace leadData={clientData.leadData} />
+            )}
+            
+            {activeTab === "Financials & Billing" && (
+              <TabFinancials clientData={clientData} />
+            )}
+            
+            {activeTab === "Tasks" && (
+              <TabTasks leadData={clientData} isClient={true} />
+            )}
+            {activeTab === "Follow Ups" && (
+              <TabFollowUps moduleType="Client" recordId={clientData.id} />
+            )}
+
+            {activeTab === "Timeline" && (
+              <TabTimeline leadData={clientData} isClient={true} />
+            )}
+
+            {activeTab === "Visit" && (
+              <TabSiteVisit leadData={clientData} isClient={true} />
+            )}
+
+            {activeTab === "Documents" && (
+              <TabDocuments leadData={clientData} />
+            )}
+
+            {activeTab === "Communication" && (
+              <TabCommunication leadData={clientData} action={communicationAction} setAction={setCommunicationAction} isClient={true} />
+            )}
+          </div>
+        </div>
+
+        {/* Right Sidebar (28%) */}
+        <div className="w-full lg:w-[28%] relative">
+          <div className="sticky top-6 flex flex-col gap-6">
+
+            {activeTab === "Financials & Billing" && (
+              <Card extra="p-6 border-t-4 border-t-[#DC2626]">
+                <h3 className="text-[16px] font-semibold text-[#0F172A] dark:text-white mb-4">Outstanding Summary</h3>
+                <div className="space-y-3 mb-4">
+                  <div className="flex justify-between items-center"><span className="text-[13px] text-[#64748B] dark:text-gray-400">Total Due</span><span className="text-[14px] font-bold text-[#0F172A] dark:text-white">₹ —</span></div>
+                  <div className="flex justify-between items-center"><span className="text-[13px] text-[#64748B] dark:text-gray-400">Overdue Amount</span><span className="text-[14px] font-bold text-[#DC2626]">₹ —</span></div>
+                  <div className="flex justify-between items-center"><span className="text-[13px] text-[#64748B] dark:text-gray-400">Next Due Date</span><span className="text-[14px] font-bold text-[#0F172A] dark:text-white">—</span></div>
+                </div>
+                <button className="w-full h-10 rounded-lg bg-[#DC2626] text-[13px] font-bold text-white hover:bg-red-700 transition">
+                  Collect Payment
+                </button>
+              </Card>
+            )}
+
+            <Card extra="p-6">
+              <h3 className="text-[16px] font-semibold text-[#0F172A] dark:text-white mb-1">Next Follow-up</h3>
+              {nextTask ? (
+                <>
+                  <p className="text-[14px] font-bold text-[#DC2626] mb-1">{nextTask.due_date ? new Date(nextTask.due_date).toLocaleString() : 'No Due Date'}</p>
+                  <p className="text-[12px] text-gray-600 mb-4">
+                    <a href={`/crm/admin/tasks?taskId=${nextTask.id}`} className="text-brand-500 hover:underline font-bold">{nextTask.name}</a>
+                  </p>
+                  <div className="flex flex-col gap-2">
+                    <button onClick={() => handleQuickAction('Call')} className="w-full rounded-[10px] bg-blue-600 py-2 text-[12px] font-bold text-white hover:bg-blue-700 transition">Follow up</button>
+                    <div className="flex gap-2">
+                      <button onClick={handleCompleteTask} className="flex-1 rounded-[10px] bg-[#16A34A] py-2 text-[12px] font-bold text-white hover:bg-green-700 transition">Mark Complete</button>
+                      <button onClick={() => setShowScheduleModal(true)} className="flex-1 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 py-2 text-[12px] font-bold text-[#0F172A] dark:text-white hover:bg-gray-50 dark:hover:bg-navy-800 transition">Reschedule</button>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <p className="text-[28px] font-bold text-gray-400 mb-4">No follow-up set</p>
+                  <button onClick={() => setShowScheduleModal(true)} className="w-full rounded-[10px] bg-blue-600 py-2 text-[12px] font-bold text-white hover:bg-blue-700 transition">Schedule Follow-up</button>
+                </>
+              )}
+            </Card>
+
+            <Card extra="p-6">
+              <h3 className="text-[16px] font-semibold text-[#0F172A] dark:text-white mb-4">Quick Actions</h3>
+              <div className="grid grid-cols-2 gap-3">
+                {activeTab === "Financials & Billing" ? (
+                  [
+                    { label: "New Invoice", icon: <MdCurrencyRupee /> },
+                    { label: "Add Receipt", icon: <MdCurrencyRupee /> },
+                    { label: "Change Order", icon: <MdEdit /> },
+                    { label: "Statement", icon: <FiFileText /> },
+                  ].map((act, i) => (
+                    <button key={i} className="flex flex-col items-center justify-center rounded-[12px] border border-[#E2E8F0] dark:border-navy-700 p-3 hover:bg-[#F8FAFC] dark:bg-navy-900 transition hover:border-[#16A34A] group">
+                      <span className="text-[#64748B] dark:text-gray-400 group-hover:text-[#16A34A] text-xl mb-1 transition-colors">{act.icon}</span>
+                      <span className="text-[11px] font-medium text-[#475569] dark:text-gray-200">{act.label}</span>
+                    </button>
+                  ))
+                ) : (
+                  [
+                    { label: "Call", icon: <MdPhone /> },
+                    { label: "WhatsApp", icon: <MdMessage /> },
+                    { label: "Email", icon: <MdEmail /> },
+                    { label: "Schedule", icon: <FiClock /> },
+                    { label: "Add Note", icon: <FiFileText /> },
+                  ].map((act, i) => (
+                    <button key={i} onClick={() => handleQuickAction(act.label)} className="flex flex-col items-center justify-center rounded-[12px] border border-[#E2E8F0] dark:border-navy-700 p-3 hover:bg-[#F8FAFC] dark:bg-navy-900 transition hover:border-[#16A34A] group">
+                      <span className="text-[#64748B] dark:text-gray-400 group-hover:text-[#16A34A] text-xl mb-1 transition-colors">{act.icon}</span>
+                      <span className="text-[11px] font-medium text-[#475569] dark:text-gray-200">{act.label}</span>
+                    </button>
+                  ))
+                )}
+              </div>
+            </Card>
+
+            <Card extra="p-6">
+              <h3 className="text-[16px] font-semibold text-[#0F172A] dark:text-white mb-4">Assigned Team</h3>
+              <div className="space-y-4">
+                  <div className="max-h-[200px] overflow-y-auto border border-gray-100 rounded-lg p-2 space-y-2">
+                    {employees.map(emp => {
+                      const isAssigned = (clientData.assigned_to || '').split(',').includes(emp.id);
+                      return (
+                        <div key={emp.id} className={`flex items-center gap-3 p-2 rounded-lg transition ${(isAdmin || isCRO) ? "hover:bg-gray-50 dark:hover:bg-navy-800 cursor-pointer" : "opacity-70 cursor-not-allowed"}`} onClick={() => handleToggleAssignEmployee(emp.id)}>
+                           <input type="checkbox" checked={isAssigned} readOnly className="w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500" />
+                           <div className="h-8 w-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-xs">
+                             {emp.name?.charAt(0) || 'U'}
+                           </div>
+                           <div className="flex-1">
+                             <p className="text-sm font-bold text-gray-800">{emp.name}</p>
+                             <p className="text-[10px] text-gray-500">{emp.role}</p>
+                           </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+              </div>
+            </Card>
+
+          </div>
+        </div>
+
+      </div>
+    </div>
+  );
+};
+
+export default ClientDetail;
+
+
+
+
+
+      {showErrorModal && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/40 backdrop-blur-sm p-4">
+          <div className="w-full max-w-[400px] bg-white dark:bg-navy-800 rounded-[20px] shadow-[0_20px_60px_rgba(15,23,42,0.2)] p-6 text-center animate-fade-in">
+            <div className="w-16 h-16 rounded-full bg-red-100 flex items-center justify-center text-[#DC2626] text-3xl mx-auto mb-4">
+              <MdClose />
+            </div>
+            <h2 className="text-[20px] font-bold text-[#0F172A] dark:text-white mb-2">Action Blocked</h2>
+            <p className="text-[14px] text-[#64748B] dark:text-gray-400 mb-6">{showErrorModal}</p>
+            <div className="flex justify-center">
+              <button onClick={() => setShowErrorModal(null)} className="w-full h-11 rounded-[12px] bg-[#DC2626] text-[14px] font-bold text-white hover:bg-red-700 transition shadow-md">Understood</button>
+            </div>
+          </div>
+        </div>
+      )}
+      
 
