@@ -98,8 +98,7 @@ const Services = () => {
   const userStr = sessionStorage.getItem('dayal_user');
   const loggedInUser = userStr ? JSON.parse(userStr) : null;
   const isAdmin = loggedInUser?.role === 'Admin';
-  const canSeeAllData = isAdmin || loggedInUser?.role === 'CRO' || (loggedInUser?.designation && loggedInUser.designation.includes('OAS'));
-  
+    
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -107,9 +106,7 @@ const Services = () => {
      const fetchServices = async () => {
         setLoading(true);
         let query = supabase.from('services').select('*').order('created_at', { ascending: false });
-          if (!canSeeAllData && loggedInUser?.id) {
-             query = query.like('assigned_to', `%${loggedInUser.id}%`);
-          }
+          
           const { data, error } = await query;
         
         if (!error && data) {
