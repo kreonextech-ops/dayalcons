@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { 
-  MdArrowBack, MdClose, MdPhone, MdEmail, MdLocationOn, MdEdit,
+  MdArrowBack, MdPhone, MdEmail, MdLocationOn, MdEdit,
   MdBusinessCenter, MdCurrencyRupee, MdMap, MdFolder, MdAssignment,
   MdMessage, MdSave, MdDomain, MdCheckCircle, MdPerson, MdClose, MdDownload, MdDelete, MdAttachFile
 } from "react-icons/md";
