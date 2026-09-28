@@ -1,4 +1,7 @@
-import React, { useState, useEffect } from "react";
+with open('crm/src/views/admin/employees/components/TabDepartments.jsx', 'r', encoding='utf-8') as f:
+    c = f.read()
+
+new_content = """import React, { useState, useEffect } from "react";
 import Card from "components/card";
 import { MdAdd, MdMoreVert, MdFolder, MdClose, MdCheckCircle, MdDelete } from "react-icons/md";
 import { createClient } from "@supabase/supabase-js";
@@ -129,3 +132,7 @@ const TabDepartments = () => {
   );
 };
 export default TabDepartments;
+"""
+
+with open('crm/src/views/admin/employees/components/TabDepartments.jsx', 'w', encoding='utf-8') as f:
+    f.write(new_content)
