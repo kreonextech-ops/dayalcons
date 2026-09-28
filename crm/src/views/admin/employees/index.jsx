@@ -31,13 +31,37 @@ const Employees = () => {
   const [showNewModal, setShowNewModal] = useState(false);
   const [modalStep, setModalStep] = useState(1);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [empCount, setEmpCount] = useState(0);
+  const [adminCount, setAdminCount] = useState(0);
+  const [deptCount, setDeptCount] = useState(0);
+  const [desigCount, setDesigCount] = useState(0);
+
+  useEffect(() => {
+    const loadStats = async () => {
+       const { data, error } = await supabase.from('employees').select('*');
+       if (data && !error) {
+           setEmpCount(data.length);
+           setAdminCount(data.filter(e => e.role === 'Admin' || e.role === 'CRO').length);
+           
+           const depts = new Set();
+           const desigs = new Set();
+           data.forEach(e => {
+               if (e.department) depts.add(e.department);
+               if (e.designation) desigs.add(e.designation);
+           });
+           setDeptCount(depts.size);
+           setDesigCount(desigs.size);
+       }
+    };
+    loadStats();
+  }, [refreshTrigger]);
 
   // KPIs
   const kpis = [
-    { title: "Total Employees", value: "—", icon: <MdPeople /> },
-    { title: "System Users", value: "—", icon: <MdAdminPanelSettings /> },
-    { title: "Departments", value: "—", icon: <MdDomain /> },
-    { title: "Designations", value: "—", icon: <MdEngineering /> },
+    { title: "Total Employees", value: empCount, icon: <MdPeople className="text-[#2563EB]" />, bg: "bg-blue-50" },
+    { title: "System Admins", value: adminCount, icon: <MdAdminPanelSettings className="text-[#F59E0B]" />, bg: "bg-orange-50" },
+    { title: "Departments", value: deptCount, icon: <MdDomain className="text-[#10B981]" />, bg: "bg-green-50" },
+    { title: "Designations", value: desigCount, icon: <MdEngineering className="text-[#8B5CF6]" />, bg: "bg-purple-50" },
   ];
 
   // New Employee State

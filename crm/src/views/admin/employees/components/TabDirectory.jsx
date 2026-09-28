@@ -9,6 +9,8 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 
 const TabDirectory = ({ onSelect, refreshTrigger }) => {
   const [employees, setEmployees] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+
 
   useEffect(() => {
      const fetchEmployees = async () => {
@@ -20,14 +22,23 @@ const TabDirectory = ({ onSelect, refreshTrigger }) => {
      fetchEmployees();
   }, [refreshTrigger]);
 
-  return (
+  
+  const filteredEmployees = employees.filter(e => {
+     const term = searchTerm.toLowerCase();
+     return (e.name && e.name.toLowerCase().includes(term)) || 
+            (e.email && e.email.toLowerCase().includes(term)) ||
+            (e.designation && e.designation.toLowerCase().includes(term)) ||
+            (e.phone && e.phone.toLowerCase().includes(term));
+  });
+
+return (
     <div className="animate-fade-in">
        {/* Search & Filters */}
        <Card extra="p-4 border border-[#E2E8F0] mb-6 shadow-sm">
           <div className="flex flex-col lg:flex-row justify-between items-center gap-4">
             <div className="relative w-full lg:w-[300px]">
               <MdSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-[#64748B] text-xl" />
-              <input type="text" placeholder="Search employee, designation, phone..." className="w-full pl-10 pr-4 h-10 rounded-[10px] border border-[#E2E8F0] text-[13px] outline-none focus:border-[#2563EB] transition-colors" />
+              <input type="text" placeholder="Search employee, designation, phone..." className="w-full pl-10 pr-4 h-10 rounded-[10px] border border-[#E2E8F0] text-[13px] outline-none focus:border-[#2563EB] transition-colors" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} />
             </div>
             <div className="flex flex-wrap gap-2 w-full lg:w-auto">
               {["Department", "Designation", "Reporting Manager", "Employment Type", "Status", "Role"].map(f => (
@@ -48,13 +59,14 @@ const TabDirectory = ({ onSelect, refreshTrigger }) => {
                    <th className="py-4 px-6 text-[11px] font-bold text-[#64748B] uppercase tracking-wider">Employee</th>
                    <th className="py-4 px-4 text-[11px] font-bold text-[#64748B] uppercase tracking-wider">Department</th>
                    <th className="py-4 px-4 text-[11px] font-bold text-[#64748B] uppercase tracking-wider">Designation</th>
+                   <th className="py-4 px-4 text-[11px] font-bold text-[#64748B] uppercase tracking-wider">Login Details</th>
                    <th className="py-4 px-4 text-[11px] font-bold text-[#64748B] uppercase tracking-wider">Contact</th>
                    <th className="py-4 px-4 text-[11px] font-bold text-[#64748B] uppercase tracking-wider">Status</th>
                    <th className="py-4 px-6 text-[11px] font-bold text-[#64748B] uppercase tracking-wider text-right">Actions</th>
                  </tr>
                </thead>
                <tbody>
-                  {employees.length === 0 ? (
+                  {filteredEmployees.length === 0 ? (
                      <tr>
                         <td colSpan="6" className="py-16 text-center">
                            <div className="w-16 h-16 bg-blue-50 rounded-full flex items-center justify-center text-[#2563EB] text-3xl mx-auto mb-4"><MdPeople /></div>
