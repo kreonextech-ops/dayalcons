@@ -226,7 +226,7 @@ const Employees = () => {
 
         {/* Inner Tabs */}
         <div className="flex gap-4 mb-6 border-b border-[#E2E8F0] pb-2">
-           {["Employees", "Departments", "Designations", "Roles & Permissions"].map(tab => (
+           {["Employees", "Departments", "Designations"].map(tab => (
               <button 
                  key={tab}
                  onClick={() => setActiveTab(tab)}
@@ -245,7 +245,7 @@ const Employees = () => {
            {activeTab === "Employees" && <TabDirectory onSelect={(e) => setSelectedEmployee(e)} refreshTrigger={refreshTrigger} />}
            {activeTab === "Departments" && <TabDepartments />}
            {activeTab === "Designations" && <TabDesignations />}
-           {activeTab === "Roles & Permissions" && <TabRoles />}
+           
         </div>
        </>
      );
