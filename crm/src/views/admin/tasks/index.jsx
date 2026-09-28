@@ -64,6 +64,9 @@ const Tasks = () => {
   };
   const [newTask, setNewTask] = useState(initialTaskState);
 
+  const [recordSearchTerm, setRecordSearchTerm] = useState("");
+  const [empSearchTerm, setEmpSearchTerm] = useState("");
+
   const [availableRecords, setAvailableRecords] = useState([]);
   const [availableEmployees, setAvailableEmployees] = useState([]);
   const [availableDepts, setAvailableDepts] = useState([]);
@@ -184,6 +187,8 @@ const Tasks = () => {
      }
      
      setNewTask(initialTaskState);
+     setRecordSearchTerm("");
+     setEmpSearchTerm("");
      setModalStep(1);
      setShowNewModal(false);
      setRefreshTrigger(prev => prev + 1);
@@ -478,12 +483,8 @@ const Tasks = () => {
                                  <MdSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-2xl" />
                                  <input 
                                     type="text" 
-                                    onChange={(e) => {
-                                       const val = e.target.value.toLowerCase();
-                                       const filtered = (availableRecords || []).filter(r => (r.name || r.projectName || r.clientName || r.leadName || r.title || "").toLowerCase().includes(val));
-                                       // We can use a local state or just inline it, but since we don't have local state, let's use DOM tricks or add state.
-                                       // Actually, let's just use a local state in the component. Wait, I can't easily add state hook inside the JSX. 
-                                    }}
+                                    value={recordSearchTerm}
+                                    onChange={(e) => setRecordSearchTerm(e.target.value)}
                                     placeholder={`Search existing ${newTask.module}s in database...`} 
                                     className="w-full h-14 pl-12 pr-4 rounded-xl border-2 border-[#E2E8F0] dark:border-navy-700 text-[15px] outline-none focus:border-[#2563EB] transition shadow-sm" 
                                     title={`You MUST select an existing ${newTask.module} from the database.`}
@@ -497,7 +498,11 @@ const Tasks = () => {
                                        <p className="text-[12px] text-gray-500">You must create a {newTask.module} in the CRM first before you can link a task to it.</p>
                                     </div>
                                  ) : (
-                                    availableRecords.map(rec => (
+                                    availableRecords.filter(r => {
+                                        if(!recordSearchTerm) return true;
+                                        const val = recordSearchTerm.toLowerCase();
+                                        return (r.name || r.projectName || r.clientName || r.leadName || r.title || "").toLowerCase().includes(val);
+                                    }).map(rec => (
                                        <div 
                                           key={rec.id} 
                                           onClick={() => { setNewTask({...newTask, linkedRecordId: rec.id, linkedRecordName: rec.name || rec.projectName || rec.clientName || rec.leadName || rec.title}); setModalStep(3); }}
@@ -520,7 +525,7 @@ const Tasks = () => {
                         <h3 className="text-[18px] font-bold text-[#0F172A] dark:text-white mb-6">Assign Employee</h3>
                         <div className="relative max-w-xl mx-auto mb-6">
                            <MdSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 text-2xl" />
-                           <input type="text" placeholder="Search employee..." className="w-full h-14 pl-12 pr-4 rounded-xl border-2 border-[#E2E8F0] dark:border-navy-700 text-[15px] outline-none focus:border-[#2563EB] transition shadow-sm" />
+                           <input type="text" value={empSearchTerm} onChange={(e) => setEmpSearchTerm(e.target.value)} placeholder="Search employee..." className="w-full h-14 pl-12 pr-4 rounded-xl border-2 border-[#E2E8F0] dark:border-navy-700 text-[15px] outline-none focus:border-[#2563EB] transition shadow-sm" />
                            <p className="text-[11px] text-gray-400 mt-2 text-left ml-2">Select an employee from the directory to assign this task.</p>
                         </div>
                         <div className="max-h-[300px] overflow-y-auto custom-scrollbar text-left border border-[#E2E8F0] dark:border-navy-700 rounded-xl">
