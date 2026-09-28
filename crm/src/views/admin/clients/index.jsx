@@ -172,7 +172,9 @@ const Clients = () => {
   const fetchClients = async (showLoader = true) => {
     if (showLoader) setLoading(true);
     let query = supabase.from("clients").select("*").order('created_at', { ascending: false });
-      
+      if (!isAdmin && loggedInUser?.id) {
+         query = query.like('assigned_to', `%${loggedInUser.id}%`);
+      }
       const { data, error } = await query;
       const { data: empDataFetch } = await supabase.from("employees").select("id, name, designation, role");
          const eGrouped = { Admin: [], CRO: [], OAS: [], Engineers: [], Others: [] };
