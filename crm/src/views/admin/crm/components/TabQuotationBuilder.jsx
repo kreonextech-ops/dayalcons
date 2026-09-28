@@ -42,6 +42,7 @@ const TabQuotationBuilder = ({ leadData, isClient = false }) => {
   const [customerId, setCustomerId] = useState("");
   const [date, setDate] = useState(new Date().toISOString().split("T")[0]);
   const [items, setItems] = useState(defaultItems);
+  const [taxRate, setTaxRate] = useState("");
   const [isSaving, setIsSaving] = useState(false);
   const pdfRef = useRef(null);
 
@@ -73,7 +74,9 @@ const TabQuotationBuilder = ({ leadData, isClient = false }) => {
     setItems(newItems);
   };
 
-  const totalAmount = items.reduce((sum, item) => sum + (parseFloat(item.qty) || 0) * (parseFloat(item.rate) || 0), 0);
+  const subtotal = items.reduce((sum, item) => sum + (parseFloat(item.qty) || 0) * (parseFloat(item.rate) || 0), 0);
+  const taxAmount = taxRate ? subtotal * (parseFloat(taxRate) / 100) : 0;
+  const totalAmount = subtotal + taxAmount;
   const amountInWords = numberToWords(Math.round(totalAmount));
 
   const handleSaveToDB = async () => {
@@ -85,7 +88,9 @@ const TabQuotationBuilder = ({ leadData, isClient = false }) => {
          customer_id: customerId,
          quotation_date: date,
          items: items,
-         subtotal: totalAmount,
+         subtotal: subtotal,
+         tax_rate: taxRate,
+         tax_amount: taxAmount,
          total_amount: totalAmount,
          amount_in_words: amountInWords
      };
@@ -193,9 +198,16 @@ const TabQuotationBuilder = ({ leadData, isClient = false }) => {
                 <button onClick={handleAddItem} className="flex items-center gap-1 text-sm font-bold text-blue-600 hover:bg-blue-50 px-3 py-2 rounded-lg transition">
                    <MdAdd /> Add Row
                 </button>
-                <div className="text-right">
-                   <p className="text-sm text-gray-500">Total Amount</p>
-                   <p className="text-2xl font-bold text-navy-700">₹{totalAmount.toLocaleString('en-IN')}</p>
+                <div className="flex gap-6 items-end">
+                   <div>
+                       <label className="text-sm text-gray-500 font-bold block mb-1">GST Tax (%)</label>
+                       <input type="number" value={taxRate} onChange={e=>setTaxRate(e.target.value)} placeholder="0" className="w-24 p-2 border rounded outline-none focus:border-blue-500" />
+                   </div>
+                   <div className="text-right">
+                       <p className="text-sm text-gray-500">Subtotal: ₹{subtotal.toLocaleString('en-IN')}</p>
+                       {taxAmount > 0 && <p className="text-sm text-gray-500">Tax: ₹{taxAmount.toLocaleString('en-IN')}</p>}
+                       <p className="text-2xl font-bold text-navy-700 mt-1">₹{totalAmount.toLocaleString('en-IN')}</p>
+                   </div>
                 </div>
             </div>
          </div>
@@ -203,11 +215,11 @@ const TabQuotationBuilder = ({ leadData, isClient = false }) => {
 
       {/* Hidden PDF Template */}
       <div style={{ display: 'none' }}>
-        <div ref={pdfRef} style={{ padding: '40px', fontFamily: 'Arial, sans-serif', color: '#000', backgroundColor: '#fff', width: '800px', margin: '0 auto' }}>
+        <div ref={pdfRef} style={{ padding: '40px', fontFamily: 'Arial, sans-serif', color: '#000', backgroundColor: '#fff', width: '700px', margin: '0 auto' }}>
             
             {/* Header / Logo */}
             <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
-                <img src="/assets/img/quotation/image1.png" alt="Logo" style={{ maxHeight: '100px', objectFit: 'contain' }} 
+                <img src="data:image/png;base64,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" alt="Logo" style={{ maxHeight: '100px', objectFit: 'contain' }} 
                      onError={(e) => { e.target.style.display = 'none'; }} />
             </div>
 
@@ -254,6 +266,16 @@ const TabQuotationBuilder = ({ leadData, isClient = false }) => {
                         <td style={{ border: '1px solid #000', padding: '8px', textAlign: 'center' }}>₹{((parseFloat(item.qty)||0)*(parseFloat(item.rate)||0)).toLocaleString('en-IN')}</td>
                     </tr>
                     ))}
+                    <tr>
+                        <td colSpan="4" style={{ border: '1px solid #000', padding: '8px', textAlign: 'right', fontWeight: 'bold' }}>SUBTOTAL</td>
+                        <td style={{ border: '1px solid #000', padding: '8px', textAlign: 'center', fontWeight: 'bold' }}>₹{subtotal.toLocaleString('en-IN')}</td>
+                    </tr>
+                    {taxAmount > 0 && (
+                    <tr>
+                        <td colSpan="4" style={{ border: '1px solid #000', padding: '8px', textAlign: 'right', fontWeight: 'bold' }}>GST ({taxRate}%)</td>
+                        <td style={{ border: '1px solid #000', padding: '8px', textAlign: 'center', fontWeight: 'bold' }}>₹{taxAmount.toLocaleString('en-IN')}</td>
+                    </tr>
+                    )}
                     <tr>
                         <td colSpan="4" style={{ border: '1px solid #000', padding: '8px', textAlign: 'right', fontWeight: 'bold' }}>GRAND TOTAL</td>
                         <td style={{ border: '1px solid #000', padding: '8px', textAlign: 'center', fontWeight: 'bold' }}>₹{totalAmount.toLocaleString('en-IN')}</td>

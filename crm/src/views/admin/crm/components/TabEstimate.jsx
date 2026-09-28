@@ -109,10 +109,10 @@ const TabEstimate = ({ leadData, isClient = false }) => {
       {/* Quotation Builder Full Screen Modal */}
       {showBuilder && (
          <div className="fixed inset-0 z-[100] bg-gray-100 dark:bg-navy-900 overflow-y-auto">
-             <div className="max-w-7xl mx-auto py-8 px-4 relative">
-                 <button onClick={() => setShowBuilder(false)} className="absolute top-4 right-4 bg-white p-2 rounded-full shadow hover:bg-gray-50 text-gray-600">
-                     <MdClose size={24} />
-                 </button>
+             <button onClick={() => setShowBuilder(false)} className="fixed top-6 right-6 z-[101] bg-white p-3 rounded-full shadow-2xl border border-red-100 hover:bg-red-50 text-red-600 transition flex items-center justify-center">
+                 <MdClose size={28} />
+             </button>
+             <div className="max-w-7xl mx-auto py-12 px-4 relative">
                  <TabQuotationBuilder leadData={leadData} isClient={isClient} />
              </div>
          </div>
@@ -174,7 +174,7 @@ const TabEstimate = ({ leadData, isClient = false }) => {
                <MdAdd size={20} /> Generate New Quote
              </button>
              <button onClick={() => setShowAddProposal(true)} className="flex items-center gap-2 h-10 px-5 rounded-[10px] bg-[#F1F5F9] text-[#475569] font-bold text-[14px] hover:bg-[#E2E8F0] transition shadow-sm">
-               <MdUploadFile size={20} /> Upload PDF
+               <MdUploadFile size={20} /> Add Next Proposal (PDF)
              </button>
            </div>
          </div>
