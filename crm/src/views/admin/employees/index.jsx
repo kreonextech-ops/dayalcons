@@ -38,20 +38,19 @@ const Employees = () => {
 
   useEffect(() => {
     const loadStats = async () => {
-       const { data, error } = await supabase.from('employees').select('*');
+       // Employees & Admins
+       const { data, error } = await supabase.from('employees').select('role');
        if (data && !error) {
            setEmpCount(data.length);
            setAdminCount(data.filter(e => e.role === 'Admin').length);
-           
-           const depts = new Set();
-           const desigs = new Set();
-           data.forEach(e => {
-               if (e.department) depts.add(e.department);
-               if (e.designation) desigs.add(e.designation);
-           });
-           setDeptCount(depts.size);
-           setDesigCount(desigs.size);
        }
+       
+       // Real Database Counts
+       const { count: dCount } = await supabase.from('departments').select('*', { count: 'exact', head: true });
+       if (dCount !== null) setDeptCount(dCount);
+       
+       const { count: desCount } = await supabase.from('designations').select('*', { count: 'exact', head: true });
+       if (desCount !== null) setDesigCount(desCount);
     };
     loadStats();
   }, [refreshTrigger]);
