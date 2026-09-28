@@ -259,7 +259,7 @@ ${finalNotes}`;
 
   const tabs = [
     "Overview", "Communication", "Service Requirement", "Service Workspace", 
-    ...(isAdmin ? ["Quotation"] : []), "Documents", "Follow Ups", "Tasks", "Timeline", "Visit"
+    "Quotation", "Documents", "Follow Ups", "Tasks", "Timeline", "Visit"
   ];
 
   // Pipeline logic

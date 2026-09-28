@@ -6,6 +6,7 @@ import {
 } from "react-icons/md";
 import { createClient } from "@supabase/supabase-js";
 import { uploadFileToR2, getR2FileUrl, deleteR2File } from "utils/r2Storage";
+import TabQuotationBuilder from "./TabQuotationBuilder";
 
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL || "https://gdzligxryodasaxnhdco.supabase.co";
 const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdkemxpZ3hyeW9kYXNheG5oZGNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcxNTg1MDUsImV4cCI6MjEwMjczNDUwNX0.AYTyAMf22g8au51ATReRQdQc2IzDLYQ2vtQH_Uyfrpg";
@@ -23,6 +24,7 @@ const TabEstimate = ({ leadData, isClient = false }) => {
   
   // Modals
   const [showAddProposal, setShowAddProposal] = useState(false);
+  const [showBuilder, setShowBuilder] = useState(false);
   const [newProposal, setNewProposal] = useState({ title: "", amount: "", isFinal: false, file: null, date: new Date().toISOString().split('T')[0] });
 
   React.useEffect(() => {
@@ -102,6 +104,20 @@ const TabEstimate = ({ leadData, isClient = false }) => {
   };
 
   return (
+    <div className="relative">
+
+      {/* Quotation Builder Full Screen Modal */}
+      {showBuilder && (
+         <div className="fixed inset-0 z-[100] bg-gray-100 dark:bg-navy-900 overflow-y-auto">
+             <div className="max-w-7xl mx-auto py-8 px-4 relative">
+                 <button onClick={() => setShowBuilder(false)} className="absolute top-4 right-4 bg-white p-2 rounded-full shadow hover:bg-gray-50 text-gray-600">
+                     <MdClose size={24} />
+                 </button>
+                 <TabQuotationBuilder leadData={leadData} isClient={isClient} />
+             </div>
+         </div>
+      )}
+
     <div className="w-full space-y-6">
       {/* Top Section: High-level Estimate & Budget */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -145,6 +161,7 @@ const TabEstimate = ({ leadData, isClient = false }) => {
             <p className="text-[13px] text-[#64748B] mt-2">Maximum amount the client is willing to spend.</p>
          </Card>
       </div>
+    </div>
 
       {/* Proposals Sent Section */}
       <Card extra="p-6">
