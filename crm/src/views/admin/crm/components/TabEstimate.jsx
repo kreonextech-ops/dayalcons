@@ -161,7 +161,6 @@ const TabEstimate = ({ leadData, isClient = false }) => {
             <p className="text-[13px] text-[#64748B] mt-2">Maximum amount the client is willing to spend.</p>
          </Card>
       </div>
-    </div>
 
       {/* Proposals Sent Section */}
       <Card extra="p-6">
@@ -170,9 +169,14 @@ const TabEstimate = ({ leadData, isClient = false }) => {
              <h3 className="text-[18px] font-bold text-[#0F172A]">Proposals Sent</h3>
              <p className="text-[13px] text-[#64748B] mt-1">Track the history of quotations sent to the client.</p>
            </div>
-           <button onClick={() => setShowAddProposal(true)} className="flex items-center gap-2 h-10 px-5 rounded-[10px] bg-[#2563EB] font-bold text-white hover:bg-[#1D4ED8] transition shadow-sm">
-              <MdAdd size={20} /> Add Next Proposal
-           </button>
+           <div className="flex gap-2">
+             <button onClick={() => setShowBuilder(true)} className="flex items-center gap-2 h-10 px-5 rounded-[10px] bg-[#2563EB] text-white font-bold text-[14px] hover:bg-[#1D4ED8] transition shadow-sm">
+               <MdAdd size={20} /> Generate New Quote
+             </button>
+             <button onClick={() => setShowAddProposal(true)} className="flex items-center gap-2 h-10 px-5 rounded-[10px] bg-[#F1F5F9] text-[#475569] font-bold text-[14px] hover:bg-[#E2E8F0] transition shadow-sm">
+               <MdUploadFile size={20} /> Upload PDF
+             </button>
+           </div>
          </div>
 
          <div className="space-y-4">
@@ -315,6 +319,7 @@ const TabEstimate = ({ leadData, isClient = false }) => {
             </div>
          </div>
       )}
+    </div>
     </div>
   );
 };
