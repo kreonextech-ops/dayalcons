@@ -1,28 +1,16 @@
-import os
+import re
 
-filepath = 'crm/src/views/admin/crm/LeadDetail.jsx'
-with open(filepath, 'r', encoding='utf-8') as f:
-    content = f.read()
+with open('crm/src/views/admin/crm/LeadDetail.jsx', 'r', encoding='utf-8') as f:
+    c = f.read()
 
-# Make sure we normalize lines
-content = content.replace('\r\n', '\n')
+# 1. Update the import
+c = c.replace('import TabEstimate from "./components/TabEstimate";', 'import TabQuotationBuilder from "./components/TabQuotationBuilder";')
 
-old_tag = """            {activeTab === "Service Requirement" && <TabServiceRequirement leadData={leadData} setLeadData={setLeadData} />}"""
-new_tag = """            {activeTab === "Service Requirement" && <TabServiceRequirement leadData={leadData} setLeadData={setLeadData} handleSaveToDB={async () => {
-              await supabase.from("leads").update({ 
-                selectedServices: leadData.selectedServices,
-                priority: leadData.priority,
-                expectedStart: leadData.expectedStart,
-                budget: leadData.budget,
-                timeline: leadData.timeline,
-                preferredComm: leadData.preferredComm,
-                decisionMaker: leadData.decisionMaker,
-                serviceNotes: leadData.serviceNotes
-              }).eq("id", leadData.id);
-              alert("Service requirements saved successfully!");
-            }} />}"""
-content = content.replace(old_tag, new_tag)
+# 2. Update the rendering of the Quotation tab
+c = c.replace('{activeTab === "Quotation" && <TabEstimate leadData={leadData} />}', '{activeTab === "Quotation" && <TabQuotationBuilder leadData={leadData} />}')
 
-with open(filepath, 'w', encoding='utf-8') as f:
-    f.write(content)
-print("LeadDetail patched")
+# 3. Just in case isAdmin is not set or it hides the Quotation tab from CROs, let's fix the tabs array
+c = c.replace('...(isAdmin ? ["Quotation"] : []),', '"Quotation",')
+
+with open('crm/src/views/admin/crm/LeadDetail.jsx', 'w', encoding='utf-8') as f:
+    f.write(c)
