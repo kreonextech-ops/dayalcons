@@ -642,7 +642,7 @@ const ClientDetail = ({ client, onBack }) => {
                     {isEditingClient ? (
                        <div className="flex items-center">
                          <span className="text-[#16A34A] flex items-center gap-1 font-bold text-xs italic">Auto-saves on click away</span>
-                         <button onClick={() => setIsEditingClient(false)} className="ml-3 px-3 py-1 bg-gray-100 rounded text-xs font-bold hover:bg-gray-200">Done Editing</button>
+                         <button onClick={handleSaveClientInfo} className="ml-3 px-3 py-1 bg-[#16A34A] text-white rounded text-xs font-bold hover:bg-green-700 transition shadow">Save Changes</button>
                        </div>
                     ) : (
                        <MdEdit onClick={() => setIsEditingClient(true)} className="text-[#64748B] dark:text-gray-400 cursor-pointer hover:text-[#16A34A]" />
@@ -656,10 +656,10 @@ const ClientDetail = ({ client, onBack }) => {
                         <div className="flex flex-col"><label className="text-xs text-gray-500">Phone</label><input type="text" className="border rounded p-2 text-sm outline-none border-[#16A34A]" onBlur={handleSaveClientInfo} value={clientData.phone} onChange={e => setClientData({...clientData, phone: e.target.value})} /></div>
                         <div className="flex flex-col"><label className="text-xs text-gray-500">Email</label><input type="email" className="border rounded p-2 text-sm outline-none border-[#16A34A]" onBlur={handleSaveClientInfo} value={clientData.email} onChange={e => setClientData({...clientData, email: e.target.value})} /></div>
                         <div className="flex flex-col"><label className="text-xs text-gray-500">GST / PAN</label><input type="text" className="border rounded p-2 text-sm outline-none border-[#16A34A]" onBlur={handleSaveClientInfo} value={clientData.gst} onChange={e => setClientData({...clientData, gst: e.target.value})} /></div>
-                        <div className="flex flex-col"><label className="text-xs text-gray-500">Billing Address</label><input type="text" className="border rounded p-2 text-sm outline-none border-[#16A34A]" value={clientData.address} onChange={e => setClientData({...clientData, address: e.target.value})} /></div>
-                        <div className="flex flex-col"><label className="text-xs text-gray-500">Work Types</label><input type="text" className="border rounded p-2 text-sm outline-none border-[#16A34A]" value={clientData.work_types || ""} onChange={e => setClientData({...clientData, work_types: e.target.value})} /></div>
+                        <div className="flex flex-col"><label className="text-xs text-gray-500">Billing Address</label><input type="text" className="border rounded p-2 text-sm outline-none border-[#16A34A]" onBlur={handleSaveClientInfo} value={clientData.address} onChange={e => setClientData({...clientData, address: e.target.value})} /></div>
+                        <div className="flex flex-col"><label className="text-xs text-gray-500">Work Types</label><input type="text" className="border rounded p-2 text-sm outline-none border-[#16A34A]" onBlur={handleSaveClientInfo} value={clientData.work_types || ""} onChange={e => setClientData({...clientData, work_types: e.target.value})} /></div>
                         <div className="flex flex-col"><label className="text-xs text-gray-500">Source</label>
-                            <select className="border rounded p-2 text-sm outline-none border-[#16A34A] custom-scrollbar max-h-[150px]" value={clientData.source || ""} onChange={e => setClientData({...clientData, source: e.target.value})}>
+                            <select className="border rounded p-2 text-sm outline-none border-[#16A34A] custom-scrollbar max-h-[150px]" onBlur={handleSaveClientInfo} value={clientData.source || ""} onChange={e => setClientData({...clientData, source: e.target.value})}>
                     <option value="">Select source...</option>
                     <option value="Website">Website</option>
                     <option value="Referral">Referral</option>
