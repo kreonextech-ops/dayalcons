@@ -4,6 +4,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import SmoothScroll from "@/components/SmoothScroll";
 import FloatingWhatsApp from "@/components/FloatingWhatsApp";
+import MetaPixel from "@/components/MetaPixel";
 import JsonLd from "@/components/JsonLd";
 
 export const metadata: Metadata = {
@@ -92,6 +93,7 @@ export default function RootLayout({
         <JsonLd />
       </head>
       <body className="antialiased overflow-x-hidden relative text-body-lg">
+        <MetaPixel />
         <SmoothScroll>
           <Header />
           <div className="relative z-10">
