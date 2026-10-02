@@ -616,6 +616,7 @@ ${finalNotes}`;
                   <th className="py-2 px-6 w-12"><input type="checkbox" className="w-4 h-4 rounded text-[#2563EB] border-[#E2E8F0] dark:border-navy-700 cursor-pointer" /></th>
                   <th className="py-2 px-4 w-12 text-[12px] font-medium text-[#64748B] dark:text-gray-400 uppercase tracking-wider">Sl. No.</th>
                   <th className="py-2 px-4 text-[12px] font-medium text-[#64748B] dark:text-gray-400 uppercase tracking-wider">Lead</th>
+                  <th className="py-2 px-4 text-[12px] font-medium text-[#64748B] dark:text-gray-400 uppercase tracking-wider">Contact</th>
                   <th className="py-2 px-4 text-[12px] font-medium text-[#64748B] dark:text-gray-400 uppercase tracking-wider">Source</th>
                   <th className="py-2 px-4 text-[12px] font-medium text-[#64748B] dark:text-gray-400 uppercase tracking-wider">Address</th>
                   <th className="py-2 px-4 text-[12px] font-medium text-[#64748B] dark:text-gray-400 uppercase tracking-wider">Service</th>
@@ -689,8 +690,8 @@ ${finalNotes}`;
                            (l.notes && String(l.notes).toLowerCase().includes(lower))
                         );
                      }
-                     if (loading) return <tr><td colSpan="11" className="py-12 text-center text-gray-500">Loading leads...</td></tr>;
-                     if (filtered.length === 0) return <tr><td colSpan="11" className="py-12 text-center text-gray-500">No leads found.</td></tr>;
+                     if (loading) return <tr><td colSpan="12" className="py-12 text-center text-gray-500">Loading leads...</td></tr>;
+                     if (filtered.length === 0) return <tr><td colSpan="12" className="py-12 text-center text-gray-500">No leads found.</td></tr>;
                      const paginated = filtered;
                      return paginated.map((lead, index) => (
                         <tr key={lead.id} className="border-b border-gray-100 hover:bg-gray-50 dark:hover:bg-navy-800 cursor-pointer" onClick={() => { if (Date.now() - lastCloseTime.current < 500) return; setSelectedLead(lead); }}>
@@ -702,10 +703,10 @@ ${finalNotes}`;
                                </td>
                            <td className="py-2 px-4">
                               <p className="text-sm text-gray-800 font-bold">{lead.name}</p>
-                              {lead.phone && <p className="text-[12px] font-medium text-gray-500">{lead.phone}</p>}
                               {lead.email && <p className="text-[11px] text-gray-400">{lead.email}</p>}
                            </td>
-                           <td className="py-2 px-4 text-sm text-gray-600">{lead.source || lead.phone || "-"}</td>
+                           <td className="py-2 px-4 text-sm text-gray-600">{lead.phone || "-"}</td>
+                           <td className="py-2 px-4 text-sm text-gray-600">{lead.source || "-"}</td>
                             <td className="py-2 px-4 text-sm text-gray-600 truncate max-w-[150px]" title={lead.address || ""}>{lead.address || "-"}</td>
                            <td className="py-2 px-4 text-sm text-gray-600">{lead.service_type || "-"}</td>
                            <td className="py-2 px-4 text-sm">

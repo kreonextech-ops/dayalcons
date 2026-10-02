@@ -479,7 +479,6 @@ const Clients = () => {
                              </td>
                            <td className="py-2 px-4">
                               <p className="text-sm text-gray-800 font-bold">{client.name}</p>
-                              {client.phone && <p className="text-[12px] font-medium text-gray-500">{client.phone}</p>}
                               {client.company && <p className="text-[11px] text-gray-400">{client.company}</p>}
                            </td>
                            <td className="py-2 px-4">
