@@ -702,7 +702,8 @@ ${finalNotes}`;
                                </td>
                            <td className="py-2 px-4">
                               <p className="text-sm text-gray-800 font-bold">{lead.name}</p>
-                              {lead.email && <p className="text-[12px] text-gray-500">{lead.email}</p>}
+                              {lead.phone && <p className="text-[12px] font-medium text-gray-500 flex items-center gap-1"><span className="material-symbols-outlined text-[12px]">call</span> {lead.phone}</p>}
+                              {lead.email && <p className="text-[11px] text-gray-400">{lead.email}</p>}
                            </td>
                            <td className="py-2 px-4 text-sm text-gray-600">{lead.source || lead.phone || "-"}</td>
                             <td className="py-2 px-4 text-sm text-gray-600 truncate max-w-[150px]" title={lead.address || ""}>{lead.address || "-"}</td>

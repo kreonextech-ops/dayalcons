@@ -479,7 +479,8 @@ const Clients = () => {
                              </td>
                            <td className="py-2 px-4">
                               <p className="text-sm text-gray-800 font-bold">{client.name}</p>
-                              {client.company && <p className="text-[12px] text-gray-500">{client.company}</p>}
+                              {client.phone && <p className="text-[12px] font-medium text-gray-500 flex items-center gap-1"><span className="material-symbols-outlined text-[12px]">call</span> {client.phone}</p>}
+                              {client.company && <p className="text-[11px] text-gray-400">{client.company}</p>}
                            </td>
                            <td className="py-2 px-4">
                               {client.email && <p className="text-sm text-gray-600">{client.email}</p>}
