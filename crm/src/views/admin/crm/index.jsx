@@ -702,7 +702,7 @@ ${finalNotes}`;
                                </td>
                            <td className="py-2 px-4">
                               <p className="text-sm text-gray-800 font-bold">{lead.name}</p>
-                              {lead.phone && <p className="text-[12px] font-medium text-gray-500 flex items-center gap-1"><span className="material-symbols-outlined text-[12px]">call</span> {lead.phone}</p>}
+                              {lead.phone && <p className="text-[12px] font-medium text-gray-500">{lead.phone}</p>}
                               {lead.email && <p className="text-[11px] text-gray-400">{lead.email}</p>}
                            </td>
                            <td className="py-2 px-4 text-sm text-gray-600">{lead.source || lead.phone || "-"}</td>
@@ -714,7 +714,7 @@ ${finalNotes}`;
                               </span>
                            </td>
                            <td className="py-2 px-4 text-sm text-gray-600 font-medium">
-                              {lead.lead_temperature === 'Hot' ? <span className="text-red-500 flex items-center gap-1"><MdLocalFireDepartment /> Hot</span> : 
+                              {lead.lead_temperature === 'Hot' ? <span className="text-red-500"><MdLocalFireDepartment /> Hot</span> : 
                                lead.lead_temperature === 'Warm' ? <span className="text-orange-500">Warm</span> : 
                                lead.lead_temperature === 'Cold' ? <span className="text-blue-500">Cold</span> : "-"}
                            </td>
