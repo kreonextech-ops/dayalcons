@@ -262,6 +262,7 @@ export default function ContactPage() {
             <motion.div 
               initial={{ opacity: 0, x: 50 }} whileInView={{ opacity: 1, x: 0 }} transition={{ duration: 0.8 }} viewport={{ once: true, margin: "-100px" }}
               className="w-full lg:w-[60%]"
+              id="consultation-form"
             >
               <div className="bg-[#F8FBFE]/80 backdrop-blur-xl border border-[#062B55]/10 p-8 lg:p-12 rounded-[32px] shadow-[0_20px_60px_rgba(6,43,85,0.05)] relative">
                 {formStatus === "success" ? (
@@ -465,14 +466,26 @@ export default function ContactPage() {
           
           <div className="w-full lg:w-1/3 relative z-10 flex justify-center lg:justify-end">
             <motion.div initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }} viewport={{ once: true }} transition={{ duration: 0.6, delay: 0.2 }}>
-              <Link href="/contact" className="group relative inline-flex items-center justify-center px-8 lg:px-10 py-[20px] bg-white text-[#062B55] font-[800] tracking-wide text-[14px] rounded-full overflow-hidden transition-all hover:scale-105">
+              <a 
+                href="#consultation-form" 
+                onClick={(e) => {
+                  e.preventDefault();
+                  const target = document.getElementById("consultation-form");
+                  if (target) {
+                    target.scrollIntoView({ behavior: "smooth" });
+                    const firstInput = target.querySelector("input");
+                    if (firstInput) (firstInput as HTMLElement).focus();
+                  }
+                }}
+                className="group relative inline-flex items-center justify-center px-8 lg:px-10 py-[20px] bg-white text-[#062B55] font-[800] tracking-wide text-[14px] rounded-full overflow-hidden transition-all hover:scale-105 cursor-pointer"
+              >
                 {/* Pulse Glow Effect */}
                 <span className="absolute inset-0 rounded-full border-[3px] border-[#18AFFF] opacity-0 animate-[pulse-glow_6s_ease-out_infinite]"></span>
                 <span className="relative z-10 flex items-center gap-2">
                   BOOK A FREE CONSULTATION
                   <span className="material-symbols-outlined text-[18px] transition-transform group-hover:translate-x-1">arrow_forward</span>
                 </span>
-              </Link>
+              </a>
             </motion.div>
           </div>
           
