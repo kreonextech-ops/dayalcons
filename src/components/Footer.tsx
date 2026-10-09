@@ -176,7 +176,7 @@ export default function Footer() {
                 </div>
                 <div className="flex flex-col gap-1">
                   <span className="font-['Inter',_sans-serif] text-[12px] text-gray-500 mb-1 uppercase tracking-wider">Email</span>
-                  <a href="mailto:info@dayalconstructions.com" className="font-['Inter',_sans-serif] text-[14px] text-[#071A2F] hover:text-[#2563EB] transition-colors break-all">info@dayalconstructions.com</a>
+                  <a href="mailto:contact@dayalconstructions.com" className="font-['Inter',_sans-serif] text-[14px] text-[#071A2F] hover:text-[#2563EB] transition-colors break-all">contact@dayalconstructions.com</a>
                   <a href="mailto:dayalconstruction.office@gmail.com" className="font-['Inter',_sans-serif] text-[14px] text-[#071A2F] hover:text-[#2563EB] transition-colors break-all">dayalconstruction.office@gmail.com</a>
                 </div>
               </motion.li>
@@ -204,17 +204,17 @@ export default function Footer() {
               
             </motion.ul>
 
-            <motion.button 
-              variants={fadeVariant}
-              className="group relative w-full lg:w-[240px] h-[52px] rounded-full border border-[#1EA7FF]/50 bg-transparent overflow-hidden transition-all duration-300 hover:border-[#1EA7FF]"
+            <Link
+              href="/contact"
+              className="group relative w-full lg:w-[240px] h-[52px] rounded-full border border-[#1EA7FF]/50 bg-transparent overflow-hidden transition-all duration-300 hover:border-[#1EA7FF] flex items-center justify-center inline-flex"
             >
               <div className="absolute inset-0 rounded-full shadow-[0_0_15px_rgba(30,167,255,0.2)] animate-[pulse_4s_ease-in-out_infinite]"></div>
               <div className="absolute inset-0 bg-[#1EA7FF] w-0 group-hover:w-full transition-all duration-500 ease-out z-0"></div>
               <div className="relative z-10 flex items-center justify-center gap-2 w-full h-full text-[#071A2F] font-['Plus_Jakarta_Sans',_sans-serif] text-[14px] font-bold">
-                Request a Consultation
+                Book Free Consultation
                 <span className="transition-transform duration-300 group-hover:translate-x-[6px]">→</span>
               </div>
-            </motion.button>
+            </Link>
           </motion.div>
           
         </div>

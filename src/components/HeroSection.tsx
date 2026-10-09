@@ -89,26 +89,52 @@ export default function HeroSection() {
 
         </div>
         
-        {/* CTA Buttons */}
+        {/* CTA Buttons & Social Proof */}
         <motion.div 
           variants={ctaContainer}
           initial="hidden"
           animate="visible"
-          className="flex flex-col md:flex-row gap-5 items-start md:items-center w-full md:w-[60%] lg:w-[48%]"
+          className="flex flex-col gap-4 w-full md:w-[75%] lg:w-[65%]"
         >
-          {/* Primary CTA */}
-          <motion.div variants={buttonVariant} className="w-full md:w-auto">
-            <Link href="/contact" className="w-full md:w-auto inline-flex items-center justify-center gap-3 px-8 py-[18px] bg-[#18AFFF] text-white font-['Manrope',_sans-serif] font-bold text-[16px] rounded-[16px] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_8px_24px_rgba(24,175,255,0.4)] cursor-pointer">
-              <span>Start Your Project</span>
-              <span className="material-symbols-outlined text-[20px]">arrow_forward</span>
-            </Link>
-          </motion.div>
+          <div className="flex flex-col sm:flex-row gap-4 items-stretch sm:items-center">
+            {/* Primary High-Intent CTA */}
+            <motion.div variants={buttonVariant} className="w-full sm:w-auto">
+              <Link href="/contact" className="w-full sm:w-auto inline-flex items-center justify-center gap-3 px-8 py-[18px] bg-[#18AFFF] text-white font-['Manrope',_sans-serif] font-bold text-[16px] rounded-[16px] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_8px_24px_rgba(24,175,255,0.45)] cursor-pointer">
+                <span>Book Free Site Visit</span>
+                <span className="material-symbols-outlined text-[20px]">calendar_month</span>
+              </Link>
+            </motion.div>
 
-          {/* Secondary CTA */}
-          <motion.div variants={buttonVariant} className="w-full md:w-auto">
-            <Link href="/projects" className="w-full md:w-auto inline-flex items-center justify-center px-8 py-[18px] bg-transparent border-2 border-white/40 text-white font-['Manrope',_sans-serif] font-bold text-[16px] rounded-[16px] transition-all duration-300 hover:bg-white hover:border-white hover:text-[#062B55] cursor-pointer">
-              View Our Portfolio
-            </Link>
+            {/* Instant Estimate CTA */}
+            <motion.div variants={buttonVariant} className="w-full sm:w-auto">
+              <a href="#quote-calculator" className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-[18px] bg-white text-[#071A2F] font-['Manrope',_sans-serif] font-bold text-[16px] rounded-[16px] transition-all duration-300 hover:-translate-y-1 hover:bg-[#F0F7FF] hover:shadow-[0_8px_24px_rgba(255,255,255,0.25)] cursor-pointer">
+                <span>Calculate Cost in 60s</span>
+                <span className="material-symbols-outlined text-[19px] text-[#18AFFF]">calculate</span>
+              </a>
+            </motion.div>
+
+            {/* Portfolio Link */}
+            <motion.div variants={buttonVariant} className="w-full sm:w-auto">
+              <Link href="/projects" className="w-full sm:w-auto inline-flex items-center justify-center px-6 py-[18px] bg-white/10 backdrop-blur-md border border-white/20 text-white font-['Manrope',_sans-serif] font-medium text-[15px] rounded-[16px] transition-all duration-300 hover:bg-white hover:text-[#062B55] hover:border-white cursor-pointer">
+                View Portfolio
+              </Link>
+            </motion.div>
+          </div>
+
+          {/* Micro-Trust Proof Under CTAs */}
+          <motion.div 
+            variants={buttonVariant}
+            className="flex flex-wrap items-center gap-y-2 gap-x-5 text-[12px] md:text-[13px] text-white/80 font-medium pt-1"
+          >
+            <span className="inline-flex items-center gap-1.5">
+              <span className="text-[#18AFFF]">✓</span> 350+ Projects Delivered
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <span className="text-[#18AFFF]">✓</span> Free Initial Plot Feasibility Check
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <span className="text-[#18AFFF]">✓</span> Guaranteed 30-Min Callback
+            </span>
           </motion.div>
         </motion.div>
         

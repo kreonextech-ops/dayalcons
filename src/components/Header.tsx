@@ -54,8 +54,9 @@ export default function Header() {
           <Link className="hover:text-accent transition-colors" href="/about">About</Link>
         </nav>
         <div className="flex items-center gap-3">
-          <Link className="hidden md:inline-flex items-center justify-center bg-accent text-white font-medium rounded-full px-6 py-2.5 transition-all duration-250 hover:bg-[#0052AB] hover:-translate-y-0.5 hover:shadow-[0_4px_20px_rgba(22,181,255,0.3)] text-sm uppercase tracking-wider" href="/contact">
-            Contact Us
+          <Link className="hidden md:inline-flex items-center justify-center bg-accent text-white font-semibold rounded-full px-6 py-2.5 transition-all duration-250 hover:bg-[#0052AB] hover:-translate-y-0.5 hover:shadow-[0_4px_20px_rgba(22,181,255,0.35)] text-sm uppercase tracking-wider gap-2 shadow-sm" href="/contact">
+            <span>Get Free Estimate</span>
+            <span className="text-[16px] leading-none">→</span>
           </Link>
           <a 
             href="/crm/auth/sign-in"
@@ -87,8 +88,9 @@ export default function Header() {
             <Link className="hover:text-accent transition-colors" href="/process" onClick={closeMobileMenu}>Our Process</Link>
             <Link className="hover:text-accent transition-colors" href="/projects" onClick={closeMobileMenu}>Projects</Link>
             <Link className="hover:text-accent transition-colors" href="/about" onClick={closeMobileMenu}>About</Link>
-            <Link className="mt-4 bg-accent text-white font-medium rounded-full px-8 py-3 transition-all duration-250 hover:bg-[#0052AB]" href="/contact" onClick={closeMobileMenu}>
-              Contact Us
+            <Link className="mt-4 bg-accent text-white font-semibold rounded-full px-8 py-3 transition-all duration-250 hover:bg-[#0052AB] text-center flex items-center justify-center gap-2 shadow-sm" href="/contact" onClick={closeMobileMenu}>
+              <span>Get Free Estimate</span>
+              <span>→</span>
             </Link>
             <a 
               href="/crm/auth/sign-in"

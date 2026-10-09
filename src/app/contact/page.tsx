@@ -211,7 +211,7 @@ export default function ContactPage() {
                       </div>
                       <div className="flex flex-col gap-1 pt-0.5">
                         <span className="text-[12px] text-[#18AFFF] uppercase font-bold tracking-wider mb-0.5">Email</span>
-                        <a href="mailto:info@dayalconstructions.com" className="text-[15px] text-white hover:text-[#18AFFF] transition-colors break-all font-medium">info@dayalconstructions.com</a>
+                        <a href="mailto:contact@dayalconstructions.com" className="text-[15px] text-white hover:text-[#18AFFF] transition-colors break-all font-medium">contact@dayalconstructions.com</a>
                         <a href="mailto:dayalconstruction.office@gmail.com" className="text-[15px] text-white hover:text-[#18AFFF] transition-colors break-all font-medium">dayalconstruction.office@gmail.com</a>
                       </div>
                     </div>
@@ -393,7 +393,7 @@ export default function ContactPage() {
                   <span className="material-symbols-outlined text-[#18AFFF] font-light">mail</span>
                   <div>
                     <span className="block text-[13px] text-[#94A3B8] font-bold uppercase tracking-wider mb-1">Email</span>
-                    <a href="mailto:info@dayalconstructions.com" className="block text-[15px] font-bold text-[#062B55] hover:text-[#18AFFF] transition-colors mb-1 break-all">info@dayalconstructions.com</a>
+                    <a href="mailto:contact@dayalconstructions.com" className="block text-[15px] font-bold text-[#062B55] hover:text-[#18AFFF] transition-colors mb-1 break-all">contact@dayalconstructions.com</a>
                     <a href="mailto:dayalconstruction.office@gmail.com" className="block text-[15px] font-bold text-[#062B55] hover:text-[#18AFFF] transition-colors break-all">dayalconstruction.office@gmail.com</a>
                   </div>
                 </div>
