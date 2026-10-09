@@ -120,22 +120,6 @@ export default function HeroSection() {
               </Link>
             </motion.div>
           </div>
-
-          {/* Micro-Trust Proof Under CTAs */}
-          <motion.div 
-            variants={buttonVariant}
-            className="flex flex-wrap items-center gap-y-2 gap-x-5 text-[12px] md:text-[13px] text-white/80 font-medium pt-1"
-          >
-            <span className="inline-flex items-center gap-1.5">
-              <span className="text-[#18AFFF]">✓</span> 350+ Projects Delivered
-            </span>
-            <span className="inline-flex items-center gap-1.5">
-              <span className="text-[#18AFFF]">✓</span> Free Initial Plot Feasibility Check
-            </span>
-            <span className="inline-flex items-center gap-1.5">
-              <span className="text-[#18AFFF]">✓</span> Guaranteed 30-Min Callback
-            </span>
-          </motion.div>
         </motion.div>
         
       </div>
