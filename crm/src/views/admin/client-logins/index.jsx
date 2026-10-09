@@ -63,7 +63,12 @@ export default function ClientLogins() {
       department: formData.clientId // We store clientId in department field to link them
     };
 
-    await supabase.from("employees").insert([newLogin]);
+    const { error } = await supabase.from("employees").insert([newLogin]);
+    if (error) {
+      alert("Failed to create login: " + (error.message.includes("duplicate") ? "This email already has a login!" : error.message));
+      setIsSaving(false);
+      return;
+    }
     setFormData({ clientId: "", email: "", password: "" });
     setShowModal(false);
     setIsSaving(false);

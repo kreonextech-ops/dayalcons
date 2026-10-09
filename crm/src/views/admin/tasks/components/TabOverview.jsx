@@ -23,13 +23,15 @@ const TabOverview = ({ task, contextData = {} }) => {
   }, [task]);
 
   const handleSaveDesc = async () => {
-    await supabase.from("tasks").update({ description: descVal }).eq("id", task.id);
+    const { error } = await supabase.from("tasks").update({ description: descVal }).eq("id", task.id);
+    if (error) { alert("Failed to save description: " + error.message); return; }
     setIsEditingDesc(false);
     task.description = descVal;
   };
 
   const handleSaveDate = async () => {
-    await supabase.from("tasks").update({ due_date: dateVal }).eq("id", task.id);
+    const { error } = await supabase.from("tasks").update({ due_date: dateVal }).eq("id", task.id);
+    if (error) { alert("Failed to save due date: " + error.message); return; }
     setIsEditingDate(false);
     task.due_date = dateVal;
   };

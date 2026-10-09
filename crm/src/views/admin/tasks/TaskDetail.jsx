@@ -45,7 +45,15 @@ const TaskDetail = ({ task, onBack, onStatusChange, onDeleteTask }) => {
          // optimistic ui update hack - trigger re-render
          setContextData(prev => ({...prev}));
       };
-      const handleTitleSave = async () => { await supabase.from("tasks").update({ title: editTitle, name: editTitle }).eq("id", task.id); setIsEditingTitle(false); task.title = editTitle; task.name = editTitle; };
+      const handleTitleSave = async () => {
+        try {
+          const { error } = await supabase.from("tasks").update({ title: editTitle, name: editTitle }).eq("id", task.id);
+          if (error) { alert("Failed to save task title: " + error.message); return; }
+          setIsEditingTitle(false);
+          task.title = editTitle;
+          task.name = editTitle;
+        } catch(e) { alert("Error saving task title: " + e.message); }
+      };
               const [employees, setEmployees] = useState([]);
     const [contextData, setContextData] = useState({ client: null, lead: null, project: null, service: null });
 
