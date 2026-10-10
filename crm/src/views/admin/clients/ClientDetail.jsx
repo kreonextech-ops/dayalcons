@@ -155,6 +155,19 @@ const ClientDetail = ({ client, onBack }) => {
       }
     };
     refetchClient();
+
+    const channel = supabase
+      .channel(`client-detail-${client?.id}`)
+      .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'clients', filter: `id=eq.${client?.id}` }, (payload) => {
+        if (payload.new) {
+          setClientData(prev => ({ ...prev, ...payload.new }));
+        }
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [client?.id]);
 
 

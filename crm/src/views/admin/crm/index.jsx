@@ -221,7 +221,8 @@ ${finalNotes}`;
        plot_size: convertLeadData.plot_size, 
        timeline: convertLeadData.timeline, 
        lead_temperature: convertLeadData.lead_temperature, 
-       notes: finalNotes 
+       notes: finalNotes,
+       assigned_to: convertLeadData.assigned_to || loggedInUser?.id || null
     }]).select();
 
     if (!insertError && newClientData && newClientData.length > 0) {
@@ -291,23 +292,16 @@ ${finalNotes}`;
           
           return lead;
        });
-         // Group duplicates by phone number
-         const groupedMap = {};
-         const finalLeads = [];
-         merged.forEach(lead => {
-            if (!lead.phone || lead.phone.trim() === "") {
-               finalLeads.push(lead);
-            } else {
-               const phoneStr = lead.phone.trim();
-               if (groupedMap[phoneStr]) {
-                  const primary = groupedMap[phoneStr];
-                  if (!primary.duplicate_history) primary.duplicate_history = [];
-                  primary.duplicate_history.push(lead);
-               } else {
-                  groupedMap[phoneStr] = lead;
-                  finalLeads.push(lead);
-               }
+         // Track duplicate phones for badges, but keep all leads visible
+         const seenPhones = new Set();
+         const finalLeads = merged.map(lead => {
+            if (lead.phone && lead.phone.trim() !== "") {
+               const p = lead.phone.trim();
+               const isRepeat = seenPhones.has(p);
+               seenPhones.add(p);
+               return { ...lead, is_repeat_contact: isRepeat };
             }
+            return lead;
          });
          
          setLeads(finalLeads);

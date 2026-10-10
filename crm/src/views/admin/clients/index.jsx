@@ -249,8 +249,9 @@ const Clients = () => {
     return () => window.removeEventListener("reset-view", handleReset);
   }, []);
 
-  const handleCreateClient = async (e) => {
-    e.preventDefault();
+    const userStr = sessionStorage.getItem('dayal_user');
+    const loggedInUser = userStr ? JSON.parse(userStr) : null;
+
     const { data: newClientData, error } = await supabase.from("clients").insert([{
       name: newClient.name,
       status: 'active',
@@ -260,6 +261,7 @@ const Clients = () => {
       company: newClient.company || null,
       notes: newClient.gst ? `GST: ${newClient.gst}` : null,
       work_types: Array.isArray(newClient.work_types) ? newClient.work_types.join(', ') : newClient.work_types,
+      assigned_to: loggedInUser?.id || null,
       ...(newClient.created_at ? { created_at: new Date(newClient.created_at).toISOString() } : {})
     }]).select();
     

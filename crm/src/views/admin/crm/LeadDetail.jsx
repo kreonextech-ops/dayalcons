@@ -44,8 +44,21 @@ const LeadDetail = ({ lead, onBack }) => {
       fetchComments();
       fetchNextTask();
       fetchEmployees();
+
+      const channel = supabase
+        .channel(`lead-detail-${lead.id}`)
+        .on('postgres_changes', { event: 'UPDATE', schema: 'public', table: 'leads', filter: `id=eq.${lead.id}` }, (payload) => {
+          if (payload.new) {
+            setLeadData(prev => ({ ...prev, ...payload.new }));
+          }
+        })
+        .subscribe();
+
+      return () => {
+        supabase.removeChannel(channel);
+      };
     }
-  }, [lead]);
+  }, [lead?.id]);
 
   const fetchEmployees = async () => {
     const { data } = await supabase.from('employees').select('id, name, role');
@@ -168,7 +181,8 @@ ${finalNotes}`;
        timeline: leadData.timeline, 
        lead_temperature: leadData.lead_temperature, 
        notes: finalNotes, 
-       created_at: leadData.created_at 
+       created_at: leadData.created_at,
+       assigned_to: leadData.assigned_to || loggedInUser?.id || null
     }]).select();
 
     if (!insertError && newClientData && newClientData.length > 0) {

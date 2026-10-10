@@ -178,8 +178,8 @@ const Services = () => {
         title: title,
         client_id: finalClientId,
         description: JSON.stringify(metadata),
-          status: 'Pending',
-        status: "Active"
+        status: "Active",
+        assigned_to: loggedInUser?.id || null
      }]);
 
      if (srvError) {

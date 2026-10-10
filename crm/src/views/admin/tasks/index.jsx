@@ -214,8 +214,8 @@ const Tasks = () => {
      // Role Scope Filtering
      let scopeMatch = false;
      if (!loggedInUser) scopeMatch = true; // fallback
-     else if (taskScope === "All Tasks" && isAdminOrMD) scopeMatch = true;
-     else if (taskScope === "My Tasks") scopeMatch = t.assignee_id && t.assignee_id.includes(loggedInUser.id);
+     else if (taskScope === "All Tasks") scopeMatch = true;
+     else if (taskScope === "My Tasks") scopeMatch = (t.assignee_id && t.assignee_id.includes(loggedInUser.id)) || (t.creator_id && t.creator_id === loggedInUser.id);
      else if (taskScope === "Given Tasks") scopeMatch = t.creator_id === loggedInUser.id;
      
      if (!scopeMatch) return false;
