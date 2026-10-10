@@ -77,6 +77,7 @@ const ProjectDetail = ({ projData, onBack, onUpdate }) => {
            if (newAssignedString.includes(employeeId)) {
              await supabase.from('tasks').insert([{
                name: `Assigned to Project: ${projData.title || projData.name || 'Unknown'}`,
+               title: `Assigned to Project: ${projData.title || projData.name || 'Unknown'}`,
                description: `You have been assigned to Project ID: PRJ-${projData.id.substring(0,5).toUpperCase()}`,
                status: 'To Do',
                priority: 'High',
@@ -378,6 +379,7 @@ const ProjectDetail = ({ projData, onBack, onUpdate }) => {
               
               const { error } = await supabase.from('tasks').insert([{
                 name: formData.get('name'),
+                title: formData.get('name'),
                 due_date: formData.get('due_date') || null,
                 priority: 'High',
                 status: 'To Do',

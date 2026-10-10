@@ -370,7 +370,8 @@ const ClientDetail = ({ client, onBack }) => {
            // Actually, let's just put it right after the update.
            if (newAssignedString.includes(employeeId)) {
              await supabase.from('tasks').insert([{
-               name: `Assigned to Client: ${clientData.name || clientData.name || 'Unknown'}`,
+               name: `Assigned to Client: ${clientData.name || 'Unknown'}`,
+               title: `Assigned to Client: ${clientData.name || 'Unknown'}`,
                description: `You have been assigned to Client ID: CLIENT-${clientData.id.substring(0,5).toUpperCase()}`,
                status: 'To Do',
                priority: 'High',
@@ -590,6 +591,7 @@ const ClientDetail = ({ client, onBack }) => {
               
               const { error } = await supabase.from('tasks').insert([{
                 name: formData.get('name'),
+                title: formData.get('name'),
                 due_date: formData.get('due_date') || null,
                 priority: 'High',
                 status: 'To Do',

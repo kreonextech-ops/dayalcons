@@ -301,7 +301,8 @@ ${finalNotes}`;
            // Actually, let's just put it right after the update.
            if (newAssignedString.includes(employeeId)) {
              await supabase.from('tasks').insert([{
-               name: `Assigned to Lead: ${leadData.name || leadData.name || 'Unknown'}`,
+               name: `Assigned to Lead: ${leadData.name || 'Unknown'}`,
+                title: `Assigned to Lead: ${leadData.name || 'Unknown'}`,
                description: `You have been assigned to Lead ID: LEAD-${leadData.id.substring(0,5).toUpperCase()}`,
                status: 'To Do',
                priority: 'High',
@@ -498,6 +499,7 @@ ${finalNotes}`;
               
               const { error } = await supabase.from('tasks').insert([{
                 name,
+                title: name,
                 due_date,
                 lead_id: leadData.id,
                 assignee_id: loggedInUser?.id,

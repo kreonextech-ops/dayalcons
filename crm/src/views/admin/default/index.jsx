@@ -146,6 +146,7 @@ const Dashboard = () => {
     if (!employeeId) return alert("No employee assigned to poke!");
     const { error } = await supabase.from('tasks').insert([{
       title: `REMINDER: Action required regarding ${context}`,
+      name: `REMINDER: Action required regarding ${context}`,
       description: `Please check on this immediately. (System Generated Poke)`,
       assignee_id: employeeId,
       status: 'Pending',

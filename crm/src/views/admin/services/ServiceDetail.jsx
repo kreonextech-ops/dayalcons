@@ -362,6 +362,7 @@ const ServiceDetail = ({ serviceCase, onBack, onUpdate }) => {
               
               const { error } = await supabase.from('tasks').insert([{
                 name: formData.get('name'),
+                title: formData.get('name'),
                 due_date: formData.get('due_date') || null,
                 priority: 'High',
                 status: 'To Do',
