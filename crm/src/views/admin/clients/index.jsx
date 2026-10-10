@@ -249,9 +249,8 @@ const Clients = () => {
     return () => window.removeEventListener("reset-view", handleReset);
   }, []);
 
-    const userStr = sessionStorage.getItem('dayal_user');
-    const loggedInUser = userStr ? JSON.parse(userStr) : null;
-
+  const handleCreateClient = async (e) => {
+    e.preventDefault();
     const { data: newClientData, error } = await supabase.from("clients").insert([{
       name: newClient.name,
       status: 'active',
