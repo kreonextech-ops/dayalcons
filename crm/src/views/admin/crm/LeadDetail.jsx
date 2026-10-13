@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { 
   MdArrowBack, MdPhone, MdEmail, MdLocationOn, MdCheckCircle, MdEdit,
   MdTimeline, MdCurrencyRupee, MdMap, MdEvent, MdFolder, MdAssignment,
-  MdMessage, MdPhoneInTalk, MdLocalPrintshop, MdPictureAsPdf, MdSave, MdClose, MdAttachFile, MdDelete
+  MdMessage, MdPhoneInTalk, MdLocalPrintshop, MdPictureAsPdf, MdSave, MdClose, MdAttachFile, MdDelete, MdKeyboardArrowDown
 } from "react-icons/md";
 import CommentRenderer from "components/chat/CommentRenderer";
 import { uploadFileToR2, deleteR2File } from "utils/r2Storage";
@@ -267,6 +267,60 @@ ${finalNotes}`;
     serviceNotes: ""
   });
 
+  const STATUS_OPTIONS = [
+    { value: "New", label: "STATUS: NEW", badgeClass: "bg-blue-600 text-white", itemClass: "bg-blue-50 text-blue-700 hover:bg-blue-100 border-blue-200" },
+    { value: "Ongoing", label: "STATUS: ONGOING", badgeClass: "bg-amber-500 text-white", itemClass: "bg-amber-50 text-amber-700 hover:bg-amber-100 border-amber-200" },
+    { value: "Success", label: "STATUS: SUCCESS", badgeClass: "bg-emerald-600 text-white", itemClass: "bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border-emerald-200" },
+    { value: "Closed", label: "STATUS: CLOSED", badgeClass: "bg-rose-600 text-white", itemClass: "bg-rose-50 text-rose-700 hover:bg-rose-100 border-rose-200" }
+  ];
+
+  const TEMP_OPTIONS = [
+    { value: "Hot", label: "HOT LEAD", badgeClass: "bg-red-100 text-red-700 border-red-200", itemClass: "bg-red-50 text-red-700 hover:bg-red-100 border-red-200" },
+    { value: "Warm", label: "WARM LEAD", badgeClass: "bg-orange-100 text-orange-700 border-orange-200", itemClass: "bg-orange-50 text-orange-700 hover:bg-orange-100 border-orange-200" },
+    { value: "Cold", label: "COLD LEAD", badgeClass: "bg-blue-100 text-blue-700 border-blue-200", itemClass: "bg-blue-50 text-blue-700 hover:bg-blue-100 border-blue-200" }
+  ];
+
+  const [statusDropdownOpen, setStatusDropdownOpen] = useState(false);
+  const [tempDropdownOpen, setTempDropdownOpen] = useState(false);
+
+  const handleSelectStatus = async (newStatus) => {
+    setStatusDropdownOpen(false);
+    setLeadData(prev => ({ ...prev, status: newStatus }));
+    const { error } = await supabase.from("leads").update({ status: newStatus }).eq("id", leadData.id);
+    if (error) {
+      alert("Failed to update status: " + error.message);
+    }
+    if (newStatus === "Success" || newStatus === "Won") {
+      setShowConvertModal(true);
+    }
+  };
+
+  const handleSelectTemp = async (newTemp) => {
+    setTempDropdownOpen(false);
+    setLeadData(prev => ({ ...prev, lead_temperature: newTemp }));
+    const { error } = await supabase.from("leads").update({ lead_temperature: newTemp }).eq("id", leadData.id);
+    if (error) {
+      alert("Failed to update temperature: " + error.message);
+    }
+  };
+
+  const currentStatusObj = (() => {
+    const s = (leadData.status || '').toLowerCase();
+    if (s === 'new') return STATUS_OPTIONS[0];
+    if (s === 'ongoing' || s === 'contacted' || s === 'visit' || s === 'quotation' || s === 'negotiation') return STATUS_OPTIONS[1];
+    if (s === 'success' || s === 'won' || s === 'converted') return STATUS_OPTIONS[2];
+    if (s === 'closed' || s === 'lost' || s === 'junk') return STATUS_OPTIONS[3];
+    return STATUS_OPTIONS[0];
+  })();
+
+  const currentTempObj = (() => {
+    const t = (leadData.lead_temperature || '').toLowerCase();
+    if (t.includes('hot')) return TEMP_OPTIONS[0];
+    if (t.includes('cold')) return TEMP_OPTIONS[2];
+    return TEMP_OPTIONS[1];
+  })();
+
+
   const userStr = sessionStorage.getItem('dayal_user');
   const loggedInUser = userStr ? JSON.parse(userStr) : null;
   const isAdmin = loggedInUser?.role === 'Admin';
@@ -420,41 +474,66 @@ ${finalNotes}`;
           </div>
         </div>
         <div className="mt-6 flex flex-col items-end md:mt-0 gap-2">
-          <div className="flex gap-2">
-            <select 
-              value={(() => {
-                const s = (leadData.status || '').toLowerCase();
-                if (s === 'new') return 'New';
-                if (s === 'ongoing' || s === 'contacted' || s === 'visit' || s === 'quotation' || s === 'negotiation') return 'Ongoing';
-                if (s === 'success' || s === 'won' || s === 'converted') return 'Success';
-                if (s === 'closed' || s === 'lost' || s === 'junk') return 'Closed';
-                return 'New';
-              })()} 
-              onChange={handleDirectStatusChange}
-              className={`rounded-full px-4 py-1 text-xs font-bold tracking-wide outline-none cursor-pointer appearance-none shadow-sm transition-colors ${
-                (leadData.status || '').toLowerCase() === 'new' 
-                  ? 'bg-blue-600 text-white hover:bg-blue-700' 
-                  : ((leadData.status || '').toLowerCase() === 'ongoing' || (leadData.status || '').toLowerCase() === 'contacted') 
-                  ? 'bg-amber-500 text-white hover:bg-amber-600' 
-                  : ((leadData.status || '').toLowerCase() === 'success' || (leadData.status || '').toLowerCase() === 'won' || (leadData.status || '').toLowerCase() === 'converted') 
-                  ? 'bg-emerald-600 text-white hover:bg-emerald-700' 
-                  : 'bg-rose-600 text-white hover:bg-rose-700'
-              }`}
-            >
-              <option value="New" className="bg-white text-blue-600 font-bold dark:bg-navy-800 dark:text-blue-400">STATUS: NEW</option>
-              <option value="Ongoing" className="bg-white text-amber-600 font-bold dark:bg-navy-800 dark:text-amber-400">STATUS: ONGOING</option>
-              <option value="Success" className="bg-white text-emerald-600 font-bold dark:bg-navy-800 dark:text-emerald-400">STATUS: SUCCESS</option>
-              <option value="Closed" className="bg-white text-rose-600 font-bold dark:bg-navy-800 dark:text-rose-400">STATUS: CLOSED</option>
-            </select>
-            <select 
-              value={leadData.lead_temperature || 'Warm'} 
-              onChange={handleDirectTempChange}
-              className={`rounded-full px-4 py-1 text-xs font-bold tracking-wide outline-none cursor-pointer appearance-none ${leadData.lead_temperature === 'Hot' ? 'bg-red-100 text-red-700' : leadData.lead_temperature === 'Cold' ? 'bg-blue-100 text-blue-700' : 'bg-orange-100 text-orange-700'}`}
-            >
-              <option value="Hot">HOT LEAD</option>
-              <option value="Warm">WARM LEAD</option>
-              <option value="Cold">COLD LEAD</option>
-            </select>
+          <div className="flex gap-2 relative">
+            {/* Custom Status Dropdown */}
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => { setStatusDropdownOpen(!statusDropdownOpen); setTempDropdownOpen(false); }}
+                className={`flex items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-bold tracking-wide outline-none cursor-pointer shadow-sm transition-all ${currentStatusObj.badgeClass}`}
+              >
+                <span>{currentStatusObj.label}</span>
+                <MdKeyboardArrowDown className={`text-base transition-transform duration-200 ${statusDropdownOpen ? 'rotate-180' : ''}`} />
+              </button>
+
+              {statusDropdownOpen && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={() => setStatusDropdownOpen(false)} />
+                  <div className="absolute right-0 top-full mt-1.5 z-50 w-44 rounded-xl bg-white dark:bg-navy-800 p-1.5 shadow-xl border border-gray-100 dark:border-navy-700 flex flex-col gap-1">
+                    {STATUS_OPTIONS.map(opt => (
+                      <button
+                        key={opt.value}
+                        type="button"
+                        onClick={() => handleSelectStatus(opt.value)}
+                        className={`w-full text-left px-3 py-2 rounded-lg text-xs font-bold transition-all border ${opt.itemClass} ${currentStatusObj.value === opt.value ? 'ring-2 ring-offset-1 ring-blue-500 font-extrabold' : ''}`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
+
+            {/* Custom Temperature Dropdown */}
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => { setTempDropdownOpen(!tempDropdownOpen); setStatusDropdownOpen(false); }}
+                className={`flex items-center gap-1.5 rounded-full px-4 py-1.5 text-xs font-bold tracking-wide outline-none cursor-pointer shadow-sm transition-all border ${currentTempObj.badgeClass}`}
+              >
+                <span>{currentTempObj.label}</span>
+                <MdKeyboardArrowDown className={`text-base transition-transform duration-200 ${tempDropdownOpen ? 'rotate-180' : ''}`} />
+              </button>
+
+              {tempDropdownOpen && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={() => setTempDropdownOpen(false)} />
+                  <div className="absolute right-0 top-full mt-1.5 z-50 w-40 rounded-xl bg-white dark:bg-navy-800 p-1.5 shadow-xl border border-gray-100 dark:border-navy-700 flex flex-col gap-1">
+                    {TEMP_OPTIONS.map(opt => (
+                      <button
+                        key={opt.value}
+                        type="button"
+                        onClick={() => handleSelectTemp(opt.value)}
+                        className={`w-full text-left px-3 py-2 rounded-lg text-xs font-bold transition-all border ${opt.itemClass} ${currentTempObj.value === opt.value ? 'ring-2 ring-offset-1 ring-orange-400 font-extrabold' : ''}`}
+                      >
+                        {opt.label}
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
           </div>
           <p className="mt-2 text-sm font-semibold text-[#64748B] dark:text-gray-400">Est. Project Value</p>
           <p className="text-[28px] font-bold text-[#0F172A] dark:text-white">{leadData.budget || "—"}</p>
