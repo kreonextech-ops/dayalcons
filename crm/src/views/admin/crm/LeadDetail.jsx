@@ -268,16 +268,58 @@ ${finalNotes}`;
   });
 
   const STATUS_OPTIONS = [
-    { value: "New", label: "STATUS: NEW", badgeClass: "bg-blue-600 text-white", itemClass: "bg-blue-50 text-blue-700 hover:bg-blue-100 border-blue-200" },
-    { value: "Ongoing", label: "STATUS: ONGOING", badgeClass: "bg-amber-500 text-white", itemClass: "bg-amber-50 text-amber-700 hover:bg-amber-100 border-amber-200" },
-    { value: "Success", label: "STATUS: SUCCESS", badgeClass: "bg-emerald-600 text-white", itemClass: "bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border-emerald-200" },
-    { value: "Closed", label: "STATUS: CLOSED", badgeClass: "bg-rose-600 text-white", itemClass: "bg-rose-50 text-rose-700 hover:bg-rose-100 border-rose-200" }
+    { 
+      value: "New", 
+      label: "STATUS: NEW", 
+      badgeClass: "bg-blue-600 text-white", 
+      itemClass: "border-blue-200 hover:bg-blue-100",
+      style: { backgroundColor: "#eff6ff", color: "#1d4ed8", borderColor: "#bfdbfe" }
+    },
+    { 
+      value: "Ongoing", 
+      label: "STATUS: ONGOING", 
+      badgeClass: "bg-amber-500 text-white", 
+      itemClass: "border-amber-200 hover:bg-amber-100",
+      style: { backgroundColor: "#fffbeb", color: "#b45309", borderColor: "#fde68a" }
+    },
+    { 
+      value: "Success", 
+      label: "STATUS: SUCCESS", 
+      badgeClass: "bg-green-600 text-white", 
+      itemClass: "border-green-200 hover:bg-green-100",
+      style: { backgroundColor: "#dcfce7", color: "#15803d", borderColor: "#bbf7d0" }
+    },
+    { 
+      value: "Closed", 
+      label: "STATUS: CLOSED", 
+      badgeClass: "bg-red-600 text-white", 
+      itemClass: "border-red-200 hover:bg-red-100",
+      style: { backgroundColor: "#fee2e2", color: "#b91c1c", borderColor: "#fecaca" }
+    }
   ];
 
   const TEMP_OPTIONS = [
-    { value: "Hot", label: "HOT LEAD", badgeClass: "bg-red-100 text-red-700 border-red-200", itemClass: "bg-red-50 text-red-700 hover:bg-red-100 border-red-200" },
-    { value: "Warm", label: "WARM LEAD", badgeClass: "bg-orange-100 text-orange-700 border-orange-200", itemClass: "bg-orange-50 text-orange-700 hover:bg-orange-100 border-orange-200" },
-    { value: "Cold", label: "COLD LEAD", badgeClass: "bg-blue-100 text-blue-700 border-blue-200", itemClass: "bg-blue-50 text-blue-700 hover:bg-blue-100 border-blue-200" }
+    { 
+      value: "Hot", 
+      label: "HOT LEAD", 
+      badgeClass: "bg-red-100 text-red-700 border-red-200", 
+      itemClass: "border-red-200 hover:bg-red-100",
+      style: { backgroundColor: "#fee2e2", color: "#b91c1c", borderColor: "#fecaca" }
+    },
+    { 
+      value: "Warm", 
+      label: "WARM LEAD", 
+      badgeClass: "bg-orange-100 text-orange-700 border-orange-200", 
+      itemClass: "border-orange-200 hover:bg-orange-100",
+      style: { backgroundColor: "#ffedd5", color: "#c2410c", borderColor: "#fed7aa" }
+    },
+    { 
+      value: "Cold", 
+      label: "COLD LEAD", 
+      badgeClass: "bg-blue-100 text-blue-700 border-blue-200", 
+      itemClass: "border-blue-200 hover:bg-blue-100",
+      style: { backgroundColor: "#eff6ff", color: "#1d4ed8", borderColor: "#bfdbfe" }
+    }
   ];
 
   const [statusDropdownOpen, setStatusDropdownOpen] = useState(false);
@@ -495,6 +537,7 @@ ${finalNotes}`;
                         key={opt.value}
                         type="button"
                         onClick={() => handleSelectStatus(opt.value)}
+                        style={opt.style}
                         className={`w-full text-left px-3 py-2 rounded-lg text-xs font-bold transition-all border ${opt.itemClass} ${currentStatusObj.value === opt.value ? 'ring-2 ring-offset-1 ring-blue-500 font-extrabold' : ''}`}
                       >
                         {opt.label}
@@ -525,6 +568,7 @@ ${finalNotes}`;
                         key={opt.value}
                         type="button"
                         onClick={() => handleSelectTemp(opt.value)}
+                        style={opt.style}
                         className={`w-full text-left px-3 py-2 rounded-lg text-xs font-bold transition-all border ${opt.itemClass} ${currentTempObj.value === opt.value ? 'ring-2 ring-offset-1 ring-orange-400 font-extrabold' : ''}`}
                       >
                         {opt.label}
