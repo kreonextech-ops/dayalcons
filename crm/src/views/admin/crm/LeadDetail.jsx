@@ -422,13 +422,29 @@ ${finalNotes}`;
         <div className="mt-6 flex flex-col items-end md:mt-0 gap-2">
           <div className="flex gap-2">
             <select 
-              value={leadData.status} 
+              value={(() => {
+                const s = (leadData.status || '').toLowerCase();
+                if (s === 'new') return 'New';
+                if (s === 'ongoing' || s === 'contacted' || s === 'visit' || s === 'quotation' || s === 'negotiation') return 'Ongoing';
+                if (s === 'success' || s === 'won' || s === 'converted') return 'Success';
+                if (s === 'closed' || s === 'lost' || s === 'junk') return 'Closed';
+                return 'New';
+              })()} 
               onChange={handleDirectStatusChange}
-              className={`rounded-full px-4 py-1 text-xs font-bold tracking-wide outline-none cursor-pointer appearance-none ${leadData.status === 'Closed' ? 'bg-red-500 text-white' : leadData.status === 'Success' ? 'bg-green-600 text-white' : 'bg-[#16A34A] text-white'}`}
+              className={`rounded-full px-4 py-1 text-xs font-bold tracking-wide outline-none cursor-pointer appearance-none shadow-sm transition-colors ${
+                (leadData.status || '').toLowerCase() === 'new' 
+                  ? 'bg-blue-600 text-white hover:bg-blue-700' 
+                  : ((leadData.status || '').toLowerCase() === 'ongoing' || (leadData.status || '').toLowerCase() === 'contacted') 
+                  ? 'bg-amber-500 text-white hover:bg-amber-600' 
+                  : ((leadData.status || '').toLowerCase() === 'success' || (leadData.status || '').toLowerCase() === 'won' || (leadData.status || '').toLowerCase() === 'converted') 
+                  ? 'bg-emerald-600 text-white hover:bg-emerald-700' 
+                  : 'bg-rose-600 text-white hover:bg-rose-700'
+              }`}
             >
-              <option value="Ongoing">STATUS: ONGOING</option>
-              <option value="Success">STATUS: SUCCESS</option>
-              <option value="Closed">STATUS: CLOSED</option>
+              <option value="New" className="bg-white text-blue-600 font-bold dark:bg-navy-800 dark:text-blue-400">STATUS: NEW</option>
+              <option value="Ongoing" className="bg-white text-amber-600 font-bold dark:bg-navy-800 dark:text-amber-400">STATUS: ONGOING</option>
+              <option value="Success" className="bg-white text-emerald-600 font-bold dark:bg-navy-800 dark:text-emerald-400">STATUS: SUCCESS</option>
+              <option value="Closed" className="bg-white text-rose-600 font-bold dark:bg-navy-800 dark:text-rose-400">STATUS: CLOSED</option>
             </select>
             <select 
               value={leadData.lead_temperature || 'Warm'} 
@@ -851,7 +867,15 @@ ${finalNotes}`;
         <div className="flex gap-8 px-4">
           <div className="hidden sm:block">
             <p className="text-[11px] text-[#64748B] dark:text-gray-400 font-medium uppercase">Current Stage</p>
-            <p className="text-[16px] font-bold text-[#2563EB]">{leadData.status}</p>
+            <p className={`text-[16px] font-bold ${
+              (leadData.status || '').toLowerCase() === 'new'
+                ? 'text-blue-600'
+                : ((leadData.status || '').toLowerCase() === 'ongoing' || (leadData.status || '').toLowerCase() === 'contacted')
+                ? 'text-amber-600'
+                : ((leadData.status || '').toLowerCase() === 'success' || (leadData.status || '').toLowerCase() === 'won')
+                ? 'text-emerald-600'
+                : 'text-rose-600'
+            }`}>{leadData.status || 'New'}</p>
           </div>
           <div className="hidden sm:block">
             <p className="text-[11px] text-[#64748B] dark:text-gray-400 font-medium uppercase">Est. Value</p>

@@ -586,8 +586,10 @@ ${finalNotes}`;
                            <option value="status">Status (A-Z)</option>
                         </optgroup>
                         <optgroup label="Filter Status">
+                           <option value="status_new">New Leads</option>
                            <option value="status_ongoing">Ongoing Leads</option>
-                           <option value="status_success">Success Closed (Won)</option>
+                           <option value="status_success">Success (Won)</option>
+                           <option value="status_closed">Closed (Lost)</option>
                         </optgroup>
                         <optgroup label="Filter Temp">
                            <option value="temp_hot">Hot Leads</option>
@@ -648,16 +650,29 @@ ${finalNotes}`;
                         });
                      }
 
-                     if (sortOrder === "status_ongoing") {
-                        filtered = filtered.filter(x => x.status !== "Won" && x.status !== "Lost");
+                     if (sortOrder === "status_new") {
+                        filtered = filtered.filter(x => (x.status || "").toLowerCase() === "new");
+                     } else if (sortOrder === "status_ongoing") {
+                        filtered = filtered.filter(x => {
+                           const st = (x.status || "").toLowerCase();
+                           return st === "ongoing" || st === "contacted" || st === "visit" || st === "quotation" || st === "negotiation";
+                        });
                      } else if (sortOrder === "status_success") {
-                        filtered = filtered.filter(x => x.status === "Won");
+                        filtered = filtered.filter(x => {
+                           const st = (x.status || "").toLowerCase();
+                           return st === "success" || st === "won" || st === "converted";
+                        });
+                     } else if (sortOrder === "status_closed") {
+                        filtered = filtered.filter(x => {
+                           const st = (x.status || "").toLowerCase();
+                           return st === "closed" || st === "lost" || st === "junk";
+                        });
                      } else if (sortOrder === "temp_hot") {
-                        filtered = filtered.filter(x => x.lead_temperature === "Hot");
+                        filtered = filtered.filter(x => (x.lead_temperature || "").toLowerCase().includes("hot"));
                      } else if (sortOrder === "temp_warm") {
-                        filtered = filtered.filter(x => x.lead_temperature === "Warm");
+                        filtered = filtered.filter(x => (x.lead_temperature || "").toLowerCase().includes("warm"));
                      } else if (sortOrder === "temp_cold") {
-                        filtered = filtered.filter(x => x.lead_temperature === "Cold");
+                        filtered = filtered.filter(x => (x.lead_temperature || "").toLowerCase().includes("cold"));
                      }
                      
                      if (sortOrder === "oldest") {
@@ -709,9 +724,13 @@ ${finalNotes}`;
                               </span>
                            </td>
                            <td className="py-2 px-4 text-sm text-gray-600 font-medium">
-                              {lead.lead_temperature === 'Hot' ? <span className="text-red-500"><MdLocalFireDepartment /> Hot</span> : 
-                               lead.lead_temperature === 'Warm' ? <span className="text-orange-500">Warm</span> : 
-                               lead.lead_temperature === 'Cold' ? <span className="text-blue-500">Cold</span> : "-"}
+                              {(() => {
+                                  const temp = (lead.lead_temperature || '').toLowerCase();
+                                  if (temp.includes('hot')) return <span className="text-red-500 font-semibold">Hot</span>;
+                                  if (temp.includes('warm')) return <span className="text-orange-500 font-semibold">Warm</span>;
+                                  if (temp.includes('cold')) return <span className="text-blue-500 font-semibold">Cold</span>;
+                                  return <span className="text-gray-400">{lead.lead_temperature || "-"}</span>;
+                               })()}
                            </td>
                            <td className="py-2 px-4 text-sm text-gray-600">{lead.created_at ? new Date(lead.created_at).toLocaleDateString('en-GB') : "-"}</td>
                            <td className="py-2 px-4 text-sm font-medium text-gray-800">
@@ -853,7 +872,8 @@ ${finalNotes}`;
                     onChange={e => setStatusUpdateData({...statusUpdateData, status: e.target.value})}
                     className="w-full h-11 px-3 rounded-[10px] border border-[#E2E8F0] dark:border-navy-700 text-[14px] text-[#0F172A] dark:text-white outline-none focus:border-[#2563EB]"
                   >
-                    <option>Ongoing</option>
+                    <option value="New">New</option>
+                    <option value="Ongoing">Ongoing</option>
                     
                     <option>Success</option>
                     <option>Estimate</option>
