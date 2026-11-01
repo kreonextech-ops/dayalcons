@@ -53,10 +53,10 @@ export default function HeroSection() {
       </div>
 
       {/* Content Container */}
-      <div className="relative z-10 w-full max-w-[1920px] mx-auto px-6 md:px-12 flex-1 pt-[80px] md:pt-0 flex flex-col justify-center md:justify-end md:pb-[60px] text-left">
+      <div className="relative z-10 w-full max-w-[1920px] mx-auto px-6 md:px-12 flex-1 pt-[70px] md:pt-0 flex flex-col justify-end pb-8 md:pb-[60px] text-left">
         
         {/* Adjusted mb-16 to mb-6 and justify-end to bring it closer to buttons */}
-        <div className="w-full flex flex-col mb-6 cursor-default min-h-[160px] md:min-h-[220px] justify-end pb-2">
+        <div className="w-full flex flex-col mb-3 md:mb-6 cursor-default min-h-[100px] md:min-h-[220px] justify-end pb-1">
           
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -100,7 +100,8 @@ export default function HeroSection() {
             {/* Primary High-Intent CTA */}
             <motion.div variants={buttonVariant} className="w-full sm:w-auto">
               <Link href="/contact" className="w-full sm:w-auto h-full inline-flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-3 px-2 sm:px-8 py-2.5 sm:py-[18px] bg-[#18AFFF] text-white font-['Manrope',_sans-serif] font-bold text-[11px] xs:text-[12px] sm:text-[16px] rounded-[12px] sm:rounded-[16px] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_8px_24px_rgba(24,175,255,0.45)] cursor-pointer text-center leading-tight shadow-md">
-                <span>Site Visit</span>
+                <span className="sm:hidden">Site Visit</span>
+                <span className="hidden sm:inline">Book Free Site Visit</span>
                 <span className="material-symbols-outlined text-[16px] sm:text-[20px]">calendar_month</span>
               </Link>
             </motion.div>
@@ -108,7 +109,8 @@ export default function HeroSection() {
             {/* Instant Estimate CTA */}
             <motion.div variants={buttonVariant} className="w-full sm:w-auto">
               <a href="#quote-calculator" className="w-full sm:w-auto h-full inline-flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 px-2 sm:px-7 py-2.5 sm:py-[18px] bg-white text-[#071A2F] font-['Manrope',_sans-serif] font-bold text-[11px] xs:text-[12px] sm:text-[16px] rounded-[12px] sm:rounded-[16px] transition-all duration-300 hover:-translate-y-1 hover:bg-[#F0F7FF] hover:shadow-[0_8px_24px_rgba(255,255,255,0.25)] cursor-pointer text-center leading-tight shadow-md">
-                <span>Cost in 60s</span>
+                <span className="sm:hidden">Cost in 60s</span>
+                <span className="hidden sm:inline">Calculate Cost in 60s</span>
                 <span className="material-symbols-outlined text-[16px] sm:text-[19px] text-[#18AFFF]">calculate</span>
               </a>
             </motion.div>
@@ -116,7 +118,8 @@ export default function HeroSection() {
             {/* Portfolio Link */}
             <motion.div variants={buttonVariant} className="w-full sm:w-auto">
               <Link href="/projects" className="w-full sm:w-auto h-full inline-flex flex-col sm:flex-row items-center justify-center gap-1 px-2 sm:px-6 py-2.5 sm:py-[18px] bg-white/20 backdrop-blur-md border border-white/30 text-white font-['Manrope',_sans-serif] font-semibold text-[11px] xs:text-[12px] sm:text-[15px] rounded-[12px] sm:rounded-[16px] transition-all duration-300 hover:bg-white hover:text-[#062B55] hover:border-white cursor-pointer text-center leading-tight shadow-md">
-                <span>Portfolio</span>
+                <span className="sm:hidden">Portfolio</span>
+                <span className="hidden sm:inline">View Portfolio</span>
                 <span className="material-symbols-outlined text-[16px] sm:hidden">photo_library</span>
               </Link>
             </motion.div>
