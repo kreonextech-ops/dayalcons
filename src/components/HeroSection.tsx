@@ -53,10 +53,10 @@ export default function HeroSection() {
       </div>
 
       {/* Content Container */}
-      <div className="relative z-10 w-full max-w-[1920px] mx-auto px-6 md:px-12 flex-1 pt-[70px] md:pt-0 flex flex-col justify-end pb-8 md:pb-[60px] text-left">
+      <div className="relative z-10 w-full max-w-[1920px] mx-auto px-6 md:px-12 flex-1 pt-[80px] md:pt-0 flex flex-col justify-center md:justify-end md:pb-[60px] text-left">
         
         {/* Adjusted mb-16 to mb-6 and justify-end to bring it closer to buttons */}
-        <div className="w-full flex flex-col mb-6 cursor-default min-h-[110px] md:min-h-[220px] justify-end pb-2">
+        <div className="w-full flex flex-col mb-6 cursor-default min-h-[160px] md:min-h-[220px] justify-end pb-2">
           
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -65,7 +65,7 @@ export default function HeroSection() {
           >
             {/* Wrapper handles the color dynamically to prevent Tailwind purging issues */}
             <h1 
-              className="font-['Manrope',_sans-serif] text-[32px] sm:text-[40px] md:text-[60px] lg:text-[76px] font-[800] leading-[1.2] transition-colors duration-300 whitespace-pre-line"
+              className="font-['Manrope',_sans-serif] text-[40px] md:text-[60px] lg:text-[76px] font-[800] leading-[1.2] transition-colors duration-300 whitespace-pre-line"
               style={{ color: textColor }}
             >
               <TypeAnimation
