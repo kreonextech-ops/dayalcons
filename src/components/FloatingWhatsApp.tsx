@@ -17,14 +17,14 @@ export default function FloatingWhatsApp() {
       transition={{ duration: 0.5, delay: 1, type: "spring", stiffness: 200, damping: 20 }}
       whileHover={{ scale: 1.1 }}
       whileTap={{ scale: 0.9 }}
-      className="fixed bottom-6 right-6 z-[9999] flex items-center justify-center w-14 h-14 bg-[#25D366] text-white rounded-full shadow-[0_10px_30px_rgba(37,211,102,0.4)] hover:shadow-[0_15px_40px_rgba(37,211,102,0.6)] transition-shadow group"
+      className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-[9999] flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 bg-[#25D366] text-white rounded-full shadow-[0_10px_30px_rgba(37,211,102,0.4)] hover:shadow-[0_15px_40px_rgba(37,211,102,0.6)] transition-shadow group"
     >
       {/* Pulse effect */}
       <div className="absolute inset-0 rounded-full border-2 border-[#25D366] opacity-0 animate-ping"></div>
       
       {/* WhatsApp SVG Icon */}
       <svg
-        className="w-8 h-8 relative z-10"
+        className="w-6 h-6 sm:w-8 sm:h-8 relative z-10"
         fill="currentColor"
         viewBox="0 0 24 24"
         xmlns="http://www.w3.org/2000/svg"

@@ -41,6 +41,10 @@ const LeadDetail = ({ lead, onBack }) => {
 
   React.useEffect(() => {
     if (lead?.id) {
+      if ((lead.status || '').toLowerCase() === 'new') {
+        setLeadData(prev => ({ ...prev, status: 'Ongoing' }));
+        supabase.from('leads').update({ status: 'Ongoing' }).eq('id', lead.id);
+      }
       fetchComments();
       fetchNextTask();
       fetchEmployees();

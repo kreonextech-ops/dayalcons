@@ -703,7 +703,7 @@ ${finalNotes}`;
                      if (filtered.length === 0) return <tr><td colSpan="12" className="py-12 text-center text-gray-500">No leads found.</td></tr>;
                      const paginated = filtered;
                      return paginated.map((lead, index) => (
-                        <tr key={lead.id} className="border-b border-gray-100 hover:bg-gray-50 dark:hover:bg-navy-800 cursor-pointer" onClick={() => { if (Date.now() - lastCloseTime.current < 500) return; setSelectedLead(lead); }}>
+                        <tr key={lead.id} className="border-b border-gray-100 hover:bg-gray-50 dark:hover:bg-navy-800 cursor-pointer" onClick={() => { if (Date.now() - lastCloseTime.current < 500) return; if ((lead.status || '').toLowerCase() === 'new') { lead.status = 'Ongoing'; supabase.from('leads').update({ status: 'Ongoing' }).eq('id', lead.id); } setSelectedLead(lead); }}>
                            <td className="py-2 px-6" onClick={(e) => e.stopPropagation()}>
                               <input type="checkbox" className="w-4 h-4 rounded text-[#2563EB] border-[#E2E8F0] dark:border-navy-700 cursor-pointer" />
                            </td>
