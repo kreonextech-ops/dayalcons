@@ -47,7 +47,7 @@ export default function ClientDashboard() {
                projectsData.forEach(p => combined.push({ ...p, _type: 'projects' }));
             }
             if (servicesData) {
-               servicesData.forEach(s => combined.push({ ...s, _type: 'services' }));
+               servicesData.forEach(s => combined.push({ ...s, name: s.title || s.name || 'Design/Legal Service', _type: 'services' }));
             }
             
             setAllProjects(combined);
@@ -129,7 +129,7 @@ export default function ClientDashboard() {
                 <select 
                    className="flex-1 max-w-md bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 outline-none font-semibold text-navy-700 focus:border-brand-500"
                    value={activeProject?.id || ""}
-                   onChange={(e) => setActiveProject(allProjects.find(p => p.id === parseInt(e.target.value)))}
+                   onChange={(e) => setActiveProject(allProjects.find(p => String(p.id) === String(e.target.value)))}
                 >
                    {allProjects.map(p => (
                       <option key={p.id} value={p.id}>

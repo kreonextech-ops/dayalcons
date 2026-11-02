@@ -245,7 +245,7 @@ ${finalNotes}`;
     email: lead?.email || "",
     address: lead?.address || "",
     source: lead?.source || "",
-    status: lead?.status || "New",
+    status: (lead?.status || '').toLowerCase() === 'new' ? 'Ongoing' : (lead?.status || 'New'),
     service_type: lead?.service_type || "",
     lead_temperature: lead?.lead_temperature || "",
     assigned_to: lead?.assigned_to || "",

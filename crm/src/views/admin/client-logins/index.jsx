@@ -43,7 +43,7 @@ export default function ClientLogins() {
     const fetchClientDetails = async () => {
       if (!selectedClient) return;
       const { data: pData } = await supabase.from("projects").select("id, name, status").eq("client_id", selectedClient.id);
-      const { data: sData } = await supabase.from("services").select("id, name, status").eq("client_id", selectedClient.id);
+      const { data: sData } = await supabase.from("services").select("id, title, status, description").eq("client_id", selectedClient.id);
       if (pData) setClientProjects(pData);
       if (sData) setClientServices(sData);
     };
@@ -166,7 +166,7 @@ export default function ClientLogins() {
                  <div className="flex flex-col gap-3">
                    {clientServices.map(s => (
                      <div key={s.id} className="bg-gray-50 p-4 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition">
-                       <p className="text-md font-bold text-navy-700">{s.name}</p>
+                       <p className="text-md font-bold text-navy-700">{s.title || s.name || "Design / Legal Service"}</p>
                        <p className="text-sm text-brand-500 font-medium mt-1">{s.status || "Pending"}</p>
                      </div>
                    ))}
