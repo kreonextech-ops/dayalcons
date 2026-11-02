@@ -49,11 +49,6 @@ export const MILESTONE_TEMPLATES = [
   }
 ];
 
-const toDateTimeLocal = (date = new Date()) => {
-  const pad = n => String(n).padStart(2, '0');
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
-};
-
 const formatTimestamp = (isoString) => {
   if (!isoString) return "";
   try {
@@ -76,7 +71,6 @@ const TabSteps = ({ serviceCase, tableName = "services", onUpdate }) => {
   // Workspace Expansion State
   const [expandedStep, setExpandedStep] = useState(null);
   const [newComment, setNewComment] = useState("");
-  const [commentDate, setCommentDate] = useState(toDateTimeLocal());
 
   const userStr = sessionStorage.getItem("dayal_user");
   const loggedInUser = userStr ? JSON.parse(userStr) : { name: "Admin" };
@@ -189,23 +183,13 @@ const TabSteps = ({ serviceCase, tableName = "services", onUpdate }) => {
 
   const handleAddComment = (stepId) => {
       if (!newComment.trim()) return;
-      
-      let timestamp = new Date().toISOString();
-      if (commentDate) {
-        try {
-          const parsed = new Date(commentDate);
-          if (!isNaN(parsed.getTime())) {
-            timestamp = parsed.toISOString();
-          }
-        } catch(e) {}
-      }
 
       const commentObj = {
           id: Date.now(),
           text: newComment.trim(),
           author: loggedInUser.name || "Admin",
           role: "Admin",
-          timestamp: timestamp
+          timestamp: new Date().toISOString()
       };
 
       setSteps(prev => prev.map(step => {
@@ -215,7 +199,17 @@ const TabSteps = ({ serviceCase, tableName = "services", onUpdate }) => {
           return step;
       }));
       setNewComment("");
-      setCommentDate(toDateTimeLocal());
+  };
+
+  const removeComment = (stepId, commentId, e) => {
+      e.stopPropagation();
+      if (!window.confirm("Delete this communication note?")) return;
+      setSteps(prev => prev.map(step => {
+          if (step.id === stepId) {
+              return { ...step, comments: (step.comments || []).filter(c => c.id !== commentId) };
+          }
+          return step;
+      }));
   };
 
   const handleFileUpload = async (stepId, e) => {
@@ -244,6 +238,17 @@ const TabSteps = ({ serviceCase, tableName = "services", onUpdate }) => {
             alert("File upload failed.");
         }
         e.target.value = null;
+  };
+
+  const removeFile = (stepId, fileId, e) => {
+      e.stopPropagation();
+      if (!window.confirm("Delete this attached file?")) return;
+      setSteps(prev => prev.map(step => {
+          if (step.id === stepId) {
+              return { ...step, files: (step.files || []).filter(f => f.id !== fileId) };
+          }
+          return step;
+      }));
   };
 
   const sortedSteps = [...steps].sort((a, b) => a.order - b.order);
@@ -349,22 +354,32 @@ const TabSteps = ({ serviceCase, tableName = "services", onUpdate }) => {
                               {step.files && step.files.length > 0 ? (
                                  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-3">
                                     {step.files.map(file => (
-                                       <div key={file.id} className="bg-white p-2 rounded border border-gray-200 text-xs flex flex-col justify-between shadow-sm">
+                                       <div key={file.id} className="bg-white p-2.5 rounded border border-gray-200 text-xs flex justify-between items-start shadow-sm">
+                                          <div className="truncate flex-1 mr-2">
+                                             <button 
+                                                type="button"
+                                                onClick={async () => { 
+                                                   if(file.fileKey) { 
+                                                      try { 
+                                                         const u = await getR2FileUrl(file.fileKey); 
+                                                         window.open(u, "_blank"); 
+                                                      } catch(e){} 
+                                                   } 
+                                                }} 
+                                                className="truncate font-medium text-blue-500 hover:underline text-left block"
+                                             >
+                                                {file.name}
+                                             </button>
+                                             <span className="text-gray-400 text-[10px] mt-0.5 block">{file.author}</span>
+                                          </div>
                                           <button 
                                              type="button"
-                                             onClick={async () => { 
-                                                if(file.fileKey) { 
-                                                   try { 
-                                                      const u = await getR2FileUrl(file.fileKey); 
-                                                      window.open(u, "_blank"); 
-                                                   } catch(e){} 
-                                                } 
-                                             }} 
-                                             className="truncate font-medium text-blue-500 hover:underline text-left"
+                                             onClick={(e) => removeFile(step.id, file.id, e)}
+                                             title="Delete file"
+                                             className="text-gray-400 hover:text-red-500 p-0.5"
                                           >
-                                             {file.name}
+                                             <MdDelete size={14} />
                                           </button>
-                                          <span className="text-gray-400 text-[10px] mt-1">{file.author}</span>
                                        </div>
                                     ))}
                                  </div>
@@ -389,10 +404,20 @@ const TabSteps = ({ serviceCase, tableName = "services", onUpdate }) => {
                                        <div key={comment.id} className={`p-3 rounded-xl max-w-[85%] ${comment.role === 'Client' ? 'bg-white border border-gray-200 self-start' : 'bg-brand-50 border border-brand-100 self-end ml-auto'}`}>
                                           <div className="flex justify-between items-center mb-1 gap-2">
                                              <span className="text-xs font-bold text-navy-700">{comment.author} {comment.role === 'Admin' ? '(Staff)' : ''}</span>
-                                             <span className="text-[10px] text-gray-400 flex items-center gap-1">
-                                                <MdAccessTime size={11} className="text-gray-400" />
-                                                {formatTimestamp(comment.timestamp)}
-                                             </span>
+                                             <div className="flex items-center gap-1.5">
+                                                <span className="text-[10px] text-gray-400 flex items-center gap-1">
+                                                   <MdAccessTime size={11} className="text-gray-400" />
+                                                   {formatTimestamp(comment.timestamp)}
+                                                </span>
+                                                <button 
+                                                   type="button"
+                                                   onClick={(e) => removeComment(step.id, comment.id, e)}
+                                                   title="Delete note"
+                                                   className="text-gray-400 hover:text-red-500 p-0.5"
+                                                >
+                                                   <MdDelete size={13} />
+                                                </button>
+                                             </div>
                                           </div>
                                           <p className="text-sm text-gray-600">{comment.text}</p>
                                        </div>
@@ -402,39 +427,23 @@ const TabSteps = ({ serviceCase, tableName = "services", onUpdate }) => {
                                  )}
                               </div>
                               
-                              {/* Add Comment Input with Date Picker */}
-                              <div className="flex flex-col gap-2 bg-white p-3 rounded-xl border border-gray-200 shadow-sm">
-                                 <div className="flex items-center gap-2">
-                                    <div className="flex items-center gap-1.5 bg-gray-50 border border-gray-200 rounded-lg px-2.5 py-1">
-                                       <span className="text-[11px] font-bold text-gray-500">Date:</span>
-                                       <input 
-                                          type="datetime-local"
-                                          value={commentDate}
-                                          onChange={(e) => setCommentDate(e.target.value)}
-                                          className="bg-transparent text-xs font-semibold text-navy-700 outline-none cursor-pointer"
-                                       />
-                                    </div>
-                                    <span className="text-[11px] text-gray-400 italic">
-                                       Set date if recording a past update.
-                                    </span>
-                                 </div>
-                                 <div className="flex gap-2">
-                                    <input 
-                                       type="text"
-                                       placeholder="Write an update or communication note..."
-                                       value={newComment}
-                                       onChange={(e) => setNewComment(e.target.value)}
-                                       onKeyDown={(e) => { if (e.key === 'Enter') handleAddComment(step.id); }}
-                                       className="flex-1 bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 text-xs outline-none focus:border-brand-500"
-                                    />
-                                    <button 
-                                       type="button"
-                                       onClick={() => handleAddComment(step.id)}
-                                       className="bg-brand-500 text-white px-4 py-2 rounded-lg hover:bg-brand-600 transition shadow-sm text-xs font-bold flex items-center justify-center gap-1 shrink-0"
-                                    >
-                                       <MdSend size={15} /> Post Update
-                                    </button>
-                                 </div>
+                              {/* Add Comment Input */}
+                              <div className="flex gap-2">
+                                 <input 
+                                    type="text"
+                                    placeholder="Write an update or communication note..."
+                                    value={newComment}
+                                    onChange={(e) => setNewComment(e.target.value)}
+                                    onKeyDown={(e) => { if (e.key === 'Enter') handleAddComment(step.id); }}
+                                    className="flex-1 bg-white border border-gray-200 rounded-lg px-4 py-2.5 text-xs outline-none focus:border-brand-500 shadow-sm"
+                                 />
+                                 <button 
+                                    type="button"
+                                    onClick={() => handleAddComment(step.id)}
+                                    className="bg-brand-500 text-white px-5 py-2.5 rounded-lg hover:bg-brand-600 transition shadow-sm text-xs font-bold flex items-center justify-center gap-1 shrink-0"
+                                 >
+                                    <MdSend size={15} /> Post Update
+                                 </button>
                               </div>
                            </div>
 

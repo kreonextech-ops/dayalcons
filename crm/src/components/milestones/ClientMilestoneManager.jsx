@@ -53,11 +53,6 @@ export const DEFAULT_TEMPLATES = [
   }
 ];
 
-const toDateTimeLocal = (date = new Date()) => {
-  const pad = n => String(n).padStart(2, '0');
-  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
-};
-
 const formatTimestamp = (isoString) => {
   if (!isoString) return "";
   try {
@@ -77,7 +72,6 @@ export default function ClientMilestoneManager({ clientId, clientName, isAdmin =
   const [isSaving, setIsSaving] = useState(false);
   const [expandedMilestone, setExpandedMilestone] = useState(null);
   const [newComment, setNewComment] = useState("");
-  const [commentDate, setCommentDate] = useState(toDateTimeLocal());
   const [newTitle, setNewTitle] = useState("");
   const [newOrder, setNewOrder] = useState("");
   const [templates, setTemplates] = useState(DEFAULT_TEMPLATES);
@@ -279,26 +273,16 @@ export default function ClientMilestoneManager({ clientId, clientName, isAdmin =
     setMilestones(updated);
   };
 
-  // Per-Milestone Comments & Communications with Custom Date
+  // Per-Milestone Comments & Communications (Add + Delete)
   const handleAddComment = async (milestoneId) => {
     if (!newComment.trim()) return;
-
-    let timestamp = new Date().toISOString();
-    if (isAdmin && commentDate) {
-      try {
-        const parsed = new Date(commentDate);
-        if (!isNaN(parsed.getTime())) {
-          timestamp = parsed.toISOString();
-        }
-      } catch(e) {}
-    }
 
     const commentObj = {
       id: Date.now(),
       text: newComment.trim(),
       author: loggedInUser?.name || (isAdmin ? "Admin" : "Client"),
       role: isAdmin ? "Admin" : "Client",
-      timestamp: timestamp
+      timestamp: new Date().toISOString()
     };
 
     const updated = milestones.map(m => {
@@ -309,11 +293,11 @@ export default function ClientMilestoneManager({ clientId, clientName, isAdmin =
     });
 
     setNewComment("");
-    setCommentDate(toDateTimeLocal());
     setMilestones(updated);
     await persistMilestones(updated);
   };
 
+  // Delete Milestone Communication Note
   const removeComment = async (milestoneId, commentId, e) => {
     e.stopPropagation();
     if (!window.confirm("Delete this communication update?")) return;
@@ -327,7 +311,7 @@ export default function ClientMilestoneManager({ clientId, clientName, isAdmin =
     await persistMilestones(updated);
   };
 
-  // Per-Milestone Files Upload
+  // Per-Milestone Files Upload + Delete
   const handleFileUpload = async (milestoneId, e) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -357,6 +341,20 @@ export default function ClientMilestoneManager({ clientId, clientName, isAdmin =
       alert("File upload failed.");
     }
     e.target.value = null;
+  };
+
+  // Delete Milestone File Attachment
+  const removeFile = async (milestoneId, fileId, e) => {
+    e.stopPropagation();
+    if (!window.confirm("Delete this attached file?")) return;
+    const updated = milestones.map(m => {
+      if (m.id === milestoneId) {
+        return { ...m, files: (m.files || []).filter(f => f.id !== fileId) };
+      }
+      return m;
+    });
+    setMilestones(updated);
+    await persistMilestones(updated);
   };
 
   const sortedMilestones = [...milestones].sort((a, b) => a.order - b.order);
@@ -556,22 +554,34 @@ export default function ClientMilestoneManager({ clientId, clientName, isAdmin =
                         {m.files && m.files.length > 0 ? (
                           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 mb-3">
                             {m.files.map(file => (
-                              <div key={file.id} className="bg-white p-2.5 rounded-lg border border-gray-200 text-xs flex flex-col justify-between shadow-sm">
-                                <button 
-                                  type="button"
-                                  onClick={async () => {
-                                    if (file.fileKey) {
-                                      try {
-                                        const url = await getR2FileUrl(file.fileKey);
-                                        window.open(url, "_blank");
-                                      } catch(e) {}
-                                    }
-                                  }}
-                                  className="truncate font-semibold text-brand-500 hover:underline text-left"
-                                >
-                                  {file.name}
-                                </button>
-                                <span className="text-[10px] text-gray-400 mt-1">Uploaded by {file.author}</span>
+                              <div key={file.id} className="bg-white p-2.5 rounded-lg border border-gray-200 text-xs flex justify-between items-start shadow-sm">
+                                <div className="truncate flex-1 mr-2">
+                                  <button 
+                                    type="button"
+                                    onClick={async () => {
+                                      if (file.fileKey) {
+                                        try {
+                                          const url = await getR2FileUrl(file.fileKey);
+                                          window.open(url, "_blank");
+                                        } catch(e) {}
+                                      }
+                                    }}
+                                    className="truncate font-semibold text-brand-500 hover:underline text-left block max-w-full"
+                                  >
+                                    {file.name}
+                                  </button>
+                                  <span className="text-[10px] text-gray-400 block mt-0.5">By {file.author}</span>
+                                </div>
+                                {isAdmin && (
+                                  <button 
+                                    type="button"
+                                    onClick={(e) => removeFile(m.id, file.id, e)}
+                                    title="Delete file"
+                                    className="text-gray-400 hover:text-red-500 p-1 rounded transition shrink-0"
+                                  >
+                                    <MdDelete size={15} />
+                                  </button>
+                                )}
                               </div>
                             ))}
                           </div>
@@ -608,7 +618,7 @@ export default function ClientMilestoneManager({ clientId, clientName, isAdmin =
                                   <span className="font-bold text-navy-700">
                                     {c.author} {c.role === 'Admin' ? '(Staff)' : '(Client)'}
                                   </span>
-                                  <div className="flex items-center gap-1.5">
+                                  <div className="flex items-center gap-2">
                                     <span className="text-[10px] text-gray-500 font-medium flex items-center gap-1">
                                       <MdAccessTime size={11} className="text-gray-400" />
                                       {formatTimestamp(c.timestamp)}
@@ -617,10 +627,10 @@ export default function ClientMilestoneManager({ clientId, clientName, isAdmin =
                                       <button 
                                         type="button"
                                         onClick={(e) => removeComment(m.id, c.id, e)}
-                                        title="Delete note"
-                                        className="text-gray-400 hover:text-red-500 p-0.5 rounded transition"
+                                        title="Delete message"
+                                        className="text-gray-400 hover:text-red-500 p-0.5 rounded hover:bg-red-50 transition"
                                       >
-                                        <MdDelete size={13} />
+                                        <MdDelete size={14} />
                                       </button>
                                     )}
                                   </div>
@@ -633,46 +643,24 @@ export default function ClientMilestoneManager({ clientId, clientName, isAdmin =
                           )}
                         </div>
 
-                        {/* Add Comment Input with Date Picker */}
-                        <div className="flex flex-col gap-2 bg-white p-3 rounded-xl border border-gray-200 shadow-sm">
-                          <div className="flex items-center gap-2">
-                            {isAdmin && (
-                              <div className="flex items-center gap-1.5 bg-gray-50 border border-gray-200 rounded-lg px-2.5 py-1">
-                                <span className="text-[11px] font-bold text-gray-500">Date:</span>
-                                <input 
-                                  type="datetime-local"
-                                  value={commentDate}
-                                  onChange={(e) => setCommentDate(e.target.value)}
-                                  className="bg-transparent text-xs font-semibold text-navy-700 outline-none cursor-pointer"
-                                />
-                              </div>
-                            )}
-                            <span className="text-[11px] text-gray-400 italic">
-                              {isAdmin 
-                                ? "Choose date & time if logging a past update." 
-                                : "Post an inquiry or update."}
-                            </span>
-                          </div>
-
-                          <div className="flex gap-2">
-                            <input 
-                              type="text"
-                              placeholder="Write communication note or milestone update..."
-                              value={newComment}
-                              onChange={(e) => setNewComment(e.target.value)}
-                              onKeyDown={(e) => { if (e.key === 'Enter') handleAddComment(m.id); }}
-                              className="flex-1 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none focus:border-brand-500"
-                            />
-                            <button 
-                              type="button"
-                              onClick={() => handleAddComment(m.id)}
-                              className="bg-brand-500 text-white px-4 py-2 rounded-lg hover:bg-brand-600 transition shadow-sm text-xs font-bold flex items-center justify-center gap-1 shrink-0"
-                            >
-                              <MdSend size={15} /> Post Update
-                            </button>
-                          </div>
+                        {/* Add Comment Input */}
+                        <div className="flex gap-2">
+                          <input 
+                            type="text"
+                            placeholder="Add a remark or update on this milestone..."
+                            value={newComment}
+                            onChange={(e) => setNewComment(e.target.value)}
+                            onKeyDown={(e) => { if (e.key === 'Enter') handleAddComment(m.id); }}
+                            className="flex-1 bg-white border border-gray-200 rounded-lg px-4 py-2.5 text-xs outline-none focus:border-brand-500 shadow-sm"
+                          />
+                          <button 
+                            type="button"
+                            onClick={() => handleAddComment(m.id)}
+                            className="bg-brand-500 text-white px-5 py-2.5 rounded-lg hover:bg-brand-600 transition shadow-sm text-xs font-bold flex items-center justify-center gap-1.5 shrink-0"
+                          >
+                            <MdSend size={15} /> Post Update
+                          </button>
                         </div>
-
                       </div>
 
                     </div>
