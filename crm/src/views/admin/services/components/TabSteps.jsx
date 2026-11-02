@@ -4,7 +4,7 @@ import { createClient } from "@supabase/supabase-js";
 import { uploadFileToR2, getR2FileUrl } from "utils/r2Storage";
 import { 
   MdCheckCircle, MdSave, MdRadioButtonUnchecked, MdAdd, MdDelete, 
-  MdExpandMore, MdExpandLess, MdAttachFile, MdSend, MdBookmarkBorder 
+  MdExpandMore, MdExpandLess, MdAttachFile, MdSend, MdBookmarkBorder, MdAccessTime 
 } from "react-icons/md";
 
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL || "https://gdzligxryodasaxnhdco.supabase.co";
@@ -49,6 +49,23 @@ export const MILESTONE_TEMPLATES = [
   }
 ];
 
+const toDateTimeLocal = (date = new Date()) => {
+  const pad = n => String(n).padStart(2, '0');
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+};
+
+const formatTimestamp = (isoString) => {
+  if (!isoString) return "";
+  try {
+    const d = new Date(isoString);
+    if (isNaN(d.getTime())) return isoString;
+    return d.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }) + 
+      ", " + d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  } catch(e) {
+    return isoString;
+  }
+};
+
 const TabSteps = ({ serviceCase, tableName = "services", onUpdate }) => {
   const [steps, setSteps] = useState([]);
   const [isSaving, setIsSaving] = useState(false);
@@ -59,6 +76,7 @@ const TabSteps = ({ serviceCase, tableName = "services", onUpdate }) => {
   // Workspace Expansion State
   const [expandedStep, setExpandedStep] = useState(null);
   const [newComment, setNewComment] = useState("");
+  const [commentDate, setCommentDate] = useState(toDateTimeLocal());
 
   const userStr = sessionStorage.getItem("dayal_user");
   const loggedInUser = userStr ? JSON.parse(userStr) : { name: "Admin" };
@@ -80,7 +98,6 @@ const TabSteps = ({ serviceCase, tableName = "services", onUpdate }) => {
           }));
           setSteps(st);
        } else {
-          // Choose intelligent default template based on title
           const title = (serviceCase.title || serviceCase.name || "").toLowerCase();
           if (title.includes("lucc") || title.includes("legal") || title.includes("mutation") || title.includes("sanction")) {
             setSteps(MILESTONE_TEMPLATES[0].steps);
@@ -106,6 +123,7 @@ const TabSteps = ({ serviceCase, tableName = "services", onUpdate }) => {
       setSteps(tpl.steps.map((s, i) => ({
         ...s,
         id: Date.now() + i,
+        completed: false,
         comments: [],
         files: []
       })));
@@ -172,12 +190,22 @@ const TabSteps = ({ serviceCase, tableName = "services", onUpdate }) => {
   const handleAddComment = (stepId) => {
       if (!newComment.trim()) return;
       
+      let timestamp = new Date().toISOString();
+      if (commentDate) {
+        try {
+          const parsed = new Date(commentDate);
+          if (!isNaN(parsed.getTime())) {
+            timestamp = parsed.toISOString();
+          }
+        } catch(e) {}
+      }
+
       const commentObj = {
           id: Date.now(),
           text: newComment.trim(),
           author: loggedInUser.name || "Admin",
           role: "Admin",
-          timestamp: new Date().toISOString()
+          timestamp: timestamp
       };
 
       setSteps(prev => prev.map(step => {
@@ -187,6 +215,7 @@ const TabSteps = ({ serviceCase, tableName = "services", onUpdate }) => {
           return step;
       }));
       setNewComment("");
+      setCommentDate(toDateTimeLocal());
   };
 
   const handleFileUpload = async (stepId, e) => {
@@ -358,9 +387,12 @@ const TabSteps = ({ serviceCase, tableName = "services", onUpdate }) => {
                                  {step.comments && step.comments.length > 0 ? (
                                     step.comments.map(comment => (
                                        <div key={comment.id} className={`p-3 rounded-xl max-w-[85%] ${comment.role === 'Client' ? 'bg-white border border-gray-200 self-start' : 'bg-brand-50 border border-brand-100 self-end ml-auto'}`}>
-                                          <div className="flex justify-between items-center mb-1">
-                                             <span className="text-xs font-bold text-navy-700">{comment.author} {comment.role === 'Admin' ? '(You)' : ''}</span>
-                                             <span className="text-[10px] text-gray-400">{new Date(comment.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</span>
+                                          <div className="flex justify-between items-center mb-1 gap-2">
+                                             <span className="text-xs font-bold text-navy-700">{comment.author} {comment.role === 'Admin' ? '(Staff)' : ''}</span>
+                                             <span className="text-[10px] text-gray-400 flex items-center gap-1">
+                                                <MdAccessTime size={11} className="text-gray-400" />
+                                                {formatTimestamp(comment.timestamp)}
+                                             </span>
                                           </div>
                                           <p className="text-sm text-gray-600">{comment.text}</p>
                                        </div>
@@ -370,23 +402,39 @@ const TabSteps = ({ serviceCase, tableName = "services", onUpdate }) => {
                                  )}
                               </div>
                               
-                              {/* Add Comment */}
-                              <div className="flex gap-2">
-                                 <input 
-                                    type="text"
-                                    placeholder="Write an update or ask a question..."
-                                    value={newComment}
-                                    onChange={(e) => setNewComment(e.target.value)}
-                                    onKeyDown={(e) => { if (e.key === 'Enter') handleAddComment(step.id); }}
-                                    className="flex-1 bg-white border border-gray-200 rounded-lg px-4 text-sm outline-none focus:border-brand-500 shadow-sm"
-                                 />
-                                 <button 
-                                    type="button"
-                                    onClick={() => handleAddComment(step.id)}
-                                    className="bg-brand-500 text-white p-3 rounded-lg hover:bg-brand-600 transition shadow-sm"
-                                 >
-                                    <MdSend size={18} />
-                                 </button>
+                              {/* Add Comment Input with Date Picker */}
+                              <div className="flex flex-col gap-2 bg-white p-3 rounded-xl border border-gray-200 shadow-sm">
+                                 <div className="flex items-center gap-2">
+                                    <div className="flex items-center gap-1.5 bg-gray-50 border border-gray-200 rounded-lg px-2.5 py-1">
+                                       <span className="text-[11px] font-bold text-gray-500">Date:</span>
+                                       <input 
+                                          type="datetime-local"
+                                          value={commentDate}
+                                          onChange={(e) => setCommentDate(e.target.value)}
+                                          className="bg-transparent text-xs font-semibold text-navy-700 outline-none cursor-pointer"
+                                       />
+                                    </div>
+                                    <span className="text-[11px] text-gray-400 italic">
+                                       Set date if recording a past update.
+                                    </span>
+                                 </div>
+                                 <div className="flex gap-2">
+                                    <input 
+                                       type="text"
+                                       placeholder="Write an update or communication note..."
+                                       value={newComment}
+                                       onChange={(e) => setNewComment(e.target.value)}
+                                       onKeyDown={(e) => { if (e.key === 'Enter') handleAddComment(step.id); }}
+                                       className="flex-1 bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 text-xs outline-none focus:border-brand-500"
+                                    />
+                                    <button 
+                                       type="button"
+                                       onClick={() => handleAddComment(step.id)}
+                                       className="bg-brand-500 text-white px-4 py-2 rounded-lg hover:bg-brand-600 transition shadow-sm text-xs font-bold flex items-center justify-center gap-1 shrink-0"
+                                    >
+                                       <MdSend size={15} /> Post Update
+                                    </button>
+                                 </div>
                               </div>
                            </div>
 

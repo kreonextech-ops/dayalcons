@@ -5,7 +5,7 @@ import { uploadFileToR2, getR2FileUrl } from "utils/r2Storage";
 import { 
   MdCheckCircle, MdRadioButtonUnchecked, MdAdd, MdDelete, 
   MdExpandMore, MdExpandLess, MdAttachFile, MdSend, MdBookmarkBorder,
-  MdFlag, MdPlaylistAddCheck, MdDeleteOutline
+  MdFlag, MdPlaylistAddCheck, MdDeleteOutline, MdAccessTime
 } from "react-icons/md";
 
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL || "https://gdzligxryodasaxnhdco.supabase.co";
@@ -53,6 +53,23 @@ export const DEFAULT_TEMPLATES = [
   }
 ];
 
+const toDateTimeLocal = (date = new Date()) => {
+  const pad = n => String(n).padStart(2, '0');
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+};
+
+const formatTimestamp = (isoString) => {
+  if (!isoString) return "";
+  try {
+    const d = new Date(isoString);
+    if (isNaN(d.getTime())) return isoString;
+    return d.toLocaleDateString("en-GB", { day: "2-digit", month: "short", year: "numeric" }) + 
+      ", " + d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  } catch(e) {
+    return isoString;
+  }
+};
+
 export default function ClientMilestoneManager({ clientId, clientName, isAdmin = false }) {
   const [milestones, setMilestones] = useState([]);
   const [employeeRecord, setEmployeeRecord] = useState(null);
@@ -60,6 +77,7 @@ export default function ClientMilestoneManager({ clientId, clientName, isAdmin =
   const [isSaving, setIsSaving] = useState(false);
   const [expandedMilestone, setExpandedMilestone] = useState(null);
   const [newComment, setNewComment] = useState("");
+  const [commentDate, setCommentDate] = useState(toDateTimeLocal());
   const [newTitle, setNewTitle] = useState("");
   const [newOrder, setNewOrder] = useState("");
   const [templates, setTemplates] = useState(DEFAULT_TEMPLATES);
@@ -88,7 +106,7 @@ export default function ClientMilestoneManager({ clientId, clientName, isAdmin =
     if (!clientId) return;
     setLoading(true);
     try {
-      const { data, error } = await supabase
+      const { data } = await supabase
         .from("employees")
         .select("id, name, permissions, department")
         .eq("department", clientId)
@@ -101,11 +119,9 @@ export default function ClientMilestoneManager({ clientId, clientName, isAdmin =
         if (Array.isArray(perms.milestones) && perms.milestones.length > 0) {
           setMilestones(perms.milestones);
         } else {
-          // If no milestones defined yet, default to empty or LUCC if new
           setMilestones([]);
         }
       } else {
-        // Fallback: check if client has milestones in notes or empty
         setMilestones([]);
       }
     } catch (err) {
@@ -123,7 +139,6 @@ export default function ClientMilestoneManager({ clientId, clientName, isAdmin =
     setIsSaving(true);
     try {
       if (!employeeRecord?.id) {
-        // Find or create employee record
         const { data: emp } = await supabase
           .from("employees")
           .select("id, permissions")
@@ -165,7 +180,7 @@ export default function ClientMilestoneManager({ clientId, clientName, isAdmin =
       id: Date.now() + i,
       order: s.order || i + 1,
       title: s.title,
-      completed: !!s.completed,
+      completed: false,
       comments: [],
       files: []
     }));
@@ -264,15 +279,26 @@ export default function ClientMilestoneManager({ clientId, clientName, isAdmin =
     setMilestones(updated);
   };
 
-  // Per-Milestone Comments & Communications
+  // Per-Milestone Comments & Communications with Custom Date
   const handleAddComment = async (milestoneId) => {
     if (!newComment.trim()) return;
+
+    let timestamp = new Date().toISOString();
+    if (isAdmin && commentDate) {
+      try {
+        const parsed = new Date(commentDate);
+        if (!isNaN(parsed.getTime())) {
+          timestamp = parsed.toISOString();
+        }
+      } catch(e) {}
+    }
+
     const commentObj = {
       id: Date.now(),
       text: newComment.trim(),
       author: loggedInUser?.name || (isAdmin ? "Admin" : "Client"),
       role: isAdmin ? "Admin" : "Client",
-      timestamp: new Date().toISOString()
+      timestamp: timestamp
     };
 
     const updated = milestones.map(m => {
@@ -283,6 +309,20 @@ export default function ClientMilestoneManager({ clientId, clientName, isAdmin =
     });
 
     setNewComment("");
+    setCommentDate(toDateTimeLocal());
+    setMilestones(updated);
+    await persistMilestones(updated);
+  };
+
+  const removeComment = async (milestoneId, commentId, e) => {
+    e.stopPropagation();
+    if (!window.confirm("Delete this communication update?")) return;
+    const updated = milestones.map(m => {
+      if (m.id === milestoneId) {
+        return { ...m, comments: (m.comments || []).filter(c => c.id !== commentId) };
+      }
+      return m;
+    });
     setMilestones(updated);
     await persistMilestones(updated);
   };
@@ -568,9 +608,22 @@ export default function ClientMilestoneManager({ clientId, clientName, isAdmin =
                                   <span className="font-bold text-navy-700">
                                     {c.author} {c.role === 'Admin' ? '(Staff)' : '(Client)'}
                                   </span>
-                                  <span className="text-[10px] text-gray-400">
-                                    {new Date(c.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                  </span>
+                                  <div className="flex items-center gap-1.5">
+                                    <span className="text-[10px] text-gray-500 font-medium flex items-center gap-1">
+                                      <MdAccessTime size={11} className="text-gray-400" />
+                                      {formatTimestamp(c.timestamp)}
+                                    </span>
+                                    {isAdmin && (
+                                      <button 
+                                        type="button"
+                                        onClick={(e) => removeComment(m.id, c.id, e)}
+                                        title="Delete note"
+                                        className="text-gray-400 hover:text-red-500 p-0.5 rounded transition"
+                                      >
+                                        <MdDelete size={13} />
+                                      </button>
+                                    )}
+                                  </div>
                                 </div>
                                 <p className="text-gray-600 text-sm">{c.text}</p>
                               </div>
@@ -580,24 +633,46 @@ export default function ClientMilestoneManager({ clientId, clientName, isAdmin =
                           )}
                         </div>
 
-                        {/* Add Comment Input */}
-                        <div className="flex gap-2">
-                          <input 
-                            type="text"
-                            placeholder="Add a remark or update on this milestone..."
-                            value={newComment}
-                            onChange={(e) => setNewComment(e.target.value)}
-                            onKeyDown={(e) => { if (e.key === 'Enter') handleAddComment(m.id); }}
-                            className="flex-1 bg-white border border-gray-200 rounded-lg px-4 py-2 text-xs outline-none focus:border-brand-500 shadow-sm"
-                          />
-                          <button 
-                            type="button"
-                            onClick={() => handleAddComment(m.id)}
-                            className="bg-brand-500 text-white px-4 py-2 rounded-lg hover:bg-brand-600 transition shadow-sm text-xs font-bold flex items-center gap-1"
-                          >
-                            <MdSend size={15} /> Post
-                          </button>
+                        {/* Add Comment Input with Date Picker */}
+                        <div className="flex flex-col gap-2 bg-white p-3 rounded-xl border border-gray-200 shadow-sm">
+                          <div className="flex items-center gap-2">
+                            {isAdmin && (
+                              <div className="flex items-center gap-1.5 bg-gray-50 border border-gray-200 rounded-lg px-2.5 py-1">
+                                <span className="text-[11px] font-bold text-gray-500">Date:</span>
+                                <input 
+                                  type="datetime-local"
+                                  value={commentDate}
+                                  onChange={(e) => setCommentDate(e.target.value)}
+                                  className="bg-transparent text-xs font-semibold text-navy-700 outline-none cursor-pointer"
+                                />
+                              </div>
+                            )}
+                            <span className="text-[11px] text-gray-400 italic">
+                              {isAdmin 
+                                ? "Choose date & time if logging a past update." 
+                                : "Post an inquiry or update."}
+                            </span>
+                          </div>
+
+                          <div className="flex gap-2">
+                            <input 
+                              type="text"
+                              placeholder="Write communication note or milestone update..."
+                              value={newComment}
+                              onChange={(e) => setNewComment(e.target.value)}
+                              onKeyDown={(e) => { if (e.key === 'Enter') handleAddComment(m.id); }}
+                              className="flex-1 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-xs outline-none focus:border-brand-500"
+                            />
+                            <button 
+                              type="button"
+                              onClick={() => handleAddComment(m.id)}
+                              className="bg-brand-500 text-white px-4 py-2 rounded-lg hover:bg-brand-600 transition shadow-sm text-xs font-bold flex items-center justify-center gap-1 shrink-0"
+                            >
+                              <MdSend size={15} /> Post Update
+                            </button>
+                          </div>
                         </div>
+
                       </div>
 
                     </div>
