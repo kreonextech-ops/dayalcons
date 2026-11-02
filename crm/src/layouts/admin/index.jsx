@@ -69,6 +69,7 @@ export default function Admin(props) {
             "Tasks",
             "Follow Ups",
             "Assignment Workflow",
+            "Client Logins",
             "Profile Settings"
           ];
           if (allowedForCRO.includes(prop.name)) hasPermission = true;
