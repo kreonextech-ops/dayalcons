@@ -18,7 +18,7 @@ export const DEFAULT_TEMPLATES = [
     name: "L.U.C.C & Legal Services",
     isDefault: true,
     steps: [
-      { id: 1, order: 1, title: "Document Collection & Title Deed Verification", completed: true, comments: [], files: [] },
+      { id: 1, order: 1, title: "Document Collection & Title Deed Verification", completed: false, comments: [], files: [] },
       { id: 2, order: 2, title: "Land Survey & Site Inspection", completed: false, comments: [], files: [] },
       { id: 3, order: 3, title: "Application Submission to Municipal / Panchayat Authority", completed: false, comments: [], files: [] },
       { id: 4, order: 4, title: "Departmental Clearance & Field Verification", completed: false, comments: [], files: [] },
