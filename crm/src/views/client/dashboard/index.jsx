@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { createClient } from "@supabase/supabase-js";
-import ClientSteps from "./ClientSteps";
+import ClientMilestoneManager from "components/milestones/ClientMilestoneManager";
 import ClientChat from "components/chat/ClientChat";
 import { MdCameraAlt } from "react-icons/md";
 import { uploadFileToR2 } from "utils/r2Storage";
@@ -81,7 +81,8 @@ export default function ClientDashboard() {
   }
 
   return (
-    <div className="flex flex-col gap-5 mt-5">
+    <div className="flex flex-col gap-6 mt-4">
+      {/* Top 2-Column: Profile + Communication */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
         {/* Profile Card */}
@@ -102,59 +103,60 @@ export default function ClientDashboard() {
             </label>
           </div>
           <h2 className="text-xl font-bold text-navy-700">{clientProfile?.name || "Client Name"}</h2>
-          <p className="text-sm text-gray-500 mb-2">{clientProfile?.email || "No Email Provided"}</p>
-          <p className="text-sm text-gray-500">{clientProfile?.phone || "No Phone Provided"}</p>
+          <p className="text-sm font-semibold text-brand-500 mb-1">Client Portal Access</p>
+          <p className="text-xs text-gray-500">{clientProfile?.phone || "No Phone Provided"}</p>
+          {clientProfile?.email && <p className="text-xs text-gray-400 mt-0.5">{clientProfile.email}</p>}
         </div>
 
         {/* Communication Hub */}
         <div className="lg:col-span-2">
-          <h3 className="text-lg font-bold text-navy-700 mb-3">Communication & Files</h3>
+          <h3 className="text-lg font-bold text-navy-700 mb-3">Communication & Direct Messages</h3>
           {clientProfile && (
             <ClientChat clientId={clientProfile.id} userType="client" />
           )}
         </div>
       </div>
 
-      {allProjects.length === 0 ? (
-        <div className="bg-white p-8 rounded-[20px] text-center shadow-sm border border-[#E2E8F0] mt-4">
-           <h2 className="text-2xl font-bold text-navy-700 mb-2">Welcome to Dayal Construction!</h2>
-           <p className="text-gray-500">You currently do not have any active projects or services linked to this account, but you can use the chat above to communicate with our team!</p>
-        </div>
-      ) : (
-        <>
-          {/* Project Selector (if multiple) */}
+      {/* Linked Project/Service Banner */}
+      {activeProject && (
+        <div className="bg-gradient-to-r from-brand-500 to-brand-300 p-6 rounded-[20px] text-white shadow-md flex flex-col sm:flex-row justify-between sm:items-center gap-3">
+          <div>
+            <span className="text-xs uppercase font-bold tracking-wider text-white/80">
+              {activeProject?._type === 'projects' ? 'Execution Project' : 'Design & Legal Service'}
+            </span>
+            <h2 className="text-2xl font-bold">{activeProject?.name}</h2>
+            <p className="text-white/90 text-xs font-semibold mt-0.5">
+              Status: {activeProject?.status || 'In Progress'}
+            </p>
+          </div>
+
           {allProjects.length > 1 && (
-             <div className="bg-white p-4 rounded-[20px] shadow-sm border border-[#E2E8F0] flex items-center gap-4">
-                <span className="font-bold text-gray-600">Select Project:</span>
-                <select 
-                   className="flex-1 max-w-md bg-gray-50 border border-gray-200 rounded-lg px-4 py-2 outline-none font-semibold text-navy-700 focus:border-brand-500"
-                   value={activeProject?.id || ""}
-                   onChange={(e) => setActiveProject(allProjects.find(p => String(p.id) === String(e.target.value)))}
-                >
-                   {allProjects.map(p => (
-                      <option key={p.id} value={p.id}>
-                         {p.name} ({p._type === 'projects' ? 'Execution Project' : 'Design/Legal Service'})
-                      </option>
-                   ))}
-                </select>
-             </div>
+            <div className="flex items-center gap-2">
+              <span className="text-xs font-bold text-white/90">Switch:</span>
+              <select 
+                className="bg-white/20 backdrop-blur-md text-white border border-white/30 rounded-xl px-3 py-1.5 text-xs font-semibold outline-none cursor-pointer"
+                value={activeProject?.id || ""}
+                onChange={(e) => setActiveProject(allProjects.find(p => String(p.id) === String(e.target.value)))}
+              >
+                {allProjects.map(p => (
+                  <option key={p.id} value={p.id} className="text-navy-700">
+                    {p.name}
+                  </option>
+                ))}
+              </select>
+            </div>
           )}
-
-          {/* Main Project Header */}
-          <div className="bg-gradient-to-r from-brand-500 to-brand-300 p-8 rounded-[20px] text-white shadow-md">
-             <h1 className="text-3xl font-bold mb-2">{activeProject?.name}</h1>
-             <p className="text-white/80 font-medium tracking-wide uppercase text-sm">
-                {activeProject?._type === 'projects' ? 'Execution Project' : 'Design/Legal Service'} 
-                {activeProject?.status ? ` • ${activeProject.status}` : ''}
-             </p>
-          </div>
-
-          {/* Steps Viewer */}
-          <div className="mt-2">
-             <ClientSteps entityData={activeProject} tableType={activeProject?._type} />
-          </div>
-        </>
+        </div>
       )}
+
+      {/* Dedicated Client Milestones */}
+      <div className="w-full">
+        <ClientMilestoneManager 
+          clientId={clientProfile?.id} 
+          clientName={clientProfile?.name} 
+          isAdmin={false} 
+        />
+      </div>
     </div>
   );
 }
