@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { MdAdd, MdDelete, MdVpnKey, MdPerson, MdClose, MdFlag, MdMessage } from "react-icons/md";
+import React, { useState, useEffect, useRef } from "react";
+import { MdAdd, MdDelete, MdVpnKey, MdPerson, MdClose, MdFlag, MdMessage, MdSearch } from "react-icons/md";
 import Card from "components/card";
 import { createClient } from "@supabase/supabase-js";
 import ClientChat from "components/chat/ClientChat";
@@ -21,6 +21,13 @@ export default function ClientLogins() {
   const [clientServices, setClientServices] = useState([]);
   const [activeTab, setActiveTab] = useState("milestones"); // "milestones" | "chat"
 
+  // Search states
+  const [tableSearch, setTableSearch] = useState("");
+  const [modalSearch, setModalSearch] = useState("");
+  const [showClientDropdown, setShowClientDropdown] = useState(false);
+  const [selectedClientRecord, setSelectedClientRecord] = useState(null);
+  const clientDropdownRef = useRef(null);
+
   const [formData, setFormData] = useState({
     clientId: "",
     email: "",
@@ -41,6 +48,17 @@ export default function ClientLogins() {
     fetchData();
   }, []);
 
+  // Handle click outside client search dropdown in create modal
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (clientDropdownRef.current && !clientDropdownRef.current.contains(e.target)) {
+        setShowClientDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
   useEffect(() => {
     const fetchClientDetails = async () => {
       if (!selectedClient) return;
@@ -54,6 +72,10 @@ export default function ClientLogins() {
 
   const handleCreate = async (e) => {
     e.preventDefault();
+    if (!formData.clientId) {
+      alert("Please search and select a client record to link.");
+      return;
+    }
     setIsSaving(true);
     const selectedC = clients.find(c => String(c.id) === String(formData.clientId));
     
@@ -71,6 +93,8 @@ export default function ClientLogins() {
     } else {
       setShowModal(false);
       setFormData({ clientId: "", email: "", password: "" });
+      setSelectedClientRecord(null);
+      setModalSearch("");
       fetchData();
     }
     setIsSaving(false);
@@ -85,6 +109,28 @@ export default function ClientLogins() {
       if (selectedClient) setSelectedClient(null);
     }
   };
+
+  // Filter clients for modal search
+  const filteredModalClients = clients.filter(c => {
+    if (!modalSearch.trim()) return true;
+    const term = modalSearch.toLowerCase().trim();
+    return (
+      c.name?.toLowerCase().includes(term) ||
+      c.phone?.includes(term) ||
+      c.email?.toLowerCase().includes(term)
+    );
+  });
+
+  // Filter logins for main table search
+  const filteredLogins = logins.filter(login => {
+    if (!tableSearch.trim()) return true;
+    const term = tableSearch.toLowerCase().trim();
+    const linkedClient = clients.find(c => String(c.id) === String(login.department));
+    const nameMatch = (linkedClient?.name || login.name || "").toLowerCase().includes(term);
+    const emailMatch = (login.email || "").toLowerCase().includes(term);
+    const phoneMatch = (linkedClient?.phone || "").includes(term);
+    return nameMatch || emailMatch || phoneMatch;
+  });
 
   if (selectedClient) {
     return (
@@ -224,17 +270,47 @@ export default function ClientLogins() {
 
   return (
     <div className="mt-3 flex h-full w-full flex-col gap-5">
-      <div className="flex justify-between items-center mb-4 mt-2">
+      {/* Top Header Bar */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-2 mt-2">
         <div>
           <h2 className="text-2xl font-bold text-navy-700 dark:text-white">Client Logins</h2>
-          <p className="text-sm text-gray-500">Manage portal access and set client project milestones.</p>
+          <p className="text-sm text-gray-500">Manage client access, view direct messaging, and update milestones.</p>
         </div>
-        <button
-          onClick={() => setShowModal(true)}
-          className="flex items-center gap-2 rounded-lg bg-brand-500 px-5 py-2.5 text-sm font-semibold text-white hover:bg-brand-600 transition"
-        >
-          <MdAdd size={20} /> Create Client Login
-        </button>
+
+        <div className="flex flex-wrap items-center gap-3 w-full sm:w-auto">
+          {/* Table Search Input */}
+          <div className="relative flex-1 sm:w-64">
+            <MdSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 text-lg" />
+            <input 
+              type="text"
+              placeholder="Search by client or user ID..."
+              value={tableSearch}
+              onChange={(e) => setTableSearch(e.target.value)}
+              className="w-full pl-9 pr-4 py-2 rounded-xl border border-gray-200 text-xs outline-none focus:border-brand-500 bg-white shadow-sm"
+            />
+            {tableSearch && (
+              <button 
+                onClick={() => setTableSearch("")} 
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 text-xs"
+              >
+                ✕
+              </button>
+            )}
+          </div>
+
+          {/* Create Button */}
+          <button
+            onClick={() => {
+              setShowModal(true);
+              setFormData({ clientId: "", email: "", password: "" });
+              setSelectedClientRecord(null);
+              setModalSearch("");
+            }}
+            className="flex items-center gap-2 rounded-xl bg-brand-500 px-5 py-2.5 text-xs font-bold text-white hover:bg-brand-600 transition shadow-sm shrink-0"
+          >
+            <MdAdd size={18} /> Create Client Login
+          </button>
+        </div>
       </div>
 
       <Card extra={"w-full h-full p-4"}>
@@ -252,14 +328,14 @@ export default function ClientLogins() {
             <tbody>
               {loading ? (
                 <tr><td colSpan="5" className="py-8 text-center text-gray-500">Loading...</td></tr>
-              ) : logins.length === 0 ? (
+              ) : filteredLogins.length === 0 ? (
                 <tr>
-                  <td colSpan="5" className="py-8 text-center text-gray-500">
-                    No client logins created yet.
+                  <td colSpan="5" className="py-8 text-center text-gray-500 font-medium">
+                    {tableSearch ? `No client logins matching "${tableSearch}".` : "No client logins created yet."}
                   </td>
                 </tr>
               ) : (
-                logins.map((login) => {
+                filteredLogins.map((login) => {
                   const linkedClient = clients.find(c => String(c.id) === String(login.department));
                   return (
                     <tr 
@@ -278,7 +354,10 @@ export default function ClientLogins() {
                           </div>
                           <div>
                             <p className="text-sm font-bold text-navy-700">{linkedClient?.name || login.name}</p>
-                            <p className="text-xs text-gray-500">ID: CLIENT-{login.department?.toString().substring(0,4)?.toUpperCase() || "NEW"}</p>
+                            <p className="text-xs text-gray-500">
+                              {linkedClient?.phone ? `${linkedClient.phone} • ` : ""}
+                              ID: CLIENT-{login.department?.toString().substring(0,4)?.toUpperCase() || "NEW"}
+                            </p>
                           </div>
                         </div>
                       </td>
@@ -315,65 +394,140 @@ export default function ClientLogins() {
         </div>
       </Card>
 
-      {/* CREATE MODAL */}
+      {/* CREATE ACCESS CREDENTIALS MODAL */}
       {showModal && (
         <div className="fixed inset-0 z-[999] flex items-center justify-center bg-black/50 p-4">
-          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
+          <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl relative">
+            <button 
+              type="button"
+              onClick={() => setShowModal(false)}
+              className="absolute top-5 right-5 text-gray-400 hover:text-gray-600 transition"
+            >
+              <MdClose size={22} />
+            </button>
+
             <h3 className="text-xl font-bold text-navy-700 mb-4 flex items-center gap-2">
               <MdVpnKey className="text-brand-500" /> Create Access Credentials
             </h3>
+            
             <form onSubmit={handleCreate}>
-              <div className="mb-4">
-                <label className="mb-1 block text-sm font-bold text-gray-600">Link to Client Record</label>
-                <select
-                  required
-                  className="w-full rounded-lg border border-gray-200 p-3 text-sm outline-none focus:border-brand-500 text-navy-700 font-semibold"
-                  value={formData.clientId}
-                  onChange={(e) => setFormData({...formData, clientId: e.target.value})}
-                >
-                  <option value="">-- Select Client --</option>
-                  {clients.map(c => (
-                    <option key={c.id} value={c.id}>{c.name} ({c.phone || c.email})</option>
-                  ))}
-                </select>
+              
+              {/* SEARCHABLE CLIENT PICKER */}
+              <div className="mb-4 relative" ref={clientDropdownRef}>
+                <label className="mb-1 block text-sm font-bold text-gray-600">
+                  Link to Client Record <span className="text-red-500">*</span>
+                </label>
+
+                {selectedClientRecord ? (
+                  <div className="flex items-center justify-between p-3 rounded-xl border-2 border-brand-500 bg-brand-50/40 transition">
+                    <div>
+                      <p className="text-sm font-bold text-navy-700">{selectedClientRecord.name}</p>
+                      <p className="text-xs text-gray-500">
+                        {selectedClientRecord.phone || "No phone"} {selectedClientRecord.email ? `• ${selectedClientRecord.email}` : ""}
+                      </p>
+                    </div>
+                    <button 
+                      type="button"
+                      onClick={() => {
+                        setSelectedClientRecord(null);
+                        setFormData(prev => ({ ...prev, clientId: "" }));
+                        setModalSearch("");
+                      }}
+                      className="text-gray-400 hover:text-red-500 p-1 rounded-lg hover:bg-white transition"
+                      title="Clear selection"
+                    >
+                      <MdClose size={18} />
+                    </button>
+                  </div>
+                ) : (
+                  <div className="relative">
+                    <MdSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-gray-400 text-lg" />
+                    <input 
+                      type="text"
+                      value={modalSearch}
+                      onChange={(e) => {
+                        setModalSearch(e.target.value);
+                        setShowClientDropdown(true);
+                      }}
+                      onFocus={() => setShowClientDropdown(true)}
+                      placeholder="Type client name or phone to search..."
+                      className="w-full pl-10 pr-4 py-2.5 rounded-xl border border-gray-200 text-xs outline-none focus:border-brand-500 font-semibold text-navy-700"
+                    />
+
+                    {showClientDropdown && (
+                      <div className="absolute top-12 left-0 w-full bg-white border border-gray-200 rounded-xl shadow-2xl max-h-60 overflow-y-auto z-50 divide-y divide-gray-50">
+                        {filteredModalClients.length > 0 ? (
+                          filteredModalClients.map(c => (
+                            <div 
+                              key={c.id}
+                              onClick={() => {
+                                setSelectedClientRecord(c);
+                                const defaultUsername = c.phone || c.email?.split("@")[0] || c.name.toLowerCase().replace(/\s+/g, "");
+                                setFormData(prev => ({ 
+                                  ...prev, 
+                                  clientId: c.id,
+                                  email: prev.email || defaultUsername
+                                }));
+                                setShowClientDropdown(false);
+                              }}
+                              className="p-3 hover:bg-brand-50 cursor-pointer transition text-left"
+                            >
+                              <p className="text-sm font-bold text-navy-700">{c.name}</p>
+                              <p className="text-xs text-gray-500 font-medium">
+                                {c.phone || "No phone"} {c.email ? `• ${c.email}` : ""}
+                              </p>
+                            </div>
+                          ))
+                        ) : (
+                          <div className="p-4 text-xs text-gray-400 text-center">
+                            No clients matching "{modalSearch}"
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
 
+              {/* USERNAME */}
               <div className="mb-4">
                 <label className="mb-1 block text-sm font-bold text-gray-600">Login ID (Username)</label>
                 <input
                   type="text"
                   required
-                  placeholder="e.g. client123"
-                  className="w-full rounded-lg border border-gray-200 p-3 text-sm outline-none focus:border-brand-500"
+                  placeholder="e.g. client phone or username"
+                  className="w-full rounded-xl border border-gray-200 p-2.5 text-xs outline-none focus:border-brand-500 font-semibold text-navy-700"
                   value={formData.email}
                   onChange={(e) => setFormData({...formData, email: e.target.value})}
                 />
               </div>
 
+              {/* PASSWORD */}
               <div className="mb-6">
                 <label className="mb-1 block text-sm font-bold text-gray-600">Password</label>
                 <input
                   type="text"
                   required
-                  placeholder="Generated/Set Password"
-                  className="w-full rounded-lg border border-gray-200 p-3 text-sm outline-none focus:border-brand-500"
+                  placeholder="Set or generate password"
+                  className="w-full rounded-xl border border-gray-200 p-2.5 text-xs outline-none focus:border-brand-500 font-semibold text-navy-700"
                   value={formData.password}
                   onChange={(e) => setFormData({...formData, password: e.target.value})}
                 />
               </div>
 
+              {/* ACTIONS */}
               <div className="mt-4 flex gap-3">
                 <button
                   type="button"
                   onClick={() => setShowModal(false)}
-                  className="flex-1 rounded-lg bg-gray-100 py-3 text-sm font-bold text-gray-600 hover:bg-gray-200 transition"
+                  className="flex-1 rounded-xl bg-gray-100 py-2.5 text-xs font-bold text-gray-600 hover:bg-gray-200 transition"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  disabled={isSaving}
-                  className="flex-1 rounded-lg bg-brand-500 py-3 text-sm font-bold text-white hover:bg-brand-600 transition disabled:opacity-50"
+                  disabled={isSaving || !formData.clientId}
+                  className="flex-1 rounded-xl bg-brand-500 py-2.5 text-xs font-bold text-white hover:bg-brand-600 transition disabled:opacity-50 shadow-sm"
                 >
                   {isSaving ? "Saving..." : "Create Login"}
                 </button>
