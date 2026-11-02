@@ -4,6 +4,7 @@ import Card from "components/card";
 import { createClient } from "@supabase/supabase-js";
 import ClientChat from "components/chat/ClientChat";
 import R2Image from "components/R2Image";
+import TabSteps from "../services/components/TabSteps";
 
 const supabaseUrl = process.env.REACT_APP_SUPABASE_URL || "https://gdzligxryodasaxnhdco.supabase.co";
 const supabaseKey = process.env.REACT_APP_SUPABASE_ANON_KEY || "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdkemxpZ3hyeW9kYXNheG5oZGNvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODcxNTg1MDUsImV4cCI6MjEwMjczNDUwNX0.AYTyAMf22g8au51ATReRQdQc2IzDLYQ2vtQH_Uyfrpg";
@@ -18,6 +19,7 @@ export default function ClientLogins() {
   const [selectedClient, setSelectedClient] = useState(null); // Added for Profile/Chat
   const [clientProjects, setClientProjects] = useState([]);
   const [clientServices, setClientServices] = useState([]);
+  const [milestoneModal, setMilestoneModal] = useState(null); // { item, type: 'services' | 'projects' }
 
   const [formData, setFormData] = useState({
     clientId: "",
@@ -42,7 +44,7 @@ export default function ClientLogins() {
   useEffect(() => {
     const fetchClientDetails = async () => {
       if (!selectedClient) return;
-      const { data: pData } = await supabase.from("projects").select("id, name, status").eq("client_id", selectedClient.id);
+      const { data: pData } = await supabase.from("projects").select("id, name, status, description").eq("client_id", selectedClient.id);
       const { data: sData } = await supabase.from("services").select("id, title, status, description").eq("client_id", selectedClient.id);
       if (pData) setClientProjects(pData);
       if (sData) setClientServices(sData);
@@ -60,122 +62,230 @@ export default function ClientLogins() {
       email: formData.email,
       password: formData.password,
       role: "Client",
-      department: formData.clientId // We store clientId in department field to link them
+      department: formData.clientId // Store the client ID here!
     };
 
     const { error } = await supabase.from("employees").insert([newLogin]);
     if (error) {
-      alert("Failed to create login: " + (error.message.includes("duplicate") ? "This email already has a login!" : error.message));
-      setIsSaving(false);
-      return;
+      alert("Error creating login: " + error.message);
+    } else {
+      setShowModal(false);
+      setFormData({ clientId: "", email: "", password: "" });
+      fetchData();
     }
-    setFormData({ clientId: "", email: "", password: "" });
-    setShowModal(false);
     setIsSaving(false);
-    fetchData();
   };
 
   const handleDelete = async (id, e) => {
-    e.stopPropagation(); // Stop row click
-    if (window.confirm("Are you sure you want to revoke this client's portal access?")) {
-      await supabase.from("employees").delete().eq("id", id);
+    e.stopPropagation();
+    if (!window.confirm("Are you sure you want to revoke this client's portal access?")) return;
+    const { error } = await supabase.from("employees").delete().eq("id", id);
+    if (!error) {
       fetchData();
+      if (selectedClient) setSelectedClient(null);
     }
   };
 
   if (selectedClient) {
     return (
-      <div className="mt-3 flex w-full flex-col gap-5">
-        {/* Header with Back Button */}
-        <div className="flex items-center gap-4">
-          <button 
-            onClick={() => setSelectedClient(null)} 
-            className="flex items-center justify-center p-2 bg-white rounded-full shadow-sm text-gray-600 hover:bg-gray-50 hover:text-brand-500 transition"
-          >
-            <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" /></svg>
-          </button>
-          <h2 className="text-2xl font-bold text-navy-700">Client Hub</h2>
-        </div>
-
-        {/* Client Profile Header */}
-        <div className="bg-white rounded-[20px] shadow-sm border border-[#E2E8F0] p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-          <div className="flex items-center gap-6">
-            <div className="h-20 w-20 rounded-full overflow-hidden bg-gray-100 border-4 border-brand-500 shadow-md">
-              {selectedClient.profile_picture ? (
-                 <R2Image fileKey={selectedClient.profile_picture} alt="Profile" className="w-full h-full object-cover" />
-              ) : (
-                 <div className="w-full h-full flex items-center justify-center text-gray-400 text-3xl font-bold bg-gray-100">
-                    {selectedClient.name?.charAt(0) || "U"}
-                 </div>
-              )}
+      <div className="mt-3 flex h-full w-full flex-col gap-5">
+         {/* Top Header */}
+         <div className="flex items-center gap-4 bg-white p-6 rounded-[20px] shadow-sm border border-[#E2E8F0]">
+            <button 
+               onClick={() => setSelectedClient(null)} 
+               className="p-2 hover:bg-gray-100 rounded-full transition text-gray-600 font-bold"
+               title="Back to Client Logins"
+            >
+               ← Back
+            </button>
+            <div className="h-16 w-16 rounded-full overflow-hidden bg-brand-50 border-2 border-brand-500 flex items-center justify-center text-brand-500 text-2xl font-bold">
+               {selectedClient.profile_picture ? (
+                  <R2Image fileKey={selectedClient.profile_picture} alt="Profile" className="w-full h-full object-cover" />
+               ) : (
+                  selectedClient.name?.[0]?.toUpperCase() || <MdPerson />
+               )}
             </div>
             <div>
-              <h3 className="text-3xl font-bold text-navy-700">{selectedClient.name}</h3>
-              <p className="text-gray-500 font-medium mt-1">{selectedClient.email} &nbsp;•&nbsp; {selectedClient.phone}</p>
+               <h2 className="text-2xl font-bold text-navy-700">{selectedClient.name}</h2>
+               <p className="text-sm font-semibold text-gray-500">
+                  {selectedClient.phone || "No phone"} {selectedClient.email ? `• ${selectedClient.email}` : ""}
+               </p>
             </div>
-          </div>
-          
-          <div className="flex gap-3">
-             <a href="/crm/admin/projects" className="px-4 py-2 bg-brand-50 text-brand-500 font-bold rounded-lg hover:bg-brand-100 transition">
-               + Add Project
-             </a>
-             <a href="/crm/admin/services" className="px-4 py-2 bg-brand-50 text-brand-500 font-bold rounded-lg hover:bg-brand-100 transition">
-               + Add Service
-             </a>
-          </div>
-        </div>
+         </div>
 
-        {/* Main Content Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-           
-           {/* Communication (Chat) */}
-           <div className="lg:col-span-2 flex flex-col h-full">
-             <h4 className="font-bold text-navy-700 mb-3 text-xl">Direct Messaging & Files</h4>
-             <ClientChat clientId={selectedClient.id} userType="admin" />
-           </div>
+         {/* 2-Column Layout */}
+         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            
+            {/* Communication (Chat) */}
+            <div className="lg:col-span-2 flex flex-col h-full">
+              <h4 className="font-bold text-navy-700 mb-3 text-xl">Direct Messaging & Files</h4>
+              <ClientChat clientId={selectedClient.id} userType="admin" />
+            </div>
 
-           {/* Linked Assets */}
-           <div className="flex flex-col gap-6">
-             {/* Projects */}
-             <div className="bg-white rounded-[20px] shadow-sm border border-[#E2E8F0] p-6">
-               <h4 className="font-bold text-navy-700 mb-4 text-lg">Construction Projects</h4>
-               {clientProjects.length === 0 ? (
-                 <div className="text-center py-6 text-gray-400 border-2 border-dashed border-gray-200 rounded-xl">
-                   No active projects.
+            {/* Linked Assets */}
+            <div className="flex flex-col gap-6">
+              
+              {/* Construction Projects */}
+              <div className="bg-white rounded-[20px] shadow-sm border border-[#E2E8F0] p-6">
+                <div className="flex justify-between items-center mb-4">
+                  <h4 className="font-bold text-navy-700 text-lg">Construction Projects</h4>
+                  <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full font-bold">
+                    {clientProjects.length}
+                  </span>
+                </div>
+                {clientProjects.length === 0 ? (
+                  <div className="text-center py-6 text-gray-400 border-2 border-dashed border-gray-200 rounded-xl text-sm">
+                    No active projects.
+                  </div>
+                ) : (
+                  <div className="flex flex-col gap-3">
+                    {clientProjects.map(p => {
+                      let stepCount = 0;
+                      let completedCount = 0;
+                      try {
+                        const meta = JSON.parse(p.description || "{}");
+                        if (Array.isArray(meta.steps)) {
+                          stepCount = meta.steps.length;
+                          completedCount = meta.steps.filter(st => st.completed).length;
+                        }
+                      } catch(e) {}
+                      const pct = stepCount > 0 ? Math.round((completedCount / stepCount) * 100) : 0;
+
+                      return (
+                        <div 
+                          key={p.id} 
+                          onClick={() => setMilestoneModal({ item: p, type: "projects" })}
+                          className="bg-gray-50 p-4 rounded-xl border border-gray-100 shadow-sm hover:shadow-md hover:border-brand-400 transition cursor-pointer group"
+                        >
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <p className="text-md font-bold text-navy-700 group-hover:text-brand-500 transition">{p.name}</p>
+                              <p className="text-xs text-brand-500 font-semibold mt-0.5">{p.status || "Pending"}</p>
+                            </div>
+                            <span className="text-xs bg-brand-50 text-brand-600 font-bold px-2.5 py-1 rounded-full border border-brand-200 group-hover:bg-brand-500 group-hover:text-white transition">
+                              Milestones →
+                            </span>
+                          </div>
+
+                          <div className="mt-3">
+                            <div className="flex justify-between text-xs text-gray-500 font-medium mb-1">
+                              <span>{stepCount > 0 ? `${completedCount}/${stepCount} Steps` : "No steps defined"}</span>
+                              <span className="font-bold text-brand-600">{pct}%</span>
+                            </div>
+                            <div className="w-full bg-gray-200 h-1.5 rounded-full overflow-hidden">
+                              <div className="bg-brand-500 h-full rounded-full transition-all duration-300" style={{ width: `${pct}%` }}></div>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+
+              {/* Design/Legal Services */}
+              <div className="bg-white rounded-[20px] shadow-sm border border-[#E2E8F0] p-6">
+                <div className="flex justify-between items-center mb-4">
+                  <h4 className="font-bold text-navy-700 text-lg">Design/Legal Services</h4>
+                  <span className="text-xs bg-gray-100 text-gray-600 px-2 py-0.5 rounded-full font-bold">
+                    {clientServices.length}
+                  </span>
+                </div>
+                {clientServices.length === 0 ? (
+                  <div className="text-center py-6 text-gray-400 border-2 border-dashed border-gray-200 rounded-xl text-sm">
+                    No active services.
+                  </div>
+                ) : (
+                  <div className="flex flex-col gap-3">
+                    {clientServices.map(s => {
+                      let stepCount = 0;
+                      let completedCount = 0;
+                      try {
+                        const meta = JSON.parse(s.description || "{}");
+                        if (Array.isArray(meta.steps)) {
+                          stepCount = meta.steps.length;
+                          completedCount = meta.steps.filter(st => st.completed).length;
+                        }
+                      } catch(e) {}
+                      const pct = stepCount > 0 ? Math.round((completedCount / stepCount) * 100) : 0;
+
+                      return (
+                        <div 
+                          key={s.id} 
+                          onClick={() => setMilestoneModal({ item: s, type: "services" })}
+                          className="bg-gray-50 p-4 rounded-xl border border-gray-100 shadow-sm hover:shadow-md hover:border-brand-400 transition cursor-pointer group"
+                        >
+                          <div className="flex justify-between items-start">
+                            <div>
+                              <p className="text-md font-bold text-navy-700 group-hover:text-brand-500 transition">
+                                {s.title || s.name || "Design / Legal Service"}
+                              </p>
+                              <p className="text-xs text-brand-500 font-semibold mt-0.5">{s.status || "Pending"}</p>
+                            </div>
+                            <span className="text-xs bg-brand-50 text-brand-600 font-bold px-2.5 py-1 rounded-full border border-brand-200 group-hover:bg-brand-500 group-hover:text-white transition">
+                              Milestones →
+                            </span>
+                          </div>
+
+                          <div className="mt-3">
+                            <div className="flex justify-between text-xs text-gray-500 font-medium mb-1">
+                              <span>{stepCount > 0 ? `${completedCount}/${stepCount} Steps` : "No steps defined"}</span>
+                              <span className="font-bold text-brand-600">{pct}%</span>
+                            </div>
+                            <div className="w-full bg-gray-200 h-1.5 rounded-full overflow-hidden">
+                              <div className="bg-brand-500 h-full rounded-full transition-all duration-300" style={{ width: `${pct}%` }}></div>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
+
+            </div>
+
+         </div>
+
+         {/* MILESTONE / STEPS MODAL */}
+         {milestoneModal && (
+           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm overflow-y-auto">
+             <div className="bg-white rounded-2xl max-w-4xl w-full p-6 shadow-2xl relative my-8 max-h-[92vh] overflow-y-auto">
+               <div className="flex justify-between items-start mb-6 pb-4 border-b border-gray-100">
+                 <div>
+                   <span className="text-xs font-bold text-brand-500 uppercase tracking-wider">
+                     {milestoneModal.type === "projects" ? "Construction Project" : "Design / Legal Service"}
+                   </span>
+                   <h3 className="text-2xl font-bold text-navy-700">
+                     Milestones & Steps: {milestoneModal.item.title || milestoneModal.item.name}
+                   </h3>
+                   <p className="text-sm text-gray-500 mt-0.5">
+                     Load templates, add/delete steps, check off milestones, and attach documents.
+                   </p>
                  </div>
-               ) : (
-                 <div className="flex flex-col gap-3">
-                   {clientProjects.map(p => (
-                     <div key={p.id} className="bg-gray-50 p-4 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition">
-                       <p className="text-md font-bold text-navy-700">{p.name}</p>
-                       <p className="text-sm text-brand-500 font-medium mt-1">{p.status || "Pending"}</p>
-                     </div>
-                   ))}
-                 </div>
-               )}
+                 <button 
+                   onClick={() => setMilestoneModal(null)} 
+                   className="text-gray-400 hover:text-gray-700 text-2xl font-bold p-1 rounded-lg hover:bg-gray-100 transition"
+                 >
+                   <MdClose size={24} />
+                 </button>
+               </div>
+
+               <TabSteps 
+                 serviceCase={milestoneModal.item} 
+                 tableName={milestoneModal.type}
+                 onUpdate={(updatedItem) => {
+                   if (milestoneModal.type === "services") {
+                     setClientServices(prev => prev.map(s => s.id === updatedItem.id ? updatedItem : s));
+                   } else {
+                     setClientProjects(prev => prev.map(p => p.id === updatedItem.id ? updatedItem : p));
+                   }
+                   setMilestoneModal(prev => prev ? { ...prev, item: updatedItem } : null);
+                 }} 
+               />
              </div>
-
-             {/* Services */}
-             <div className="bg-white rounded-[20px] shadow-sm border border-[#E2E8F0] p-6">
-               <h4 className="font-bold text-navy-700 mb-4 text-lg">Design/Legal Services</h4>
-               {clientServices.length === 0 ? (
-                 <div className="text-center py-6 text-gray-400 border-2 border-dashed border-gray-200 rounded-xl">
-                   No active services.
-                 </div>
-               ) : (
-                 <div className="flex flex-col gap-3">
-                   {clientServices.map(s => (
-                     <div key={s.id} className="bg-gray-50 p-4 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition">
-                       <p className="text-md font-bold text-navy-700">{s.title || s.name || "Design / Legal Service"}</p>
-                       <p className="text-sm text-brand-500 font-medium mt-1">{s.status || "Pending"}</p>
-                     </div>
-                   ))}
-                 </div>
-               )}
-             </div>
            </div>
-
-        </div>
+         )}
       </div>
     );
   }
@@ -344,4 +454,3 @@ export default function ClientLogins() {
     </div>
   );
 }
-
