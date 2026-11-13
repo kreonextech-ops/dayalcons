@@ -43,7 +43,9 @@ const LeadDetail = ({ lead, onBack }) => {
     if (lead?.id) {
       if ((lead.status || '').toLowerCase() === 'new') {
         setLeadData(prev => ({ ...prev, status: 'Ongoing' }));
-        supabase.from('leads').update({ status: 'Ongoing' }).eq('id', lead.id);
+        supabase.from('leads').update({ status: 'Ongoing' }).eq('id', lead.id).then(({ error }) => {
+          if (error) console.error('Error auto-updating status to Ongoing in LeadDetail:', error);
+        });
       }
       fetchComments();
       fetchNextTask();

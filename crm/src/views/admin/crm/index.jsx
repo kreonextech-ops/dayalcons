@@ -458,7 +458,19 @@ ${finalNotes}`;
 
   return (
     <>
-    {selectedLead && <LeadDetail lead={selectedLead} onBack={(updated) => { if(updated && updated.id){ setLeads(leads.map(l => l.id === updated.id ? updated : l)); } setSelectedLead(null); lastCloseTime.current = Date.now(); fetchLeads(false); }} />}
+    {selectedLead && (
+      <LeadDetail
+        lead={selectedLead}
+        onBack={async (updated) => {
+          if (updated && updated.id) {
+            setLeads(prev => prev.map(l => l.id === updated.id ? { ...l, ...updated } : l));
+          }
+          setSelectedLead(null);
+          lastCloseTime.current = Date.now();
+          await fetchLeads(false);
+        }}
+      />
+    )}
     <div className={`w-full max-w-full bg-[#F8FAFC] dark:bg-navy-900 h-auto pt-4 pb-8 ${selectedLead ? 'hidden' : 'block'}`}>
       {convertLeadData && (
         <div className="fixed inset-0 z-[99] flex items-center justify-center bg-black/50 backdrop-blur-sm">
@@ -703,16 +715,22 @@ ${finalNotes}`;
                      if (filtered.length === 0) return <tr><td colSpan="12" className="py-12 text-center text-gray-500">No leads found.</td></tr>;
                      const paginated = filtered;
                      return paginated.map((lead, index) => (
-                        <tr key={lead.id} className="border-b border-gray-100 hover:bg-gray-50 dark:hover:bg-navy-800 cursor-pointer" onClick={() => {
+                        <tr key={lead.id} className="border-b border-gray-100 hover:bg-gray-50 dark:hover:bg-navy-800 cursor-pointer" onClick={async () => {
                               if (Date.now() - lastCloseTime.current < 500) return;
                               const isNew = (lead.status || '').toLowerCase() === 'new';
                               const activeLead = isNew ? { ...lead, status: 'Ongoing' } : lead;
                               if (isNew) {
                                 lead.status = 'Ongoing';
-                                supabase.from('leads').update({ status: 'Ongoing' }).eq('id', lead.id);
                                 setLeads(prev => prev.map(l => l.id === lead.id ? { ...l, status: 'Ongoing' } : l));
+                                setSelectedLead(activeLead);
+                                try {
+                                  await supabase.from('leads').update({ status: 'Ongoing' }).eq('id', lead.id);
+                                } catch (err) {
+                                  console.error('Failed to update lead status to Ongoing in database:', err);
+                                }
+                              } else {
+                                setSelectedLead(activeLead);
                               }
-                              setSelectedLead(activeLead);
                            }}>
                            <td className="py-2 px-6" onClick={(e) => e.stopPropagation()}>
                               <input type="checkbox" className="w-4 h-4 rounded text-[#2563EB] border-[#E2E8F0] dark:border-navy-700 cursor-pointer" />
